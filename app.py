@@ -64,6 +64,9 @@ def main():
                                             sort_item="date",
                                             sort_ascending=True)
   
+  merged_df = data_cleaner.second_data_cleaning(target_df=merged_df)
+  
+  
   
   
   

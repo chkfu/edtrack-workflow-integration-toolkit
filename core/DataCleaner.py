@@ -1,3 +1,5 @@
+import re
+import statistics
 import pandas as pd
 
   
@@ -45,7 +47,8 @@ class DataCleaner:
     return output
   
   
-  def handle_na(self, target_df: pd.DataFrame, 
+  def handle_na(self, 
+                target_df: pd.DataFrame, 
                 drop_missing: bool, 
                 na_subset_col: list) -> pd.DataFrame:
     
@@ -97,6 +100,71 @@ class DataCleaner:
     return target_df
   
   
+  #  METHOD  -  SUPPORTING -  Second Screening
+  
+  def trim_string(self, input: str, isAlpha: bool=False) -> str:
+    if pd.isna(input):
+      return "Not Specified"
+    if isAlpha:
+      output = re.sub(r'[^A-Za-z]', "", input.strip())
+    else:
+        output = input.strip()
+    if output == "":
+      return "Not Specified"
+    return output
+  
+  def manage_string_case(self, input: str, case: str="title") -> str:
+    case = case.lower()
+    if case not in ["upper", "lower", "capitalize", "capitalise", "title"]:
+      return input.title()
+    if case == "upper":
+      output =  input.upper()
+    elif case == "lower":
+      output =  input.lower()
+    elif case == "capitalise" or case == "capitalize":
+      output = input.capitalize()
+    else:
+      output = input.title()
+    return output
+  
+  def handle_num_na(self, series: pd.Series, filling: str="median"):   
+    if filling.lower() not in ["mean", "median", "mode"]:
+      return series
+    if filling == "mean":
+      temp_val = series.mean()
+    elif filling == "mode":
+      temp_val = statistics.mode(series)
+    else:
+      temp_val = series.median()
+    if series.isna().any():
+      series = series.fillna(temp_val)
+    return series
+  
+  def spec_cleaning_str(self, target_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+    output = target_df.copy()
+    output[target_col] = output[target_col].astype("string").fillna("Not Specified")
+    for index, value in target_df[target_col].items():
+      temp_val = self.trim_string(input=value, isAlpha=False)
+      temp_val = self.manage_string_case(input=value, case="title")
+      output.loc[index, target_col] = temp_val
+    return output
+  
+  def spec_cleaning_int(self, target_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+    output = target_df.copy()
+    output[target_col] = output[target_col].astype(str).map(lambda el: re.sub(r'[^0-9\.,]', "", el))
+    output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
+    output[target_col] = self.handle_num_na(output[target_col], filling="median")
+    output[target_col] = output[target_col].round().astype("Int64")
+    return output
+
+  def spec_cleaning_float(self, target_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+    output = target_df.copy()
+    output[target_col] = output[target_col].astype(str).map(lambda el: re.sub(r'[^0-9\.,]', "", el))
+    output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
+    output[target_col] = self.handle_num_na(output[target_col], filling="median")
+    output[target_col] = output[target_col].round(2).astype("Float64")
+    return output
+  
   #  METHOD  -  PIPELINES
   
   def first_data_cleaning(self, 
@@ -106,6 +174,8 @@ class DataCleaner:
                           sort_item: str = "index", 
                           sort_ascending: bool = True) -> pd.DataFrame:
     
+    output = target_df.copy()
+    
     #  validate data type
   
     if not isinstance(target_df, pd.DataFrame):
@@ -114,21 +184,47 @@ class DataCleaner:
       raise TypeError("[DataCleaner] the option for drop rows with missing cell must be boolean.")
     
     #  execution
-    output  = self.handle_duplication(target_df)
+    output  = self.handle_duplication(output)
     output  = self.handle_na(output, drop_missing, na_subset_col)
-    output  = self.validate_dtypes(target_df, DEFAULT_DTYPE_CONFIG)
-    output  = self.handle_sort(target_df, sort_item, sort_ascending)
+    output  = self.validate_dtypes(output, DEFAULT_DTYPE_CONFIG)
+    output  = self.handle_sort(output, sort_item, sort_ascending)
     
     #  output
-    print("[DataCleaner] First cleaning is completed")
+    if not output.empty:
+      print("[DataCleaner] First cleaning is completed.")
     return output
   
   
   def second_data_cleaning(self, 
-                           default_dtype: dict = DEFAULT_DTYPE_CONFIG):
+                           target_df: pd.DataFrame,
+                           default_dtype: dict = DEFAULT_DTYPE_CONFIG) -> pd.DataFrame:
     
-    if isinstance(default_dtype, dict):
+    if not isinstance(default_dtype, dict):
       raise TypeError("[DataCleaner] the input default data types config is not in dict format.")
-    print()
+  
+    output = target_df.copy()
+  
+    for dtype, list in default_dtype.items():
+      for col in list:
+        
+        if col not in target_df.columns:
+          continue
+        
+        if dtype == "string":
+          output = self.spec_cleaning_str(output, col)
+        if dtype == "integer":
+          output = self.spec_cleaning_int(output, col)
+        if dtype == "float":
+          output = self.spec_cleaning_float(output, col)
+        if dtype == "boolean":
+          output[col] = output[col].astype("boolean").fillna(False)
+        if dtype == "datetime":
+          output[col] = pd.to_datetime(output[col], errors="coerce", format="%d/%m/%Y")
+                
+    #  output
+    if not output.empty:     
+      print("Second cleaning is completed.")    
+    return output
     
-    print("second")
+    
+    
