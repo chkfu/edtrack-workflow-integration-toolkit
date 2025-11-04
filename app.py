@@ -1,7 +1,6 @@
 import os
-from datetime import datetime
 from dotenv import load_dotenv
-from core import DataLoader, SQLConnector, DataManager, DataCleaner
+from core import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor
 from core.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
 
 
@@ -44,6 +43,7 @@ def main():
 
   data_manager = DataManager()
   data_cleaner = DataCleaner()
+  data_preproc = DataPreprocessor(data_manager=data_manager)
   
   #  1.  merge the dataset to be analysed
   merged_df = data_manager.merge_tables(target_df_left=df_users, 
@@ -59,14 +59,44 @@ def main():
                                               sort_item="date",
                                               sort_ascending=True)
   
+  
   merged_df = data_cleaner.second_data_cleaning(target_df=merged_df)
   
   
+  
+  #  PRE-PROCESSING
+  
+  processed_df = data_preproc.remove_time_col(target_df=merged_df, 
+                                              time_col="time")
+  
+  processed_df = data_preproc.hash_name_col(target_df=processed_df, 
+                                            name_col="User Full Name *Anonymized")
+  
+  processed_df = data_manager.rename_col(target_df=processed_df,
+                                         target_col="User Full Name *Anonymized", 
+                                         new_name="User")
+  
+  processed_df = data_preproc.encode_component_col(target_df=processed_df, 
+                                                   target_col="component", 
+                                                   code_df=df_components, 
+                                                   dict_idx="component", 
+                                                   dict_val="code")
+  
+  processed_df = data_preproc.encode_component_col(target_df=processed_df, 
+                                                   target_col="target", 
+                                                   code_df=df_components, 
+                                                   dict_idx="component", 
+                                                   dict_val="code")
+  
+  processed_df = data_preproc.regulate_actions(target_df=processed_df, 
+                                               target_col="action")
+  
+  processed_df = data_preproc.revise_target_col(target_df=processed_df, 
+                                                target_col="target")
+ 
+ 
   #  Testing
-  
-  print(merged_df.head)
-  
-  
+  print(processed_df)
   
   
   

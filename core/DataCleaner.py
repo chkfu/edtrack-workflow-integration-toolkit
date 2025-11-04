@@ -77,7 +77,9 @@ class DataCleaner:
   
   #  METHOD  -  SUPPORTING -  Second Screening
   
-  def trim_string(self, input: str, isAlpha: bool=False) -> str:
+  def trim_string(self, 
+                  input: str, 
+                  isAlpha: bool=False) -> str:
     if pd.isna(input):
       return "Not Specified"
     if isAlpha:
@@ -88,7 +90,9 @@ class DataCleaner:
       return "Not Specified"
     return output
   
-  def manage_string_case(self, input: str, case: str="title") -> str:
+  def manage_string_case(self, 
+                         input: str, 
+                         case: str="title") -> str:
     case = case.lower()
     if case not in ["upper", "lower", "capitalize", "capitalise", "title"]:
       return input.title()
@@ -102,7 +106,9 @@ class DataCleaner:
       output = input.title()
     return output
   
-  def handle_num_na(self, series: pd.Series, filling: str="median"):   
+  def handle_num_na(self, 
+                    series: pd.Series, 
+                    filling: str="median") -> pd.Series:   
     if filling.lower() not in ["mean", "median", "mode"]:
       return series
     if filling == "mean":
@@ -115,7 +121,9 @@ class DataCleaner:
       series = series.fillna(temp_val)
     return series
   
-  def spec_cleaning_str(self, target_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+  def spec_cleaning_str(self, 
+                        target_df: pd.DataFrame, 
+                        target_col: str) -> pd.DataFrame:
     output = target_df.copy()
     output[target_col] = output[target_col].astype("string").fillna("Not Specified")
     for index, value in target_df[target_col].items():
@@ -124,21 +132,62 @@ class DataCleaner:
       output.loc[index, target_col] = temp_val
     return output
   
-  def spec_cleaning_int(self, target_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+  def spec_cleaning_int(self, 
+                        target_df: pd.DataFrame, 
+                        target_col: str) -> pd.DataFrame:
     output = target_df.copy()
-    output[target_col] = output[target_col].astype(str).map(lambda el: re.sub(r'[^0-9\.,]', "", el))
+    output[target_col] = output[target_col].astype(str).str.strip().map(lambda el: re.sub(r'[^0-9\.,]', "", el))
     output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
     output[target_col] = output[target_col].round().astype("Int64")
     return output
 
-  def spec_cleaning_float(self, target_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+  def spec_cleaning_float(self, 
+                          target_df: pd.DataFrame, 
+                          target_col: str) -> pd.DataFrame:
     output = target_df.copy()
-    output[target_col] = output[target_col].astype(str).map(lambda el: re.sub(r'[^0-9\.,]', "", el))
+    output[target_col] = output[target_col].astype(str).str.strip().map(lambda el: re.sub(r'[^0-9\.,]', "", el))
     output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
     output[target_col] = output[target_col].round(2).astype("Float64")
     return output
+  
+  def spec_cleaning_bool(self, 
+                        target_df: pd.DataFrame, 
+                        target_col: str) -> pd.DataFrame:
+    output = target_df.copy()
+    output[target_col] = output[target_col].astype(str).str.strip().str.lower()
+    output[target_col] = output[target_col].replace({
+                                                "true": True,
+                                                "yes": True,
+                                                "y": True,
+                                                "1": True,
+                                                "1.0": True,
+                                                "false": False,
+                                                "no": False,
+                                                "n": False,
+                                                "0": False,
+                                                "0.0": False,
+                                                "": False,
+                                                "none": False,
+                                                "nan": False
+                                              })
+    output[target_col] = output[target_col].astype("boolean").fillna(False)
+    return output
+  
+  def spec_cleaning_datetime(self, 
+              target_df: pd.DataFrame, 
+              target_col: str) -> pd.DataFrame:
+    output = target_df.copy()
+    output[target_col] = output[target_col].astype(str).str.strip().str.lower()
+    output[target_col] = pd.to_datetime(
+                                output[target_col],
+                                errors="coerce",
+                                dayfirst=True,
+                                infer_datetime_format=True
+                            )
+    return output
+  
   
   #  METHOD  -  PIPELINES
   
@@ -194,13 +243,11 @@ class DataCleaner:
           output = self.spec_cleaning_int(output, col)
         if dtype == "float":
           output = self.spec_cleaning_float(output, col)
-        if dtype == "boolean":
-          output[col] = output[col].astype("boolean").fillna(False)
+        if dtype == "boolean":  
+          output = self.spec_cleaning_bool(output, col)  
         if dtype == "datetime":
-          output[col] = pd.to_datetime(output[col].astype(str).str.strip(),
-                                      errors="coerce",
-                                      dayfirst=True,
-                                      format="%d/%m/%Y %H:%M:%S")
+          output = self.spec_cleaning_datetime(output, col)
+        print()
                 
     #  output
     if not output.empty:     
