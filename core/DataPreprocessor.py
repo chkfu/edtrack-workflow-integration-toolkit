@@ -98,10 +98,8 @@ class DataPreprocessor:
     #  validate column name
     target_col_r = self.validate_col(target_df, target_col)
     #  unify similar options
-    output[target_col_r] = ["submission".upper()
-                          if str(item).lower() in ["submission_state", "submission_status"]
+    output[target_col_r] = ["submission".upper().strip()
+                          if str(item).lower().strip() in ["file_submission", "submission_state", "submission_status", "submission_text"]
                           else item.upper()
                           for item in output[target_col_r]]
     return output
-  
-  

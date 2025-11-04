@@ -104,7 +104,7 @@ class DataCleaner:
       output = input.capitalize()
     else:
       output = input.title()
-    return output
+    return output.strip()
   
   def handle_num_na(self, 
                     series: pd.Series, 

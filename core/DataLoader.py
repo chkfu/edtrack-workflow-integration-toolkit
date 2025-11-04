@@ -1,4 +1,5 @@
 import os
+import dataframe_image as dfi
 import pandas as pd
 
 
@@ -46,7 +47,9 @@ class DataLoader:
       dataframe.to_xml(destination + fileName + ".xml", index=False)
     elif type_r == "json":
       #  learnt: orient="records" for dict type (json-like)
-      dataframe.to_json(destination + fileName + ".json", orient="records", indent=4)  
+      dataframe.to_json(destination + fileName + ".json", orient="records", indent=4) 
+    elif type_r == "png":
+      dfi.export(dataframe, destination + fileName + ".png")
     else:
       raise ValueError("[DataLoader] import_dataset - data path format is not .csv, .xml, or .json.")
     

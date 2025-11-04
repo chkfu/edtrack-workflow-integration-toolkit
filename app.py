@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 from dotenv import load_dotenv
 from core import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor
 from core.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
@@ -62,7 +63,10 @@ def main():
   
   merged_df = data_cleaner.second_data_cleaning(target_df=merged_df)
   
-  data_loader.convert_dataset(dataframe=merged_df, fileType="csv", fileName="table_merged", destination="output/tables/")
+  data_loader.convert_dataset(dataframe=merged_df, 
+                              fileType="csv", 
+                              fileName="table_merged", 
+                              destination="data/processed/")
   
   #  PRE-PROCESSING
   
@@ -94,97 +98,95 @@ def main():
   processed_df = data_preproc.revise_target_col(target_df=processed_df, 
                                                 target_col="target")
  
-  data_loader.convert_dataset(dataframe=processed_df, fileType="csv", fileName="table_preprocessed", destination="output/tables/")
-  #  Testing
-  print(processed_df)
+  data_loader.convert_dataset(dataframe=processed_df, 
+                              fileType="csv", 
+                              fileName="table_preprocessed", 
+                              destination="data/processed/")
   
   
+  #  DATA MANIPULATION
   
+  #  task: remove "sys" and "fold" from component column
+  processed_df = data_manager.remove_rows(target_df=processed_df, target_col="component", target_rows=["sys", "fold"])
+  print(processed_df["Target"].unique().tolist())
+  #  task: restructure a pivot table
+  #  1. to understand how events interact one another
+  reshaped_1 = data_manager.reshape_pivot(target_df=processed_df, 
+                             target_cols=["component"], 
+                             target_rows=["target"], 
+                             target_val="user",
+                             target_aggfunc=pd.Series.nunique,
+                             target_filling=0)
+  #  2. to understand how many actions has been done to component events
+  reshaped_2 = data_manager.reshape_pivot(target_df=processed_df, 
+                             target_cols=["component"], 
+                             target_rows=["action"], 
+                             target_val="user",
+                             target_aggfunc="count",
+                             target_filling=0)
+  #  3. to understand how many actions has been done to target events (by days)
+  reshaped_3 = data_manager.reshape_pivot(target_df=processed_df, 
+                             target_cols=["target"], 
+                             target_rows=["action"], 
+                             target_val="user",
+                             target_aggfunc="count",
+                             target_filling=0)
+  #  4. to understand how users prefer to engage in component events (by days)
+  reshaped_4 = data_manager.reshape_pivot(target_df=processed_df, 
+                             target_cols=["component"], 
+                             target_rows=["user"], 
+                             target_val="date",
+                             target_aggfunc=pd.Series.nunique,
+                             target_filling=0)
+  #  5. to understand how users prefer to engage in target events
+  reshaped_5 = data_manager.reshape_pivot(target_df=processed_df, 
+                             target_cols=["target"], 
+                             target_rows=["user"], 
+                             target_val="date",
+                             target_aggfunc=pd.Series.nunique,
+                             target_filling=0)
+  #  6. to understand how users prefer to act
+  reshaped_6 = data_manager.reshape_pivot(target_df=processed_df, 
+                             target_cols=["action"], 
+                             target_rows=["user"], 
+                             target_val="date",
+                             target_aggfunc=pd.Series.nunique,
+                             target_filling=0)
   
+  data_loader.convert_dataset(dataframe=reshaped_1, 
+                              fileType="png", 
+                              fileName="table_reshaped_EventCorrelation", 
+                              destination="output/tables/")
   
+  data_loader.convert_dataset(dataframe=reshaped_2, 
+                              fileType="png", 
+                              fileName="table_reshaped_ActionPattern", 
+                              destination="output/tables/")
   
+  data_loader.convert_dataset(dataframe=reshaped_3, 
+                              fileType="png", 
+                              fileName="table_reshaped_TaskBehavior", 
+                              destination="output/tables/")
   
+  data_loader.convert_dataset(dataframe=reshaped_4, 
+                              fileType="png", 
+                              fileName="table_reshaped_ContentEngagement", 
+                              destination="output/tables/")
   
-  
-  
-  
-  
-  
-  
-  
-#   #  task 4: reshape
-  
-#   #  a.  analyse how users interact in different component  ->  user participation
-#   reshaped_df = data_manager.reshape_pivot(target_df=merged_df, 
-#                                            target_cols=["component"],
-#                                            target_rows=["user_id"], 
-#                                            target_val="target", 
-#                                            target_aggfunc="count", 
-#                                            target_filling=0)
-#   # print(reshaped_df)
-#   data_loader.convert_dataset(dataframe=reshaped_df, 
-#                               fileType="csv", 
-#                               fileName=f"task4_reshape-01_user-participation")
+  data_loader.convert_dataset(dataframe=reshaped_5, 
+                              fileType="png", 
+                              fileName="table_reshaped_TargetEngagement", 
+                              destination="output/tables/")
 
-#   #  b.  analyse how users act in different component  ->  user engagement pattern
-#   reshaped_df = data_manager.reshape_pivot(target_df=merged_df, 
-#                                            target_cols=["action"], 
-#                                            target_rows=["user_id"], 
-#                                            target_val="target", 
-#                                            target_aggfunc="count", 
-#                                            target_filling=0)
-#   # print(reshaped_df)
-#   data_loader.convert_dataset(dataframe=reshaped_df, 
-#                               fileType="csv", 
-#                               fileName=f"task4_reshape-02_user-engagement-pattern")
+  data_loader.convert_dataset(dataframe=reshaped_6, 
+                              fileType="png", 
+                              fileName="table_reshaped_UserBehavior", 
+                              destination="output/tables/")
   
-#   #  c.  analyse what user perform in different target  ->  user intention
-#   reshaped_df = data_manager.reshape_pivot(target_df=merged_df, 
-#                                            target_cols=["target"], 
-#                                            target_rows=["user_id"], 
-#                                            target_val="action", 
-#                                            target_aggfunc="count", 
-#                                            target_filling=0)
-#   # print(reshaped_df)
-#   data_loader.convert_dataset(dataframe=reshaped_df, 
-#                               fileType="csv", 
-#                               fileName=f"task4_reshape-03_user-intention")
+  #  Testing
+  # print(processed_df)
   
-#   #  d.  analyse the most interacted target in different components  ->  target significance
-#   reshaped_df = data_manager.reshape_pivot(target_df=merged_df, 
-#                                            target_cols=["target"], 
-#                                            target_rows=["component"], 
-#                                            target_val="user_id", 
-#                                            target_aggfunc="count", 
-#                                            target_filling=0)
-#   # print(reshaped_df)
-#   data_loader.convert_dataset(dataframe=reshaped_df, 
-#                               fileType="csv", 
-#                               fileName=f"task4_reshape-04_target-significance")
-  
-#   #  e.  analyse the vaired performed action in different components  -> behavior distribution
-#   reshaped_df = data_manager.reshape_pivot(target_df=merged_df, 
-#                                            target_cols=["action"], 
-#                                            target_rows=["component"], 
-#                                            target_val="user_id", 
-#                                            target_aggfunc="count", 
-#                                            target_filling=0)
-#   # print(reshaped_df)
-#   data_loader.convert_dataset(dataframe=reshaped_df, 
-#                               fileType="csv", 
-#                               fileName=f"task4_reshape-05_behavior-distribution")
-  
-#   #  f.  analyse varied performed actions in different target  ->  action-target linkage
-#   reshaped_df = data_manager.reshape_pivot(target_df=merged_df, 
-#                                            target_cols=["target"], 
-#                                            target_rows=["action"], 
-#                                            target_val="user_id", 
-#                                            target_aggfunc="count", 
-#                                            target_filling=0)
-#   # print(reshaped_df)
-#   data_loader.convert_dataset(dataframe=reshaped_df, 
-#                               fileType="csv", 
-#                               fileName=f"task4_reshape-06_action-target")
+
   
   
 #  OUTPUT
