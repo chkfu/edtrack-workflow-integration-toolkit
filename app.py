@@ -62,7 +62,7 @@ def main():
   
   merged_df = data_cleaner.second_data_cleaning(target_df=merged_df)
   
-  
+  data_loader.convert_dataset(dataframe=merged_df, fileType="csv", fileName="table_merged", destination="output/tables/")
   
   #  PRE-PROCESSING
   
@@ -94,7 +94,7 @@ def main():
   processed_df = data_preproc.revise_target_col(target_df=processed_df, 
                                                 target_col="target")
  
- 
+  data_loader.convert_dataset(dataframe=processed_df, fileType="csv", fileName="table_preprocessed", destination="output/tables/")
   #  Testing
   print(processed_df)
   
