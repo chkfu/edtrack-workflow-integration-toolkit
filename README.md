@@ -4,9 +4,9 @@ This project rebuild my earlier coursework from MSc Computer Science, University
 
 The practrice therefore focuses on the tasks in below:-
 
-- Building a **data analysis pipeline** with standard workflows for cleaning, preprocessing, restructuring, and visualisation.
-- Refactoring sequential scripts into an **object-oriented structure** with maintainable components and modules.
-- Managing **version control with Git CLI**, including commits, branching, and merges.
+1. Building a **data analysis pipeline** with standard workflows for cleaning, preprocessing, restructuring, and visualisation.
+2. Refactoring sequential scripts into an **object-oriented structure** with maintainable components and modules.
+3. Managing **version control with Git CLI**, including commits, branching, and merges.
 
 </br>
 </br>

@@ -41,7 +41,6 @@ def main():
   
   
   #  Data Manager
-  
 
   data_manager = DataManager()
   data_cleaner = DataCleaner()
@@ -52,23 +51,20 @@ def main():
                                         target_col_left="User Full Name *Anonymized", 
                                         target_col_right="User Full Name *Anonymized")
   
-  #  2.  update the emerged dataset for consistency
-  data_loader.convert_dataset(dataframe=df_activities, fileType="csv", fileName=f"task3_merge")
-  
-  #  3.  clean data
-  print(type(merged_df))
-  
+  #  2.  clean data
   merged_df = data_cleaner.first_data_cleaning(target_df=merged_df,
-                                            drop_missing=True,
-                                            na_subset_col=None,
-                                            sort_item="date",
-                                            sort_ascending=True)
+                                              drop_duplicated=True,
+                                              drop_missing=True,
+                                              na_subset_col=None,
+                                              sort_item="date",
+                                              sort_ascending=True)
   
   merged_df = data_cleaner.second_data_cleaning(target_df=merged_df)
   
   
+  #  Testing
   
-  
+  print(merged_df.head)
   
   
   

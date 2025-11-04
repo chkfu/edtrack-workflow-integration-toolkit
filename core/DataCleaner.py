@@ -75,31 +75,6 @@ class DataCleaner:
     return output
   
   
-  #  METHOD -  SUPPORTING  -  Fisrt Screening
-  
-  def validate_dtypes(self, 
-                      target_df: pd.DataFrame, 
-                      default_dtype: dict):
-    
-    for dtype, list in default_dtype.items():
-      for col in list:
-        if col not in target_df.columns:
-          continue
-        if dtype == "string":
-          target_df[col] = target_df[col].astype("string").fillna("Not Specified")
-        if dtype == "integer":
-          target_df[col] = pd.to_numeric(target_df[col], errors="coerce").astype("Int64")
-          target_df[col] = target_df[col].fillna(target_df[col].median())
-        if dtype == "float":
-          target_df[col] = pd.to_numeric(target_df[col], errors="coerce").astype("Float64")
-          target_df[col] = target_df[col].fillna(target_df[col].median())
-        if dtype == "boolean":
-          target_df[col] = target_df[col].astype("boolean").fillna(False)
-        if dtype == "datetime":
-          target_df[col] = pd.to_datetime(target_df[col], errors="coerce", format="%d/%m/%Y")
-    return target_df
-  
-  
   #  METHOD  -  SUPPORTING -  Second Screening
   
   def trim_string(self, input: str, isAlpha: bool=False) -> str:
@@ -145,7 +120,7 @@ class DataCleaner:
     output[target_col] = output[target_col].astype("string").fillna("Not Specified")
     for index, value in target_df[target_col].items():
       temp_val = self.trim_string(input=value, isAlpha=False)
-      temp_val = self.manage_string_case(input=value, case="title")
+      temp_val = self.manage_string_case(input=value, case="upper")
       output.loc[index, target_col] = temp_val
     return output
   
@@ -168,11 +143,12 @@ class DataCleaner:
   #  METHOD  -  PIPELINES
   
   def first_data_cleaning(self, 
-                          target_df: pd.DataFrame, 
+                          target_df: pd.DataFrame,
+                          drop_duplicated: bool = True, 
                           drop_missing: bool = True,
                           na_subset_col = None,
                           sort_item: str = "index", 
-                          sort_ascending: bool = True) -> pd.DataFrame:
+                          sort_ascending: bool | None = True) -> pd.DataFrame:
     
     output = target_df.copy()
     
@@ -184,10 +160,12 @@ class DataCleaner:
       raise TypeError("[DataCleaner] the option for drop rows with missing cell must be boolean.")
     
     #  execution
-    output  = self.handle_duplication(output)
-    output  = self.handle_na(output, drop_missing, na_subset_col)
-    output  = self.validate_dtypes(output, DEFAULT_DTYPE_CONFIG)
-    output  = self.handle_sort(output, sort_item, sort_ascending)
+    if drop_duplicated:
+     output  = self.handle_duplication(output)
+    if drop_missing:
+     output  = self.handle_na(output, drop_missing, na_subset_col)
+    if sort_item != "index" and sort_ascending is not None:
+      output  = self.handle_sort(output, sort_item, sort_ascending)
     
     #  output
     if not output.empty:
@@ -219,11 +197,14 @@ class DataCleaner:
         if dtype == "boolean":
           output[col] = output[col].astype("boolean").fillna(False)
         if dtype == "datetime":
-          output[col] = pd.to_datetime(output[col], errors="coerce", format="%d/%m/%Y")
+          output[col] = pd.to_datetime(output[col].astype(str).str.strip(),
+                                      errors="coerce",
+                                      dayfirst=True,
+                                      format="%d/%m/%Y %H:%M:%S")
                 
     #  output
     if not output.empty:     
-      print("Second cleaning is completed.")    
+      print("[DataCleaner] Second cleaning is completed.")    
     return output
     
     
