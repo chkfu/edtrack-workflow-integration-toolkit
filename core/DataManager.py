@@ -172,10 +172,17 @@ class DataManager:
   
   def count_user_event_monthly(self, 
                                target_df: pd.DataFrame,
+                               target_col: str,
+                               target_row: str,
                                date_col: str) -> pd.DataFrame:
     
     output = target_df.copy()
     month_col: str = "Month"
+    
+    #  validate col name
+    target_col_r = self.validate_col(target_df, target_col)
+    target_row_r = self.validate_col(target_df, target_row)
+    date_col = self.validate_col(target_df, date_col)
     
     #  grouping monthly in new column, remove date column
     date_col_r = self.validate_col(target_df, date_col)
@@ -184,14 +191,14 @@ class DataManager:
     
     #  grouping
     #  learnt: .size() used for traffic (task frequency), .nunique() used for usage (user engagement)
-    output = output.groupby(["Month", "Component"])["User"].nunique().reset_index(name="User_Count")
+    output = output.groupby([month_col, target_row_r])[target_col_r].nunique().reset_index(name=f"{target_col_r}_Count")
     
     #  format in multiple index
-    output = output.set_index(["Month", "Component"]).sort_index(level="Month")
+    output = output.set_index([month_col, target_row_r]).sort_index(level=month_col)
     #  learnt: grouping before sort_values, otherwise sorting will not based on month
     #  learnt: groupkey = False, prevent duplicated column caused by data restructure with grouping
     #  learnt: no mapping in pd.DataFrame, use apply instead
-    output = output.groupby("Month", group_keys=False).apply(lambda el: el.sort_values(by="User_Count", ascending=False))
+    output = output.groupby(month_col, group_keys=False).apply(lambda el: el.sort_values(by=f"{target_col_r}_Count", ascending=False))
     return output
       
     

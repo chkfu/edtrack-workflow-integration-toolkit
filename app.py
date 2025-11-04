@@ -188,12 +188,19 @@ def main():
   #  task: counting user-component engagement (monthly)
   
   counted_df = data_manager.count_user_event_monthly(target_df=processed_df,
-                                        date_col="date")
+                                                     target_col="user",
+                                                     target_row="component",
+                                                     date_col="date")
   
   data_loader.convert_dataset(dataframe=counted_df, 
                             fileType="png", 
                             fileName="table_counted_UserEngagement_monthly", 
                             destination="output/tables/")
+  
+  
+  #  task
+  
+  
   
   
   #  Testing
