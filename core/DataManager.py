@@ -7,15 +7,7 @@ class DataManager:
     self.col_name_list = None
     print("[DataManager] initialised successfully.")
     
-    
-  #  METHOD - BASIC
-  
-  def print_df(self, target_df: pd.DataFrame):
-    if not isinstance(target_df, pd.DataFrame):
-      raise TypeError("[DataManager] target dataframe must be a pandas DataFrame.")
-    print(target_df)
    
-    
     
   #  METHOD - REUSE
   
@@ -35,6 +27,7 @@ class DataManager:
       valid_el = self.validate_col(target_df=target_df, target_col=testing_el)
       if valid_el:
         valid_list.append(valid_el) 
+    
     
     
   #  METHOD - CRUD
@@ -175,6 +168,30 @@ class DataManager:
     output = pd.pivot_table(data=target_df, columns=valid_col_list, index=valid_row_list, values=valid_val, aggfunc=target_aggfunc, fill_value=target_filling)
     print("[DataManager] a new pivot table has been created.")
     return output
-
+  
+  
+  def count_user_event_monthly(self, 
+                               target_df: pd.DataFrame,
+                               date_col: str) -> pd.DataFrame:
+    
+    output = target_df.copy()
+    month_col: str = "Month"
+    
+    #  grouping monthly in new column, remove date column
+    date_col_r = self.validate_col(target_df, date_col)
+    output[month_col] = output[date_col_r].dt.month
+    output = self.remove_col(output, date_col_r)
+    
+    #  grouping
+    #  learnt: .size() used for traffic (task frequency), .nunique() used for usage (user engagement)
+    output = output.groupby(["Month", "Component"])["User"].nunique().reset_index(name="User_Count")
+    
+    #  format in multiple index
+    output = output.set_index(["Month", "Component"]).sort_index(level="Month")
+    #  learnt: grouping before sort_values, otherwise sorting will not based on month
+    #  learnt: groupkey = False, prevent duplicated column caused by data restructure with grouping
+    #  learnt: no mapping in pd.DataFrame, use apply instead
+    output = output.groupby("Month", group_keys=False).apply(lambda el: el.sort_values(by="User_Count", ascending=False))
+    return output
       
     
