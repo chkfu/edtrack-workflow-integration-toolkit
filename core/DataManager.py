@@ -1,4 +1,5 @@
 import pandas as pd
+from core.config.monthList import MONNTH_LIST
 
 
 class DataManager:
@@ -201,4 +202,88 @@ class DataManager:
     output = output.groupby(month_col, group_keys=False).apply(lambda el: el.sort_values(by=f"{target_col_r}_Count", ascending=False))
     return output
       
+      
+  def calculate_statistics(self,
+                           target_df: pd.DataFrame,
+                           target_row: str,
+                           selected_row_list: list,
+                           target_val: str,
+                           date_col: str) -> pd.DataFrame:
+    output = target_df.copy()
+    stat_names: dict = {
+      "month_col": "Month",
+      "overall_row": "(Overall)",
+      "mean_col": "Mean",
+      "median_col": "Median",
+      "mode_col": "Mode",
+      "sum_col": "Total"
+    }
+
+    #  validate column names
+    target_row_r: str = self.validate_col(target_df, target_row)
+    target_val_r: str = self.validate_col(target_df, target_val)
+    date_col_r: str = self.validate_col(target_df, date_col)
     
+    output[stat_names["month_col"]] = output[date_col_r].dt.month
+    output = self.remove_col(output, date_col_r)
+    
+    #  initialise tabular table by months and overall
+    #  learnt: .isin() for list matches
+    output_r = output[output[target_row_r].str.upper().isin([val.upper() for val in selected_row_list])]
+    output_r = pd.pivot_table(data=output_r, 
+                              columns=stat_names["month_col"], 
+                              index=target_row_r, 
+                              values=target_val_r, 
+                              aggfunc="count", 
+                              fill_value=0)
+
+    #  append new row and merge
+    #  reminder: specify axis 1 for matching formats
+    #  learnt: to_frame turns the series in to a row of dataframe, enable to merge vertically
+    #  learnt: the new row is vertically visualised, need to be transpose
+    output_r[stat_names["overall_row"]]= output_r.sum(axis=1, numeric_only=True)
+
+    #  calculate component statistic
+    temp_mean_row = output_r.mean(numeric_only=True)
+    temp_median_row = output_r.median(numeric_only=True)
+    temp_mode_row = output_r.mode(numeric_only=True).iloc[0]
+    temp_sum_row = output_r.sum(numeric_only=True)
+    temp_mean_row.name = stat_names["mean_col"]
+    temp_median_row.name = stat_names["median_col"]
+    temp_mode_row.name = stat_names["mode_col"]
+    temp_sum_row.name = stat_names["sum_col"]
+    
+    #  merge new statistic rows into dataframe
+    output_r = pd.concat([output_r,
+                          temp_mean_row.to_frame().T,
+                          temp_median_row.to_frame().T,
+                          temp_mode_row.to_frame().T,
+                          temp_sum_row.to_frame().T])
+    
+    #  rename columns
+    output_r.columns = [(MONNTH_LIST[str(col)][0:3].title() + "/25")  
+                        if str(col) in MONNTH_LIST
+                        else col 
+                        for col in output_r.columns]
+    
+    return output_r
+    
+   
+    
+    
+    
+    
+    #  calculate montly stat
+    
+    #  grouping
+    #  learnt: .size() used for traffic (task frequency), .nunique() used for usage (user engagement)
+    # output_r = output_r.groupby([target_row_r, month_col])[target_col_r].nunique().reset_index(name=f"{target_col_r}_Count")
+    
+    #  calculate overall stat
+    
+    
+    
+
+    #  update overall stat
+
+  

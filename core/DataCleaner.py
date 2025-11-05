@@ -150,6 +150,7 @@ class DataCleaner:
     output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
     output[target_col] = output[target_col].round(2).astype("Float64")
+    pd.options.display.float_format = "{:.2f}".format
     return output
   
   def spec_cleaning_bool(self, 

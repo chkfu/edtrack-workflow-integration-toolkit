@@ -198,9 +198,18 @@ def main():
                             destination="output/tables/")
   
   
-  #  task
+  #  task: calculating statistically with mean, mode, median (only assignment, quiz, survey, lecture)
   
+  output_stat_df = data_manager.calculate_statistics(target_df=processed_df,
+                                                     target_row="component",
+                                                     selected_row_list=["assign", "attend", "lect", "quiz", "survey"],
+                                                     target_val="user",
+                                                     date_col="date")
   
+  data_loader.convert_dataset(dataframe=output_stat_df, 
+                            fileType="png", 
+                            fileName="table_calculated_statistics", 
+                            destination="output/tables/")
   
   
   #  Testing
