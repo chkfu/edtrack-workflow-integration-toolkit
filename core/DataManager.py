@@ -146,7 +146,10 @@ class DataManager:
     print("[DataManager] a new merged table has been created.")
     return output
     
-    
+  
+  
+  #  DATA MANIPULATION
+     
   def reshape_pivot(self, target_df: pd.DataFrame, target_cols: list, target_rows: list, target_val: str, target_aggfunc: str = "count", target_filling: int | None = None):
       
     #  validate types
@@ -267,23 +270,3 @@ class DataManager:
                         for col in output_r.columns]
     
     return output_r
-    
-   
-    
-    
-    
-    
-    #  calculate montly stat
-    
-    #  grouping
-    #  learnt: .size() used for traffic (task frequency), .nunique() used for usage (user engagement)
-    # output_r = output_r.groupby([target_row_r, month_col])[target_col_r].nunique().reset_index(name=f"{target_col_r}_Count")
-    
-    #  calculate overall stat
-    
-    
-    
-
-    #  update overall stat
-
-  
