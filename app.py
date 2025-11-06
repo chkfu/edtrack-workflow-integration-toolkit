@@ -119,6 +119,7 @@ def main():
                              target_val="user",
                              target_aggfunc=pd.Series.nunique,
                              target_filling=0)
+  
   #  2. to understand how many actions has been done to component events
   reshaped_df_2 = data_manager.reshape_pivot(target_df=processed_df, 
                              target_cols=["component"], 
@@ -126,6 +127,7 @@ def main():
                              target_val="user",
                              target_aggfunc="count",
                              target_filling=0)
+  
   #  3. to understand how many actions has been done to target events (by days)
   reshaped_df_3 = data_manager.reshape_pivot(target_df=processed_df, 
                              target_cols=["target"], 
@@ -133,6 +135,7 @@ def main():
                              target_val="user",
                              target_aggfunc="count",
                              target_filling=0)
+  
   #  4. to understand how users prefer to engage in component events (by days)
   reshaped_df_4 = data_manager.reshape_pivot(target_df=processed_df, 
                              target_cols=["component"], 
@@ -140,6 +143,7 @@ def main():
                              target_val="date",
                              target_aggfunc=pd.Series.nunique,
                              target_filling=0)
+  
   #  5. to understand how users prefer to engage in target events
   reshaped_df_5 = data_manager.reshape_pivot(target_df=processed_df, 
                              target_cols=["target"], 
@@ -147,6 +151,7 @@ def main():
                              target_val="date",
                              target_aggfunc=pd.Series.nunique,
                              target_filling=0)
+  
   #  6. to understand how users prefer to act
   reshaped_df_6 = data_manager.reshape_pivot(target_df=processed_df, 
                              target_cols=["action"], 
@@ -154,6 +159,76 @@ def main():
                              target_val="date",
                              target_aggfunc=pd.Series.nunique,
                              target_filling=0)
+  
+  
+  #  task: counting user-component engagement (monthly)
+  
+  counted_df = data_manager.count_user_event_monthly(target_df=processed_df,
+                                                     target_col="user",
+                                                     target_row="component",
+                                                     date_col="date")
+  
+  data_loader.convert_dataset(dataframe=counted_df, 
+                            fileType="png", 
+                            fileName="table_counted_UserEngagement_monthly", 
+                            destination="output/tables/")
+  
+  
+  #  task: calculating statistically with mean, mode, median (only assignment, quiz, survey, lecture)
+  
+  output_stat_df = data_manager.calculate_statistics(target_df=processed_df,
+                                                     target_row="component",
+                                                     selected_row_list=["assign", "attend", "lect", "quiz", "survey"],
+                                                     target_val="user",
+                                                     date_col="date")
+  
+  
+  #  DATA VISUALISATION
+  
+  fig_heatmap_1, _=  data_visual.draw_heatmap(target_df = reshaped_df_1,
+                                              target_title = "Analysis of Purposes of Activities",
+                                              target_xlabel = "Component",
+                                              target_ylabel= "Target",
+                                              target_vmax=40)
+  
+  fig_heatmap_2, _ = data_visual.draw_heatmap(target_df = reshaped_df_2,
+                                              target_title = "Analysis of User's Action Pattern in Activities",
+                                              target_xlabel = "Component",
+                                              target_ylabel= "Action",
+                                              target_vmax=800)
+  
+  fig_heatmap_3, _ = data_visual.draw_heatmap(target_df = reshaped_df_3,
+                                              target_title = "Analysis of User's Behavior on Tasks",
+                                              target_xlabel = "Target",
+                                              target_ylabel= "Action",
+                                              target_vmax=800)
+  
+  fig_heatmap_4, _ = data_visual.draw_heatmap(target_df = reshaped_df_4,
+                                              target_title = "Analysis of User Engagement on Activities",
+                                              target_xlabel = "Component",
+                                              target_ylabel= "User",
+                                              target_vmax=7)
+  
+  fig_heatmap_5, _ = data_visual.draw_heatmap(target_df = reshaped_df_5,
+                                              target_title = "Analysis of User Engagement on Target",
+                                              target_xlabel = "Target",
+                                              target_ylabel= "User",
+                                              target_vmax=7)
+  
+  fig_heatmap_6, _ = data_visual.draw_heatmap(target_df = reshaped_df_6,
+                                              target_title = "Analysis of User Behaviors Distribution",
+                                              target_xlabel = "Action",
+                                              target_ylabel= "User",
+                                              target_vmax=7)
+  
+  
+  
+  
+  
+  
+  #  TABLE AND DIAGRAM OUTPUTS
+  
+  #  1. table production
   
   data_loader.convert_dataset(dataframe=reshaped_df_1, 
                               fileType="png", 
@@ -185,85 +260,39 @@ def main():
                               fileName="table_reshaped_UserBehavior", 
                               destination="output/tables/")
   
-  
-  #  task: counting user-component engagement (monthly)
-  
-  counted_df = data_manager.count_user_event_monthly(target_df=processed_df,
-                                                     target_col="user",
-                                                     target_row="component",
-                                                     date_col="date")
-  
-  data_loader.convert_dataset(dataframe=counted_df, 
-                            fileType="png", 
-                            fileName="table_counted_UserEngagement_monthly", 
-                            destination="output/tables/")
-  
-  
-  #  task: calculating statistically with mean, mode, median (only assignment, quiz, survey, lecture)
-  
-  output_stat_df = data_manager.calculate_statistics(target_df=processed_df,
-                                                     target_row="component",
-                                                     selected_row_list=["assign", "attend", "lect", "quiz", "survey"],
-                                                     target_val="user",
-                                                     date_col="date")
-  
   data_loader.convert_dataset(dataframe=output_stat_df, 
-                            fileType="png", 
-                            fileName="table_calculated_statistics", 
-                            destination="output/tables/")
+                          fileType="png", 
+                          fileName="table_calculated_statistics", 
+                          destination="output/tables/")
   
   
-  
-  #  DATA VISUALISATION
-  
-  fig_heatmap_1, _=  data_visual.draw_heatmap(target_df = reshaped_df_1,
-                                              target_title = "Analysis of Purposes of Activities",
-                                              target_xlabel = "Component",
-                                              target_ylabel= "Target",
-                                              target_vmax=40)
-  
-  fig_heatmap_2, _ = data_visual.draw_heatmap(target_df = reshaped_df_2,
-                                              target_title = "Analysis of User's Action Pattern in Activities",
-                                              target_xlabel = "Component",
-                                              target_ylabel= "Action",
-                                              target_vmax=800)
-  
-  fig_heatmap_3, _ = data_visual.draw_heatmap(target_df = reshaped_df_3,
-                                              target_title = "Analysis of User's Behavior on Tasks",
-                                              target_xlabel = "Target",
-                                              target_ylabel= "Action",
-                                              target_vmax=800)
-  
-  fig_heatmap_4, _ = data_visual.draw_heatmap(target_df = reshaped_df_4,
-                                              target_title = "Analysis of User Engagement on Activities",
-                                              target_xlabel = "Component",
-                                              target_ylabel= "User",
-                                              target_vmax=7)
+  #  2. heatmap production
 
-  fig_heatmap_5, _ = data_visual.draw_heatmap(target_df = reshaped_df_5,
-                                              target_title = "Analysis of User Engagement on Target",
-                                              target_xlabel = "Target",
-                                              target_ylabel= "User",
-                                              target_vmax=7)
-
-  fig_heatmap_6, _ = data_visual.draw_heatmap(target_df = reshaped_df_6,
-                                              target_title = "Analysis of User Behaviors Distribution",
-                                              target_xlabel = "Action",
-                                              target_ylabel= "User",
-                                              target_vmax=7)
+  data_loader.convert_diagram(plt_figure=fig_heatmap_1, 
+                              fileType="png", 
+                              fileName="heatmap_visualise_EventCorrelation")
   
-  fig_heatmap_1.savefig("output/diagrams/heatmap_visualise_EventCorrelation.png", dpi=300)
   
-  fig_heatmap_2.savefig("output/diagrams/heatmap_visualise_ActionPattern.png", dpi=300)
+  data_loader.convert_diagram(plt_figure=fig_heatmap_2, 
+                              fileType="png", 
+                              fileName="heatmap_visualise_ActionPattern")
   
-  fig_heatmap_3.savefig("output/diagrams/heatmap_visualise_TaskBehavior", dpi=300)
   
-  fig_heatmap_4.savefig("output/diagrams/heatmap_visualise_ContentEngagement.png", dpi=300)
+  data_loader.convert_diagram(plt_figure=fig_heatmap_3, 
+                              fileType="png", 
+                              fileName="heatmap_visualise_TaskBehavior")
   
-  fig_heatmap_5.savefig("output/diagrams/heatmap_visualise_TargetEngagement.png", dpi=300)
- 
-  fig_heatmap_6.savefig("output/diagrams/heatmap_visualise_UserBehavior.png", dpi=300)
-
+  data_loader.convert_diagram(plt_figure=fig_heatmap_4, 
+                              fileType="png", 
+                              fileName="heatmap_visualise_ContentEngagement")
+  
+  data_loader.convert_diagram(plt_figure=fig_heatmap_5, 
+                              fileType="png", 
+                              fileName="heatmap_visualise_TargetEngagement")
+  
+  data_loader.convert_diagram(plt_figure=fig_heatmap_6, 
+                              fileType="png", 
+                              fileName="heatmap_visualise_UserBehavior")
 
   
 #  OUTPUT
