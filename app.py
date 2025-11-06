@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from dotenv import load_dotenv
-from core import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor
+from core import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor, DataVisualiser
 from core.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
 
 
@@ -45,6 +45,7 @@ def main():
   data_manager = DataManager()
   data_cleaner = DataCleaner()
   data_preproc = DataPreprocessor(data_manager=data_manager)
+  data_visual = DataVisualiser()
   
   #  1.  merge the dataset to be analysed
   merged_df = data_manager.merge_tables(target_df_left=df_users, 
@@ -212,11 +213,58 @@ def main():
                             destination="output/tables/")
   
   
-  #  Testing
-  # print(processed_df)
   
+  #  DATA VISUALISATION
+  
+  fig_heatmap_1, _=  data_visual.draw_heatmap(target_df = reshaped_df_1,
+                                              target_title = "Analysis of Purposes of Activities",
+                                              target_xlabel = "Component",
+                                              target_ylabel= "Target",
+                                              target_vmax=40)
+  
+  fig_heatmap_2, _ = data_visual.draw_heatmap(target_df = reshaped_df_2,
+                                              target_title = "Analysis of User's Action Pattern in Activities",
+                                              target_xlabel = "Component",
+                                              target_ylabel= "Action",
+                                              target_vmax=800)
+  
+  fig_heatmap_3, _ = data_visual.draw_heatmap(target_df = reshaped_df_3,
+                                              target_title = "Analysis of User's Behavior on Tasks",
+                                              target_xlabel = "Target",
+                                              target_ylabel= "Action",
+                                              target_vmax=800)
+  
+  fig_heatmap_4, _ = data_visual.draw_heatmap(target_df = reshaped_df_4,
+                                              target_title = "Analysis of User Engagement on Activities",
+                                              target_xlabel = "Component",
+                                              target_ylabel= "User",
+                                              target_vmax=7)
 
+  fig_heatmap_5, _ = data_visual.draw_heatmap(target_df = reshaped_df_5,
+                                              target_title = "Analysis of User Engagement on Target",
+                                              target_xlabel = "Target",
+                                              target_ylabel= "User",
+                                              target_vmax=7)
+
+  fig_heatmap_6, _ = data_visual.draw_heatmap(target_df = reshaped_df_6,
+                                              target_title = "Analysis of User Behaviors Distribution",
+                                              target_xlabel = "Action",
+                                              target_ylabel= "User",
+                                              target_vmax=7)
   
+  fig_heatmap_1.savefig("output/diagrams/heatmap_visualise_EventCorrelation.png", dpi=300)
+  
+  fig_heatmap_2.savefig("output/diagrams/heatmap_visualise_ActionPattern.png", dpi=300)
+  
+  fig_heatmap_3.savefig("output/diagrams/heatmap_visualise_TaskBehavior", dpi=300)
+  
+  fig_heatmap_4.savefig("output/diagrams/heatmap_visualise_ContentEngagement.png", dpi=300)
+  
+  fig_heatmap_5.savefig("output/diagrams/heatmap_visualise_TargetEngagement.png", dpi=300)
+ 
+  fig_heatmap_6.savefig("output/diagrams/heatmap_visualise_UserBehavior.png", dpi=300)
+
+
   
 #  OUTPUT
 if __name__ == "__main__":

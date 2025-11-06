@@ -3,6 +3,7 @@ from core.SQLConnector import SQLConnector
 from core.DataManager import DataManager
 from core.DataCleaner import DataCleaner
 from core.DataPreprocessor import DataPreprocessor
+from core.DataVisualiser import DataVisualiser
 
 
 #  MAIN
@@ -12,4 +13,5 @@ __all__ = ["DataLoader",
            "SQLConnector", 
            "DataManager", 
            "DataCleaner",
-           "Preprocessor"]
+           "DataPreprocessor",
+           "DataVisualiser"]
