@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from core import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor, DataVisualiser
+from ui import UIApplication
 from core.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
 
 
@@ -226,74 +227,84 @@ def main():
   
   
   
-  #  TABLE AND DIAGRAM OUTPUTS
+  # #  TABLE AND DIAGRAM OUTPUTS
   
-  #  1. table production
+  # #  1. table production
   
-  data_loader.convert_dataset(dataframe=reshaped_df_1, 
-                              fileType="png", 
-                              fileName="table_reshaped_EventCorrelation", 
-                              destination="output/tables/")
+  # data_loader.convert_dataset(dataframe=reshaped_df_1, 
+  #                             fileType="png", 
+  #                             fileName="table_reshaped_EventCorrelation", 
+  #                             destination="output/tables/")
   
-  data_loader.convert_dataset(dataframe=reshaped_df_2, 
-                              fileType="png", 
-                              fileName="table_reshaped_ActionPattern", 
-                              destination="output/tables/")
+  # data_loader.convert_dataset(dataframe=reshaped_df_2, 
+  #                             fileType="png", 
+  #                             fileName="table_reshaped_ActionPattern", 
+  #                             destination="output/tables/")
   
-  data_loader.convert_dataset(dataframe=reshaped_df_3, 
-                              fileType="png", 
-                              fileName="table_reshaped_TaskBehavior", 
-                              destination="output/tables/")
+  # data_loader.convert_dataset(dataframe=reshaped_df_3, 
+  #                             fileType="png", 
+  #                             fileName="table_reshaped_TaskBehavior", 
+  #                             destination="output/tables/")
   
-  data_loader.convert_dataset(dataframe=reshaped_df_4, 
-                              fileType="png", 
-                              fileName="table_reshaped_ContentEngagement", 
-                              destination="output/tables/")
+  # data_loader.convert_dataset(dataframe=reshaped_df_4, 
+  #                             fileType="png", 
+  #                             fileName="table_reshaped_ContentEngagement", 
+  #                             destination="output/tables/")
   
-  data_loader.convert_dataset(dataframe=reshaped_df_5, 
-                              fileType="png", 
-                              fileName="table_reshaped_TargetEngagement", 
-                              destination="output/tables/")
+  # data_loader.convert_dataset(dataframe=reshaped_df_5, 
+  #                             fileType="png", 
+  #                             fileName="table_reshaped_TargetEngagement", 
+  #                             destination="output/tables/")
 
-  data_loader.convert_dataset(dataframe=reshaped_df_6, 
-                              fileType="png", 
-                              fileName="table_reshaped_UserBehavior", 
-                              destination="output/tables/")
+  # data_loader.convert_dataset(dataframe=reshaped_df_6, 
+  #                             fileType="png", 
+  #                             fileName="table_reshaped_UserBehavior", 
+  #                             destination="output/tables/")
   
-  data_loader.convert_dataset(dataframe=output_stat_df, 
-                          fileType="png", 
-                          fileName="table_calculated_statistics", 
-                          destination="output/tables/")
+  # data_loader.convert_dataset(dataframe=output_stat_df, 
+  #                         fileType="png", 
+  #                         fileName="table_calculated_statistics", 
+  #                         destination="output/tables/")
   
   
-  #  2. heatmap production
+  # #  2. heatmap production
 
-  data_loader.convert_diagram(plt_figure=fig_heatmap_1, 
-                              fileType="png", 
-                              fileName="heatmap_visualise_EventCorrelation")
+  # data_loader.convert_diagram(plt_figure=fig_heatmap_1, 
+  #                             fileType="png", 
+  #                             fileName="heatmap_visualise_EventCorrelation")
   
   
-  data_loader.convert_diagram(plt_figure=fig_heatmap_2, 
-                              fileType="png", 
-                              fileName="heatmap_visualise_ActionPattern")
+  # data_loader.convert_diagram(plt_figure=fig_heatmap_2, 
+  #                             fileType="png", 
+  #                             fileName="heatmap_visualise_ActionPattern")
   
   
-  data_loader.convert_diagram(plt_figure=fig_heatmap_3, 
-                              fileType="png", 
-                              fileName="heatmap_visualise_TaskBehavior")
+  # data_loader.convert_diagram(plt_figure=fig_heatmap_3, 
+  #                             fileType="png", 
+  #                             fileName="heatmap_visualise_TaskBehavior")
   
-  data_loader.convert_diagram(plt_figure=fig_heatmap_4, 
-                              fileType="png", 
-                              fileName="heatmap_visualise_ContentEngagement")
+  # data_loader.convert_diagram(plt_figure=fig_heatmap_4, 
+  #                             fileType="png", 
+  #                             fileName="heatmap_visualise_ContentEngagement")
   
-  data_loader.convert_diagram(plt_figure=fig_heatmap_5, 
-                              fileType="png", 
-                              fileName="heatmap_visualise_TargetEngagement")
+  # data_loader.convert_diagram(plt_figure=fig_heatmap_5, 
+  #                             fileType="png", 
+  #                             fileName="heatmap_visualise_TargetEngagement")
   
-  data_loader.convert_diagram(plt_figure=fig_heatmap_6, 
-                              fileType="png", 
-                              fileName="heatmap_visualise_UserBehavior")
+  # data_loader.convert_diagram(plt_figure=fig_heatmap_6, 
+  #                             fileType="png", 
+  #                             fileName="heatmap_visualise_UserBehavior")
 
+  
+#  UI -  PyQt5
+  
+ui_app = UIApplication()
+ui_app.run_app()
+
+
+
+  
+  
   
 #  OUTPUT
 if __name__ == "__main__":
