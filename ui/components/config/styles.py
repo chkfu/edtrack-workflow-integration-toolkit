@@ -1,8 +1,8 @@
 #  WINDOW
 
 style_wd_default = {
-  "title": "EduTrack",
-  "resolution_width": 600,
+  "title": "EduTrack 🧭",
+  "resolution_width": 720,
   "resolution_height": 600,
   "f_fam": "Arial",
   "f_size": 12
@@ -10,18 +10,16 @@ style_wd_default = {
 
 style_wd_default_2 = """
   QWidget {
-      border: 1px solid black;
       background-color: #f8f9fa;
       color: #212529;
   }
 """
 
 
-#  TOPBAR
+#  TOPBAR (GRID 1)
 
 style_topbar_default = """
   QFrame {
-      border: 1px solid black;
       background-color: #14213d;
       color: #212529;
       padding: 0px;
@@ -30,8 +28,12 @@ style_topbar_default = """
 """
 
 
-#  BUTTONS
+#  MAIN_AREA (GRID 2)
 
+
+
+
+#  LABELS
 
 style_lb_default_h1 = """
 QLabel {{
@@ -56,6 +58,7 @@ QLabel {{
 
 
 
+#  BUTTONS
 
 style_btn_default = """
   QPushButton {{
@@ -66,7 +69,7 @@ style_btn_default = """
     border-radius: 14px;
     margin: 0px 0px;
     padding: 4px 8px;
-    font-family: "Segoe UI", "Helvetica Neue", "Arial", sans-serif;
+    font-family: "Arial";
     font-size: 12px;
     font-weight: 500;
   }}
@@ -77,3 +80,8 @@ style_btn_default = """
 
 
 
+#  TESTING
+
+style_testing_border = """
+    border: 1px solid red;
+"""

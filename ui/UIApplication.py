@@ -36,24 +36,13 @@ class UIApplication:
   def finalise_app(self, widget: QWidget) -> None:
     widget.show()
     sys.exit(self.app.exec_())    
-
-
-  #  METHODS - COMPONENTS
-
-  def validate_exit(self) -> None:
-    res = self.comp_fact.build_msg_box(title="",
-                                      question="Are you sure want to quit?") 
-    if res:
-      self.close_app()
-
   
   
   #  EXECUTION
   
   def run_app(self) -> None:
     
-    try:
-      
+    try:  
       #  prepare ui
       self.setup_app()
       widget_window = self.layout_fact.create_window()

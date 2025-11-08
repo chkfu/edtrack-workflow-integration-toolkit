@@ -5,7 +5,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QFont
 from ui.components.ComponentsFactory import ComponentsFactory
-from ui.components.config.styles import (style_wd_default, style_topbar_default, style_wd_default_2)
+from ui.components.config.styles import (
+  style_wd_default, style_topbar_default, style_wd_default_2, 
+  style_testing_border)
 from ui.components.config.events import (event_reset_app, event_close_app)
 
 
@@ -23,6 +25,91 @@ class LayoutFactory:
     
     
   #  METHODS - PAGE SETUPS
+  
+  
+  #  LAYER 4  -  SIDEBAR
+  
+  def create_task_sect(self):
+    # outer frame
+    outer = QListWidget()
+    outer.setStyleSheet(style_testing_border)
+    return outer
+  
+  
+  def create_db_sect(self):
+    # outer frame
+    outer = QListWidget()
+    outer.setStyleSheet(style_testing_border)
+    return outer
+  
+  
+  
+  #  LAYER 4  -  WORK PANEL
+  
+  def create_status_sect(self):
+    # outer
+    outer = QWidget()
+    outer_layout = QHBoxLayout()
+    outer.setStyleSheet(style_testing_border)
+    return outer
+  
+  
+  def create_stat_sect(self):
+    # outer
+    outer = QStackedWidget()
+    outer.setStyleSheet(style_testing_border)
+    return outer
+  
+  
+  def create_nav_sect(self):
+    # outer
+    outer = QStackedWidget()
+    outer.setStyleSheet(style_testing_border)
+    return outer
+  
+  
+  
+  #  LAYER 3  -  MAIN PANEL  -  
+      
+  def create_sidebar(self) -> QListWidget:
+    #  inner
+    inner_db_sect = self.create_db_sect()
+    inner_task_sect = self.create_db_sect()
+    #  outer
+    outer = QWidget()
+    outer_layout = QGridLayout()
+    outer_layout.addWidget(inner_task_sect, 0, 0)
+    outer_layout.addWidget(inner_db_sect, 1, 0)
+    outer_layout.setRowStretch(0, 7)
+    outer_layout.setRowStretch(0, 2)
+    outer_layout.setContentsMargins(0, 0, 0, 0)
+    outer.setStyleSheet(style_testing_border)
+    outer.setLayout(outer_layout)
+    return outer
+  
+    
+  def create_content(self) -> QWidget:
+    #  inner
+    inner_status_sect = self.create_status_sect()
+    inner_stat_sect = self.create_stat_sect()
+    inner_nav_sect = self.create_nav_sect()
+    #  outer
+    outer = QWidget()
+    outer_layout = QGridLayout()
+    outer_layout.addWidget(inner_status_sect, 0, 0)
+    outer_layout.addWidget(inner_stat_sect, 1, 0)
+    outer_layout.addWidget(inner_nav_sect, 2, 0)
+    outer_layout.setRowStretch(0, 2)
+    outer_layout.setRowStretch(1, 8)
+    outer_layout.setRowStretch(2, 1)
+    outer_layout.setContentsMargins(0, 0, 0, 0)
+    outer.setStyleSheet(style_testing_border)
+    outer.setLayout(outer_layout)
+    return outer
+
+
+
+  #  LAYER 2  -   WINDOW
   
   def create_topbar(self) -> QFrame:
     
@@ -76,28 +163,29 @@ class LayoutFactory:
   
   
   def create_main_area(self) -> QFrame:
+    
+    #  inner frame - left
+    widget_sidebar = self.create_sidebar()
+    
+    #  inner frame - right
+    widget_content= self.create_content()
+    
     #  outer frame
     outer = QFrame()
     outer_layout = QGridLayout()
+    outer_layout.addWidget(widget_sidebar, 0, 0)
+    outer_layout.addWidget(widget_content, 0, 1)
+    outer_layout.setColumnStretch(0, 1)
+    outer_layout.setColumnStretch(1, 3)
     # .....
+    outer.setStyleSheet(style_testing_border)
     outer.setLayout(outer_layout)
     return outer
     
   
-    
-  def create_sidebar(self):
-    #  outer frame
-    outer = QListWidget()
-    outer_layout = QHBoxLayout()
-    # .....
-    outer.setLayout(outer_layout)
-    return outer
-  
-    
-  def create_work_panel(self):
-    print()
 
-    
+  #  LAYER 1  -  WINDOW
+   
   def create_window(self) -> QWidget:
     
     #  from window 
@@ -112,8 +200,6 @@ class LayoutFactory:
     #  learnt: to split 1:9 
     window_layout.setRowStretch(0, 1)
     window_layout.setRowStretch(1, 9)
-
-    
     
     window.setWindowTitle(style_wd_default["title"])
     window_layout.setContentsMargins(0, 0, 0, 0)
