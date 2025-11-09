@@ -10,10 +10,11 @@ from ui.components.config.styles import (
     style_btn_default,
     style_btn_contrast,
     style_lb_default,
+    style_sidebar_listItem_default,
     style_wd_default,
     style_wd_default_2,
     style_topbar_default,
-    style_sidebar_default,
+    style_sidebar_box_default,
     style_content_panel_default,
     style_testing_border
 )
@@ -94,12 +95,11 @@ class ComponentsFactory:
     return btn
     
     
-  def build_msg_box(self, 
-                    app_window: QWidget,
+  def build_msg_box(self,
                     title: str | None, 
                     question: str) -> bool:
     #  get response
-    res = QMessageBox.question(app_window, 
+    res = QMessageBox.question(self.app_ref.window, 
                                 title, 
                                 question, 
                                 QMessageBox.Yes | QMessageBox.No,
@@ -119,6 +119,35 @@ class ComponentsFactory:
     msg.exec_()
     return msg
     
+    
+  #  section child items
+  
+  def build_sidebar_listItem(self, 
+              is_listTop: bool=False,
+              lb_text: str = "") -> QLabel:
+  
+    lb = QLabel(lb_text.strip())
+    font = lb.font()
+    font.setFamily("Impact")
+    lb.setFont(font)
+    lb.setFixedHeight(32)
+    
+    if is_listTop:
+      font.setPointSize(16)
+      lb.setStyleSheet(style_sidebar_listItem_default.format(txtcolor=THEME_COLOR["white"],
+                                                            bgcolor=THEME_COLOR["primary"]))
+      lb.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+    
+    else:
+      font.setPointSize(14)
+      lb.setStyleSheet(style_sidebar_listItem_default.format(txtcolor=THEME_COLOR["primary"],
+                                                            bgcolor=THEME_COLOR["white"]))
+      lb.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+    
+    lb.setFont(font)
+      
+    return lb
+      
 
   #  section components
   
@@ -201,11 +230,4 @@ class ComponentsFactory:
     status_sect_layout.setSpacing(0)
     status_sect.setLayout(status_sect_layout)
     return status_sect
-  
-  
-  
-  
-
-  
-  
   

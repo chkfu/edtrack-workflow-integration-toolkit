@@ -7,7 +7,8 @@ from PyQt5.QtGui import QFont
 from ui.components.ComponentsFactory import ComponentsFactory
 from ui.components.config.styles import (
   THEME_COLOR, style_wd_default, style_topbar_default, style_wd_default_2, 
-  style_testing_border, style_sidebar_default, style_content_panel_default)
+  style_testing_border, style_sidebar_box_default, style_content_panel_default,
+  style_nav_sect_default)
 from ui.components.config.events import (event_reset_app, event_close_app, event_next_btn, event_back_btn, event_done_btn)
 
 
@@ -82,7 +83,8 @@ class LayoutFactory:
     outer_layout.setRowStretch(0, 2)
     outer_layout.setRowStretch(1, 8)
     outer_layout.setRowStretch(2, 1)
-    outer_layout.setContentsMargins(4, 4, 4, 4)
+    outer_layout.setContentsMargins(24, 16, 24, 24)
+    outer_layout.setSpacing(12)
     outer.setStyleSheet(style_content_panel_default)
     outer.setLayout(outer_layout)
     return outer
@@ -107,8 +109,9 @@ class LayoutFactory:
     outer_layout.setRowStretch(0, 2)
     outer_layout.setRowStretch(1, 8)
     outer_layout.setRowStretch(2, 1)
-    outer_layout.setContentsMargins(4, 4, 4, 4)
-    outer.setStyleSheet(style_content_panel_default)
+    outer_layout.setContentsMargins(24, 16, 24, 24)
+    outer_layout.setSpacing(12)
+    outer.setStyleSheet(style_nav_sect_default)
     outer.setLayout(outer_layout)
     return outer
     
@@ -167,40 +170,41 @@ class LayoutFactory:
       
   #  LAYER 4  -  SIDEBAR
 
-  def create_task_sect(self):
+  def create_task_sect(self) -> QWidget:
+    sect_top = self.comp_fact.build_sidebar_listItem(lb_text="Task Process",
+                                                     is_listTop=True)
     # outer frame
-    outer = QWidget()
-    outer_layout = QVBoxLayout()
-    return outer
+    task_sect = QWidget()
+    task_sect_layout = QVBoxLayout()
+    task_sect_layout.addWidget(sect_top, alignment=Qt.AlignTop)
+    task_sect.setContentsMargins(0, 0, 0, 0)
+    task_sect_layout.setSpacing(0)
+    task_sect_layout.addStretch()
+    task_sect.setLayout(task_sect_layout)
+    task_sect.setStyleSheet(style_sidebar_box_default)
+    return task_sect 
 
 
-  def create_db_sect(self):
+  def create_db_sect(self) -> QWidget:
+    sect_top = self.comp_fact.build_sidebar_listItem(lb_text="Dataset Status",
+                                                     is_listTop=True)
     # outer frame
-    outer = QListWidget()
-    return outer
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    db_sect = QWidget()
+    db_sect_layout = QVBoxLayout()
+    db_sect_layout.addWidget(sect_top, alignment=Qt.AlignTop)
+    db_sect.setContentsMargins(0, 0, 0, 0)
+    db_sect_layout.setSpacing(0)
+    db_sect_layout.addStretch()
+    db_sect.setLayout(db_sect_layout)
+    db_sect.setStyleSheet(style_sidebar_box_default)
+    return db_sect    
 
 
   #  LAYER 4  -  WORK PANEL
 
   def create_stat_sect(self):
     # outer
-    outer = QStackedWidget()
+    outer = QWidget()
     return outer
 
 
@@ -218,7 +222,7 @@ class LayoutFactory:
                                               btn_txtcolor=THEME_COLOR["white"],
                                               btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
     btn_completed = self.comp_fact.build_btn(btn_text="Done",
-                                              btn_event=lambda: event_done_btn(self.app_ref), 
+                                              btn_event=lambda: event_reset_app(self.app_ref), 
                                               btn_bgcolor=THEME_COLOR["primary"],
                                               btn_txtcolor=THEME_COLOR["white"],
                                               btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
@@ -228,81 +232,52 @@ class LayoutFactory:
     outer_layout.addWidget(btn_back)
     outer_layout.addWidget(btn_next)
     outer_layout.addWidget(btn_completed)
-    outer_layout.setContentsMargins(0, 0, 0, 0)
+    outer_layout.setContentsMargins(4, 4, 4, 4)
     outer_layout.setAlignment(Qt.AlignRight)
+    outer.setStyleSheet(style_nav_sect_default)
     outer.setLayout(outer_layout)
     return outer
-
-
-
-
-
-
-
-
 
 
   #  LAYER 3  -  MAIN PANEL  -  
       
-  def create_sidebar(self) -> QListWidget:
+  def create_sidebar(self) -> QWidget:
     #  inner
-    inner_db_sect = self.create_db_sect()
-    inner_task_sect = self.create_db_sect()
+    task_sect = self.create_task_sect()
+    db_sect = self.create_db_sect()
     #  outer
-    outer = QWidget()
-    outer_layout = QGridLayout()
-    outer_layout.addWidget(inner_task_sect, 0, 0)
-    outer_layout.addWidget(inner_db_sect, 1, 0)
-    outer_layout.setRowStretch(0, 7)
-    outer_layout.setRowStretch(0, 2)
-    outer_layout.setContentsMargins(0, 0, 0, 0)
-    outer.setStyleSheet(style_sidebar_default)
-    outer.setLayout(outer_layout)
-    return outer
-
-    
-  def create_content(self) -> QWidget:
-    #  inner
-    inner_status_sect = self.create_status_sect()
-    inner_stat_sect = self.create_stat_sect()
-    inner_nav_sect = self.create_nav_sect()
-    #  outer
-    outer = QWidget()
-    outer_layout = QGridLayout()
-    # outer_layout.addWidget(inner_status_sect, 0, 0)
-    # outer_layout.addWidget(inner_stat_sect, 1, 0)
-    # outer_layout.addWidget(inner_nav_sect, 2, 0)
-    # outer_layout.setRowStretch(0, 2)
-    # outer_layout.setRowStretch(1, 8)
-    # outer_layout.setRowStretch(2, 1)
-    outer_layout.setContentsMargins(4, 4, 4, 4)
-    outer.setStyleSheet(style_content_panel_default)
-    outer.setLayout(outer_layout)
-    return outer
-
+    sidebar = QWidget()
+    sidebar_layout = QGridLayout()
+    sidebar_layout.addWidget(task_sect, 0, 0)
+    sidebar_layout.addWidget(db_sect, 1, 0)
+    sidebar_layout.setRowStretch(0, 5)
+    sidebar_layout.setRowStretch(1, 3)
+    sidebar_layout.setContentsMargins(0, 0, 0, 0)
+    sidebar_layout.setSpacing(0)
+    sidebar.setLayout(sidebar_layout)
+    return sidebar
 
 
   #  LAYER 2  -   WINDOW
 
-  def create_main_area(self) -> QFrame:
+  # def create_content(self) -> QFrame:
     
-    #  inner frame - left
-    widget_sidebar = self.create_sidebar()
+  #   #  inner frame - left
+  #   widget_sidebar = self.create_sidebar()
     
-    #  inner frame - right
-    widget_content= self.create_content()
+  #   #  inner frame - right
+  #   widget_content= self.create_content()
     
-    #  outer frame
-    outer = QWidget()
-    outer_layout = QGridLayout()
-    outer_layout.addWidget(widget_sidebar, 0, 0)
-    outer_layout.addWidget(widget_content, 0, 1)
-    outer_layout.setColumnStretch(0, 1)
-    outer_layout.setColumnStretch(1, 3)
-    # .....
-    
-    outer.setLayout(outer_layout)
-    return outer
+  #   #  outer frame
+  #   outer = QWidget()
+  #   outer_layout = QGridLayout()
+  #   outer_layout.addWidget(widget_sidebar, 0, 0)
+  #   outer_layout.addWidget(widget_content, 0, 1)
+  #   outer_layout.setColumnStretch(0, 1)
+  #   outer_layout.setColumnStretch(1, 3)
+  #   # .....
+  #   outer.setLayout(outer_layout)
+  #   return outer
     
 
 
@@ -328,7 +303,6 @@ class LayoutFactory:
     window_layout.setColumnStretch(1, 7)
     window_layout.setSpacing(0) 
     window_layout.setContentsMargins(0, 0, 0, 0)
-    window.setLayout(window_layout)
     #  window setting
     window.setWindowTitle(style_wd_default["title"])
     window.setFont(QFont(style_wd_default["f_fam"], 

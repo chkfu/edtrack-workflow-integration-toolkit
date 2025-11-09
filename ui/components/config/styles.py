@@ -19,7 +19,7 @@ style_wd_default = {
   "resolution_width": 720,
   "resolution_height": 600,
   "f_fam": "Arial",
-  "f_size": 12
+  "f_size": 12,
 }
 
 style_wd_default_2 = """
@@ -49,11 +49,11 @@ style_topbar_default = """
 
 
 
-#  LAYER 1 - SIDEBAR
-style_sidebar_default = """
+#  LAYER 2 - SIDEBAR
+style_sidebar_box_default = """
   QWidget {{
       background-color: {white_hvr};
-      border: 1px solid {gray}
+      border: 1px solid {gray};
       color: {primary};
       padding: 0px;
       margin: 0px;
@@ -64,16 +64,22 @@ style_sidebar_default = """
       primary=THEME_COLOR["primary"])
 
 
-#  LAYER 1 - MAIN AREA
+#  LAYER 2 - CONTENT PANEL
 
 style_content_panel_default = """
   QWidget {{
-        padding: 4px;
-        border: 1px solod cyan;
+    padding: 4px;
     }}
-  """.format(
-        mid=THEME_COLOR["mid"])
+  """
+  
+  
+#  LAYER 3 - NAVIGATION SECTION
 
+style_nav_sect_default = """
+  QWidget {{
+    padding: 4px;
+    }}
+  """
 
 
 #  LABELS
@@ -81,7 +87,15 @@ style_content_panel_default = """
 style_lb_default = """
 QLabel {{
   color: {txtcolor};
-  letter-spacing: 0.7px;
+}}
+"""
+
+style_sidebar_listItem_default = """
+QLabel {{
+  color: {txtcolor};
+  background-color: {bgcolor};
+  border: 1px solid {txtcolor};
+  padding: 8px;
 }}
 """
 
