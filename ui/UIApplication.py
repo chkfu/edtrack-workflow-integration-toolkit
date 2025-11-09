@@ -24,14 +24,20 @@ class UIApplication:
     self.df_processed = None
     self.df_merged = None
     self.df_pivot = None
+
     
     
   #  METHODS - SETUP
     
   def setup_app(self) -> None:
+    #  allow child class to use parent constructors
     self.app = QApplication(sys.argv)
-    self.comp_fact = ComponentsFactory()
+    #  setup child classes
+    self.comp_fact = ComponentsFactory(app_ref=self)
     self.layout_fact = LayoutFactory(app_ref=self)
+    #  setup the stacks for transitional views
+    self.page_stack = self.layout_fact.page_stack
+    self.step_stack = self.layout_fact.step_stack
 
   def finalise_app(self, widget: QWidget) -> None:
     widget.show()
@@ -49,4 +55,6 @@ class UIApplication:
       self.finalise_app(widget=widget_window)
       
     except Exception as ex:
-      raise Exception(f"[UIApplication] failed to disaply UI application: {ex}")
+      self.comp_fact.build_reminder_box(app_window=self.app,
+                                        title="Error",
+                                        txt_msg="Error 500: Please contact the administrator for your further action.")

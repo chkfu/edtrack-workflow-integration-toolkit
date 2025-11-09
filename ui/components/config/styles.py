@@ -1,3 +1,17 @@
+THEME_COLOR = {
+    "dark":    "#333333",
+    "primary": "#213D57",
+    "mid":     "#334C64",
+    "light":   "#475F76",
+    "pale":    "#C6D1D8",
+    "gray":    "#999999",
+    "white":   "#ffffff",
+    "primary_hvr": "#455C75",
+    "white_hvr":   "#dddddd"
+}
+
+
+
 #  WINDOW
 
 style_wd_default = {
@@ -9,50 +23,65 @@ style_wd_default = {
 }
 
 style_wd_default_2 = """
-  QWidget {
-      background-color: #f8f9fa;
-      color: #212529;
-  }
-"""
+  QWidget {{
+      background-color: {pale};
+      color: {primary};
+  }}
+""".format(
+    primary=THEME_COLOR["primary"],
+    pale=THEME_COLOR["pale"]
+)
 
 
-#  TOPBAR (GRID 1)
+#  LAYER 1 - TOPBAR
 
 style_topbar_default = """
-  QFrame {
-      background-color: #14213d;
-      color: #212529;
+  QFrame {{
+      background-color: {primary};
+      color: {dark};
       padding: 0px;
       margin: 0px;
-  }
-"""
+  }}
+  """.format(
+      primary=THEME_COLOR["primary"],
+      dark=THEME_COLOR["dark"]
+  )
 
 
-#  MAIN_AREA (GRID 2)
 
+#  LAYER 1 - SIDEBAR
+style_sidebar_default = """
+  QWidget {{
+      background-color: {white_hvr};
+      border: 1px solid {gray}
+      color: {primary};
+      padding: 0px;
+      margin: 0px;
+  }}
+  """.format(
+      white_hvr=THEME_COLOR["white_hvr"],
+      gray=THEME_COLOR["gray"],
+      primary=THEME_COLOR["primary"])
+
+
+#  LAYER 1 - MAIN AREA
+
+style_content_panel_default = """
+  QWidget {{
+        padding: 4px;
+        border: 1px solod cyan;
+    }}
+  """.format(
+        mid=THEME_COLOR["mid"])
 
 
 
 #  LABELS
 
-style_lb_default_h1 = """
+style_lb_default = """
 QLabel {{
-  margin-left: 8px;
-    font-size: 28px;
-    font-weight: bold;
-    color: {txtcolor};
-    font-weight: 900;
-    font-style: italic;
-    font-family: "Impact", "Arial";
-    letter-spacing: 0.7px;
-}}
-"""
-
-style_lb_default_p = """
-QLabel {{
-    font-size: 13px;
-    font-weight: normal;
-    color: {txtcolor}
+  color: {txtcolor};
+  letter-spacing: 0.7px;
 }}
 """
 
@@ -64,8 +93,7 @@ style_btn_default = """
   QPushButton {{
     background-color: {bgcolor};
     color: {txtcolor};
-    width: 60px;
-    border: none;
+    border: 1px solid {bgcolor};
     border-radius: 14px;
     margin: 0px 0px;
     padding: 4px 8px;
@@ -76,6 +104,31 @@ style_btn_default = """
   QPushButton:hover {{
     background-color: {hover_bgcolor};
   }}
+  QPushButton:pressed {{
+      background-color: {bgcolor};
+      border: 1px solid {txtcolor};
+}}
+"""
+
+style_btn_contrast = """
+QPushButton {{
+    background-color: {bgcolor};
+    color: {txtcolor};
+    border: 1px solid {txtcolor};
+    border-radius: 14px;
+    margin: 0;
+    padding: 4px 8px;
+    font-family: "Arial";
+    font-size: 12px;
+    font-weight: 500;
+}}
+QPushButton:hover {{
+    background-color: {hover_bgcolor};
+}}
+QPushButton:pressed {{
+    background-color: {bgcolor};
+    border: 1px solid {txtcolor};
+}}
 """
 
 

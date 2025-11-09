@@ -1,14 +1,14 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QMessageBox, QPushButton, QStackedWidget, QGridLayout,QListWidget,
-    QFrame, QHBoxLayout, QWidget, QMainWindow
+    QFrame, QHBoxLayout, QWidget, QMainWindow, QVBoxLayout, QLabel
 )
 from PyQt5.QtGui import QFont
 from ui.components.ComponentsFactory import ComponentsFactory
 from ui.components.config.styles import (
-  style_wd_default, style_topbar_default, style_wd_default_2, 
-  style_testing_border)
-from ui.components.config.events import (event_reset_app, event_close_app)
+  THEME_COLOR, style_wd_default, style_topbar_default, style_wd_default_2, 
+  style_testing_border, style_sidebar_default, style_content_panel_default)
+from ui.components.config.events import (event_reset_app, event_close_app, event_next_btn, event_back_btn, event_done_btn)
 
 
 #  CLASS
@@ -18,57 +18,242 @@ class LayoutFactory:
   #  Constructor    
   
   def __init__(self, app_ref):
+    
     super().__init__()
-    self.app_ref = app_ref    
-    self.comp_fact = ComponentsFactory()
+    self.app_ref = app_ref  
+    self.comp_fact = app_ref.comp_fact
+    
+    #  pages stack
+    
+    self.page_stack = QStackedWidget()
+    
+    self.page_1 = self.create_page_1()
+    self.page_2 = self.create_page_2()
+    # self.page_3 = self.create_page_3()
+    # self.page_4 = self.create_page_4()
+    # self.page_5 = self.create_page_5()
+    # self.page_6 = self.create_page_6()
+    # self.page_7 = self.create_page_7()
+
+    #  step stack
+    
+    self.step_stack = QStackedWidget()
+    
+    self.step_1 = self.create_step_1()
+    self.step_2 = self.create_step_2()
+    # self.step_3 = self.create_step_3()
+    # self.step_4 = self.create_step_4()
+    # self.step_5 = self.create_step_5()
+    # self.step_6 = self.create_step_6()
+    # self.step_7 = self.create_step_7()
+    
+    #  execution
+    
+    self.page_stack.addWidget(self.page_1)
+    self.page_stack.addWidget(self.page_2)
+    # self.page_stack.addWidget(self.page_3)
+    # self.page_stack.addWidget(self.page_4)
+    # self.page_stack.addWidget(self.page_5)
+    # self.page_stack.addWidget(self.page_6)
+    # self.page_stack.addWidget(self.page_7)
+    
+    self.step_stack.addWidget(self.step_1)
+    self.step_stack.addWidget(self.step_2)
+    # self.step_stack.addWidget(self.step_3)
+    # self.step_stack.addWidget(self.step_4)
+    # self.step_stack.addWidget(self.step_5)
+    # self.step_stack.addWidget(self.step_6)
+    # self.step_stack.addWidget(self.step_7)
+    
+    #  learnt: to get total num, use stack.count()
+    self.page_stack.setCurrentIndex(0)
+    self.step_stack.setCurrentIndex(0)
+
     print("[PagesFactory] initialised successfully.") 
     
     
-  #  METHODS - PAGE SETUPS
+  #  METHODS - Page SETUPS
   
-  
+  def create_page_1(self):
+    #  status section
+    inner_status_sect = self.comp_fact.create_status_sect(sect_title="Step 1: Import Database", 
+                                                          sect_des="This step reads the dataset, checks its structure, and prepares it for cleaning and processing.")
+    
+    #  statistic section
+    inner_stat_sect = self.create_stat_sect()
+    
+    #  nav section
+    inner_nav_sect = self.create_nav_sect()
+    
+    #  Work Panel Grid
+    outer = QWidget()
+    outer_layout = QGridLayout()
+    outer_layout.addWidget(inner_status_sect, 0, 0)
+    outer_layout.addWidget(inner_stat_sect, 1, 0)
+    outer_layout.addWidget(inner_nav_sect, 2, 0)
+    outer_layout.setRowStretch(0, 2)
+    outer_layout.setRowStretch(1, 8)
+    outer_layout.setRowStretch(2, 1)
+    outer_layout.setContentsMargins(4, 4, 4, 4)
+    outer.setStyleSheet(style_content_panel_default)
+    outer.setLayout(outer_layout)
+    return outer
+
+  def create_page_2(self):
+    #  status section
+    inner_status_sect = self.comp_fact.create_status_sect(sect_title="Step 2: Clean Data and Preprocessing", 
+                                                          sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
+    
+    #  statistic section
+    inner_stat_sect = self.create_stat_sect()
+    
+    #  nav section
+    inner_nav_sect = self.create_nav_sect()
+    
+    #  Work Panel Grid
+    outer = QWidget()
+    outer_layout = QGridLayout()
+    outer_layout.addWidget(inner_status_sect, 0, 0)
+    outer_layout.addWidget(inner_stat_sect, 1, 0)
+    outer_layout.addWidget(inner_nav_sect, 2, 0)
+    outer_layout.setRowStretch(0, 2)
+    outer_layout.setRowStretch(1, 8)
+    outer_layout.setRowStretch(2, 1)
+    outer_layout.setContentsMargins(4, 4, 4, 4)
+    outer.setStyleSheet(style_content_panel_default)
+    outer.setLayout(outer_layout)
+    return outer
+    
+  def create_page_3(self):
+    print("page 3")
+    
+  def create_page_4(self):
+    print("page 4")
+    
+  def create_page_5(self):
+    print("page 5")
+    
+  def create_page_6(self):
+    print("page 6")
+    
+  def create_page_7(self):
+    print("page 7")
+    
+    
+    
+    
+  #  METHODS - STEP SETUPS
+
+  def create_step_1(self):
+    return self.comp_fact.build_label(lb_text="🔘 1: Import Datasets",
+                                      lb_type="h2",
+                                      lb_align=Qt.AlignVCenter | Qt.AlignLeft,
+                                      lb_bold=True
+                                      )
+
+
+  def create_step_2(self):
+    return self.comp_fact.build_label(lb_text="🔘 2: Data Cleaning",
+                                      lb_type="h2",
+                                      lb_align=Qt.AlignVCenter | Qt.AlignLeft,
+                                      lb_bold=True
+                                      )
+    
+  def create_step_3(self):
+    print("step 3")
+    
+  def create_step_4(self):
+    print("step 4")
+    
+  def create_step_5(self):
+    print("step 5")
+    
+  def create_step_6(self):
+    print("step 6")
+    
+  def create_step_7(self):
+    print("step 7")
+      
+      
+      
+      
   #  LAYER 4  -  SIDEBAR
-  
+
   def create_task_sect(self):
     # outer frame
-    outer = QListWidget()
-    outer.setStyleSheet(style_testing_border)
+    outer = QWidget()
+    outer_layout = QVBoxLayout()
     return outer
-  
-  
+
+
   def create_db_sect(self):
     # outer frame
     outer = QListWidget()
-    outer.setStyleSheet(style_testing_border)
     return outer
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   #  LAYER 4  -  WORK PANEL
-  
-  def create_status_sect(self):
-    # outer
-    outer = QWidget()
-    outer_layout = QHBoxLayout()
-    outer.setStyleSheet(style_testing_border)
-    return outer
-  
-  
+
   def create_stat_sect(self):
     # outer
     outer = QStackedWidget()
-    outer.setStyleSheet(style_testing_border)
     return outer
-  
-  
+
+
   def create_nav_sect(self):
-    # outer
-    outer = QStackedWidget()
-    outer.setStyleSheet(style_testing_border)
+    #  inner
+    #  leanrt: lambda: enable importing parameters to fn
+    btn_back = self.comp_fact.build_btn(btn_text="back",
+                                        btn_event=lambda: event_back_btn(self.app_ref),
+                                        btn_bgcolor=THEME_COLOR["white"],
+                                        btn_txtcolor=THEME_COLOR["primary"],
+                                        btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    btn_next = self.comp_fact.build_btn(btn_text="Next", 
+                                              btn_event=lambda: event_next_btn(self.app_ref),
+                                              btn_bgcolor=THEME_COLOR["primary"],
+                                              btn_txtcolor=THEME_COLOR["white"],
+                                              btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+    btn_completed = self.comp_fact.build_btn(btn_text="Done",
+                                              btn_event=lambda: event_done_btn(self.app_ref), 
+                                              btn_bgcolor=THEME_COLOR["primary"],
+                                              btn_txtcolor=THEME_COLOR["white"],
+                                              btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+    #  outer
+    outer = QWidget()
+    outer_layout = QHBoxLayout()
+    outer_layout.addWidget(btn_back)
+    outer_layout.addWidget(btn_next)
+    outer_layout.addWidget(btn_completed)
+    outer_layout.setContentsMargins(0, 0, 0, 0)
+    outer_layout.setAlignment(Qt.AlignRight)
+    outer.setLayout(outer_layout)
     return outer
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
   #  LAYER 3  -  MAIN PANEL  -  
       
   def create_sidebar(self) -> QListWidget:
@@ -83,10 +268,10 @@ class LayoutFactory:
     outer_layout.setRowStretch(0, 7)
     outer_layout.setRowStretch(0, 2)
     outer_layout.setContentsMargins(0, 0, 0, 0)
-    outer.setStyleSheet(style_testing_border)
+    outer.setStyleSheet(style_sidebar_default)
     outer.setLayout(outer_layout)
     return outer
-  
+
     
   def create_content(self) -> QWidget:
     #  inner
@@ -96,72 +281,21 @@ class LayoutFactory:
     #  outer
     outer = QWidget()
     outer_layout = QGridLayout()
-    outer_layout.addWidget(inner_status_sect, 0, 0)
-    outer_layout.addWidget(inner_stat_sect, 1, 0)
-    outer_layout.addWidget(inner_nav_sect, 2, 0)
-    outer_layout.setRowStretch(0, 2)
-    outer_layout.setRowStretch(1, 8)
-    outer_layout.setRowStretch(2, 1)
-    outer_layout.setContentsMargins(0, 0, 0, 0)
-    outer.setStyleSheet(style_testing_border)
+    # outer_layout.addWidget(inner_status_sect, 0, 0)
+    # outer_layout.addWidget(inner_stat_sect, 1, 0)
+    # outer_layout.addWidget(inner_nav_sect, 2, 0)
+    # outer_layout.setRowStretch(0, 2)
+    # outer_layout.setRowStretch(1, 8)
+    # outer_layout.setRowStretch(2, 1)
+    outer_layout.setContentsMargins(4, 4, 4, 4)
+    outer.setStyleSheet(style_content_panel_default)
     outer.setLayout(outer_layout)
     return outer
 
 
 
   #  LAYER 2  -   WINDOW
-  
-  def create_topbar(self) -> QFrame:
-    
-    #  inner frame - left
-    
-    # app_title = self.comp_fact.build_label(lb_text="APP TITLE")
-    
-    label_title = self.comp_fact.build_label(lb_text=style_wd_default["title"],
-                                             lb_type="h1",
-                                             lb_txtcolor="#f1f3f5",
-                                             lb_align=Qt.AlignVCenter | Qt.AlignLeft)
-    
-    
-    inner_lframe = QFrame()
-    inner_lframe_layout = QHBoxLayout(inner_lframe)
-    inner_lframe_layout.addWidget(label_title)
-    inner_lframe.setLayout(inner_lframe_layout)
-    
-    
-    #  inner frame - right
-    btn_reset = self.comp_fact.build_btn(btn_text="🔄 reset",
-                                        btn_event=lambda: event_reset_app(self.app_ref),
-                                        btn_bgcolor="#fab005",
-                                        btn_txtcolor="#333333",
-                                        btn_hover_bgcolor="#f08c00")
-    btn_exit = self.comp_fact.build_btn(btn_text="🚪 exit", 
-                                        btn_event=lambda: event_close_app(self.app_ref),
-                                        btn_bgcolor="#fa5252",
-                                        btn_txtcolor="#333333",
-                                        btn_hover_bgcolor="#e03131")
-    
-    inner_rframe = QFrame()
-    inner_rframe_layout = QHBoxLayout()
-    inner_rframe_layout.addWidget(btn_reset)
-    inner_rframe_layout.addWidget(btn_exit)
-    inner_rframe.setLayout(inner_rframe_layout)
-    
-    #  outer frame
-    #  learnt:  widget -> layout -> widget -> layout ....
-    outer = QFrame()
-    outer_layout = QGridLayout()
-    outer_layout.addWidget(inner_lframe, 0, 0)
-    outer_layout.addWidget(inner_rframe, 0, 1)
-    outer_layout.setColumnStretch(0, 5)
-    outer_layout.setColumnStretch(1, 2)
-    outer_layout.setContentsMargins(0, 0, 0, 0)
-    outer.setStyleSheet(style_topbar_default)
-    outer.setLayout(outer_layout)
-    
-    return outer
-  
-  
+
   def create_main_area(self) -> QFrame:
     
     #  inner frame - left
@@ -171,21 +305,21 @@ class LayoutFactory:
     widget_content= self.create_content()
     
     #  outer frame
-    outer = QFrame()
+    outer = QWidget()
     outer_layout = QGridLayout()
     outer_layout.addWidget(widget_sidebar, 0, 0)
     outer_layout.addWidget(widget_content, 0, 1)
     outer_layout.setColumnStretch(0, 1)
     outer_layout.setColumnStretch(1, 3)
     # .....
-    outer.setStyleSheet(style_testing_border)
+    
     outer.setLayout(outer_layout)
     return outer
     
-  
+
 
   #  LAYER 1  -  WINDOW
-   
+    
   def create_window(self) -> QWidget:
     
     #  from window 
@@ -193,24 +327,28 @@ class LayoutFactory:
     window_layout = QGridLayout()
     
     #  add child components
-    widget_topbar = self.create_topbar()
-    window_layout.addWidget(widget_topbar, 0, 0)
-    widget_main_area = self.create_main_area()
-    window_layout.addWidget(widget_main_area, 1, 0)
-    #  learnt: to split 1:9 
+    widget_topbar = self.comp_fact.create_topbar()
+    window_layout.addWidget(widget_topbar, 0, 0, 1, 2)
+    widget_sidebar = self.create_sidebar()
+    window_layout.addWidget(widget_sidebar, 1, 0)
+    widget_content = self.page_stack
+    window_layout.addWidget(widget_content, 1, 1)
+    #  grid distribution
     window_layout.setRowStretch(0, 1)
-    window_layout.setRowStretch(1, 9)
-    
-    window.setWindowTitle(style_wd_default["title"])
+    window_layout.setRowStretch(1, 9) 
+    window_layout.setColumnStretch(0, 3)
+    window_layout.setColumnStretch(1, 7)
+    window_layout.setSpacing(0) 
     window_layout.setContentsMargins(0, 0, 0, 0)
-    window_layout.setSpacing(0)
+    window.setLayout(window_layout)
+    #  window setting
+    window.setWindowTitle(style_wd_default["title"])
     window.setFont(QFont(style_wd_default["f_fam"], 
-                         style_wd_default["f_size"]))
+                          style_wd_default["f_size"]))
     window.resize(style_wd_default["resolution_width"], 
                   style_wd_default["resolution_height"])
     window.setStyleSheet(style_wd_default_2)
     window.setLayout(window_layout)
-    
     #  learnt: disable flexible size
     window.setFixedSize(
       style_wd_default["resolution_width"],
