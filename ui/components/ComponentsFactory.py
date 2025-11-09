@@ -44,7 +44,7 @@ class ComponentsFactory:
   def build_label(self, 
                 lb_text: str | None,
                 lb_type: str="p",
-                lb_txtcolor: str=THEME_COLOR["dark"],
+                lb_txtcolor: str=THEME_COLOR["primary"],
                 lb_align: Qt.AlignmentFlag=Qt.AlignCenter,
                 lb_bold: bool=False,
                 lb_italic: bool=False,
@@ -55,11 +55,11 @@ class ComponentsFactory:
     font.setBold(lb_bold)
     font.setItalic(lb_italic)
     if lb_type == "h1":
-      font.setPointSize(28)
+      font.setPointSize(24)
     elif lb_type == "h2":
-      font.setPointSize(20)
+      font.setPointSize(18)
     elif lb_type == "h3":
-      font.setPointSize(16)
+      font.setPointSize(14)
     else:
       font.setPointSize(12)
       font.setFamily("Arial")
@@ -130,104 +130,21 @@ class ComponentsFactory:
     font = lb.font()
     font.setFamily("Impact")
     lb.setFont(font)
-    lb.setFixedHeight(32)
-    
+    lb.setFixedHeight(36)
+    lb.setContentsMargins(0, 0, 0, 0)   
     if is_listTop:
-      font.setPointSize(16)
-      lb.setStyleSheet(style_sidebar_listItem_default.format(txtcolor=THEME_COLOR["white"],
+      font.setPointSize(14)
+      lb.setStyleSheet(style_sidebar_listItem_default.format(txtcolor=THEME_COLOR["white_hvr"],
                                                             bgcolor=THEME_COLOR["primary"]))
       lb.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
     
     else:
       font.setPointSize(14)
       lb.setStyleSheet(style_sidebar_listItem_default.format(txtcolor=THEME_COLOR["primary"],
-                                                            bgcolor=THEME_COLOR["white"]))
+                                                            bgcolor=THEME_COLOR["white_hvr"]))
       lb.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
     
     lb.setFont(font)
       
     return lb
       
-
-  #  section components
-  
-  def create_topbar(self) -> QFrame:
-    
-    #  inner frame - left
-    
-    label_title = self.build_label(lb_text=style_wd_default["title"],
-                                  lb_type="h1",
-                                  lb_txtcolor=THEME_COLOR["white"],
-                                  lb_align=Qt.AlignVCenter | Qt.AlignLeft,
-                                  lb_italic=True,
-                                  lb_bold=True)
-    
-    inner_lframe = QFrame()
-    inner_lframe_layout = QHBoxLayout(inner_lframe)
-    inner_lframe_layout.addWidget(label_title)
-    inner_lframe.setLayout(inner_lframe_layout)
-    
-    
-    #  inner frame - right
-    btn_reset = self.build_btn(btn_text="reset",
-                              btn_event=lambda: event_reset_app(self.app_ref),
-                              btn_bgcolor="#fab005",
-                              btn_txtcolor=THEME_COLOR["dark"],
-                              btn_hover_bgcolor="#f08c00")
-    btn_exit = self.build_btn(btn_text="exit", 
-                              btn_event=lambda: event_close_app(self.app_ref),
-                              btn_bgcolor="#fa5252",
-                              btn_txtcolor=THEME_COLOR["dark"],
-                              btn_hover_bgcolor="#e03131")
-    
-    inner_rframe = QFrame()
-    inner_rframe_layout = QHBoxLayout()
-    inner_rframe_layout.addWidget(btn_reset)
-    inner_rframe_layout.addWidget(btn_exit)
-    inner_rframe.setLayout(inner_rframe_layout)
-    
-    #  outer frame
-    #  learnt:  widget -> layout -> widget -> layout ....
-    outer = QFrame()
-    outer_layout = QGridLayout()
-    outer_layout.addWidget(inner_lframe, 0, 0)
-    outer_layout.addWidget(inner_rframe, 0, 1)
-    outer_layout.setColumnStretch(0, 5)
-    outer_layout.setColumnStretch(1, 2)
-    outer_layout.setContentsMargins(0, 0, 0, 0)
-    outer.setStyleSheet(style_topbar_default)
-    outer.setLayout(outer_layout)
-    
-    return outer
-  
-
-  def create_status_sect(self, 
-                         sect_title:str="Insert Title",
-                         sect_des:str="Insert Description"):
-
-     # inner - title
-    title = self.build_label(lb_text=sect_title, 
-                            lb_type="h2", 
-                            lb_align=Qt.AlignVCenter | Qt.AlignLeft,
-                            lb_bold=True)
-
-    title.setFixedHeight(32)
-    
-    # inner - item list
-    description = self.build_label(lb_text=sect_des, 
-                                  lb_type="h3", 
-                                  lb_align=Qt.AlignLeft, 
-                                  lb_wrap=True,
-                                  lb_italic=True)
-    description.setStyleSheet("margin-bottom: 4px;")
-    
-    # outer
-    status_sect = QWidget()
-    status_sect_layout  = QVBoxLayout()
-    status_sect_layout.addWidget(title)
-    status_sect_layout.addWidget(description)
-    status_sect_layout.setContentsMargins(0, 0, 0, 0)
-    status_sect_layout.setSpacing(0)
-    status_sect.setLayout(status_sect_layout)
-    return status_sect
-  

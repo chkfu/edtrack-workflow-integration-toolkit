@@ -17,7 +17,7 @@ THEME_COLOR = {
 style_wd_default = {
   "title": "EduTrack 🧭",
   "resolution_width": 720,
-  "resolution_height": 600,
+  "resolution_height": 640,
   "f_fam": "Arial",
   "f_size": 12,
 }
@@ -53,14 +53,12 @@ style_topbar_default = """
 style_sidebar_box_default = """
   QWidget {{
       background-color: {white_hvr};
-      border: 1px solid {gray};
       color: {primary};
       padding: 0px;
       margin: 0px;
   }}
   """.format(
       white_hvr=THEME_COLOR["white_hvr"],
-      gray=THEME_COLOR["gray"],
       primary=THEME_COLOR["primary"])
 
 
@@ -94,8 +92,7 @@ style_sidebar_listItem_default = """
 QLabel {{
   color: {txtcolor};
   background-color: {bgcolor};
-  border: 1px solid {txtcolor};
-  padding: 8px;
+  padding: 8px 8px;
 }}
 """
 
