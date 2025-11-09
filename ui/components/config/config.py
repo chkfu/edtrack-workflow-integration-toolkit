@@ -4,7 +4,7 @@ STEP_NAME_LIST = [
       "visited": True
     },
     {
-      "step": "2: Clean Data and Preprocessing", 
+      "step": "2: Clean Data", 
       "visited": False
     },
     {
@@ -12,23 +12,7 @@ STEP_NAME_LIST = [
       "visited": False
     },
     {
-      "step": "4: Select Analytic Option", 
-      "visited": False
-    },
-    {
-      "step": "4a: Check Pivot Table", 
-      "visited": False
-    },
-    {
-      "step": "4b: Check Monthly Record", 
-      "visited": False
-    },
-    {
-      "step": "4c: Check Statistics", 
-      "visited": False
-    },
-    {
-      "step": "4d: Visualise Correlation", 
+      "step": "4: Analyse Data", 
       "visited": False
     }
 ]

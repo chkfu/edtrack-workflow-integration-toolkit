@@ -108,9 +108,8 @@ style_btn_default = """
     border-radius: 14px;
     margin: 0px 0px;
     padding: 4px 8px;
-    font-family: "Arial";
-    font-size: 12px;
-    font-weight: 500;
+    font-family: "Impact";
+    font-size: 14px;
   }}
   QPushButton:hover {{
     background-color: {hover_bgcolor};
@@ -129,9 +128,8 @@ QPushButton {{
     border-radius: 14px;
     margin: 0;
     padding: 4px 8px;
-    font-family: "Arial";
-    font-size: 12px;
-    font-weight: 500;
+    font-family: "Impact";
+    font-size: 14px;
 }}
 QPushButton:hover {{
     background-color: {hover_bgcolor};

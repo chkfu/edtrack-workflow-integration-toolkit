@@ -21,7 +21,6 @@ from ui.components.config.styles import (
 from ui.components.config.events import (
   event_reset_app, 
   event_close_app, 
-  event_done_btn,
   event_back_btn,
   event_next_btn
 )
