@@ -37,7 +37,6 @@ class UIApplication:
     self.layout_fact = LayoutFactory(app_ref=self)
     #  setup the stacks for transitional views
     self.page_stack = self.layout_fact.page_stack
-    self.step_stack = self.layout_fact.step_stack
 
   def finalise_app(self, widget: QWidget) -> None:
     widget.show()
@@ -55,6 +54,6 @@ class UIApplication:
       self.finalise_app(widget=widget_window)
       
     except Exception as ex:
-      self.comp_fact.build_reminder_box(app_window=self.app,
-                                        title="Error",
+      self.comp_fact.build_reminder_box(title="Error",
                                         txt_msg="Error 500: Please contact the administrator for your further action.")
+      raise SystemError(f"{ex}")

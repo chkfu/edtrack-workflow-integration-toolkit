@@ -109,10 +109,9 @@ class ComponentsFactory:
   
   
   def build_reminder_box(self,
-                         app_window: QWidget,
                          title: str, 
                          txt_msg: str) -> QMessageBox:
-    msg = QMessageBox(app_window)
+    msg = QMessageBox(self.app_ref.window)
     msg.setIcon(QMessageBox.Information)
     msg.setWindowTitle(title)
     msg.setText(txt_msg)

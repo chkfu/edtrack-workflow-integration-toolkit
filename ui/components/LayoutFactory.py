@@ -36,9 +36,6 @@ class LayoutFactory:
     # self.page_7 = self.create_page_7()
 
     #  step stack
-    
-    self.step_stack = QStackedWidget()
-    
     self.step_1 = self.create_step_1()
     self.step_2 = self.create_step_2()
     # self.step_3 = self.create_step_3()
@@ -57,17 +54,8 @@ class LayoutFactory:
     # self.page_stack.addWidget(self.page_6)
     # self.page_stack.addWidget(self.page_7)
     
-    self.step_stack.addWidget(self.step_1)
-    self.step_stack.addWidget(self.step_2)
-    # self.step_stack.addWidget(self.step_3)
-    # self.step_stack.addWidget(self.step_4)
-    # self.step_stack.addWidget(self.step_5)
-    # self.step_stack.addWidget(self.step_6)
-    # self.step_stack.addWidget(self.step_7)
-    
     #  learnt: to get total num, use stack.count()
     self.page_stack.setCurrentIndex(0)
-    self.step_stack.setCurrentIndex(0)
 
     print("[PagesFactory] initialised successfully.") 
     
