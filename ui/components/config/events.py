@@ -16,21 +16,22 @@ def event_reset_app(app_ref) -> None:
         )
       if res:
         #  removal
-        app_ref.curr_stage = "STEP_1"
         app_ref.df_users = None
         app_ref.df_activities = None
         app_ref.df_components = None
         app_ref.df_processed = None
         app_ref.df_merged = None
         app_ref.df_pivot = None
+        
+        #  follow-up event
+        app_ref.page_stack.setCurrentIndex(0)
+      
+        # update task list
+        update_workflow(app_ref, "reset", 0)
+      
         #  confirmation
         app_ref.comp_fact.build_reminder_box(title="Confirmation",
                                             txt_msg="The application has been reset.")
-      #  follow-up event
-      app_ref.page_stack.setCurrentIndex(0)
-     
-      # update task list
-      update_workflow(app_ref, "reset", 0)
       
   except Exception as ex:
     raise SystemError(f"{ex}")

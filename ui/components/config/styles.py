@@ -141,9 +141,3 @@ QPushButton:pressed {{
 """
 
 
-
-#  TESTING
-
-style_testing_border = """
-    border: 1px solid red;
-"""

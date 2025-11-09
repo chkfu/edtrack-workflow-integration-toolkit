@@ -1,28 +1,11 @@
 from typing import Callable
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QWidget, QMainWindow, QLabel, QPushButton, QMessageBox, QStackedWidget,
-    QListWidget, QFrame, QGridLayout, QVBoxLayout, QHBoxLayout
+    QLabel, QPushButton, QMessageBox
 )
 from ui.components.config.styles import (
-    THEME_COLOR,
-    style_btn_default,
-    style_btn_contrast,
-    style_lb_default,
-    style_sidebar_listItem_default,
-    style_wd_default,
-    style_wd_default_2,
-    style_topbar_default,
-    style_sidebar_box_default,
-    style_content_panel_default,
-    style_testing_border
-)
-from ui.components.config.events import (
-  event_reset_app, 
-  event_close_app, 
-  event_back_btn,
-  event_next_btn
+    THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
+    style_sidebar_listItem_default
 )
 
 

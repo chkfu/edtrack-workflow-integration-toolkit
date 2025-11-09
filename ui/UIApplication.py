@@ -1,8 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget
-from ui.components.ComponentsFactory import ComponentsFactory
-from ui.components.LayoutFactory import LayoutFactory
-
+from ui.components import ComponentsFactory, LayoutFactory, PagesFactory
 
 
 #  CLASS
@@ -10,20 +8,22 @@ from ui.components.LayoutFactory import LayoutFactory
 class UIApplication:
   
   def __init__(self):
-    #  app
+    
+    #  setup this app
     self.app = None
     self.window = None
-    #  class
+    
+    #  setup factory classes
     self.comp_fact = None
     self.layout_fact = None
-    #  datasets
-    self.curr_stage = "STEP_1"
+    self.pages_fact = None
+    
+    #  setup datasets
     self.df_users = None
     self.df_activities = None
     self.df_components = None
     self.df_processed = None
     self.df_merged = None
-    self.df_pivot = None
 
     
     
@@ -34,6 +34,7 @@ class UIApplication:
     self.app = QApplication(sys.argv)
     #  setup child classes
     self.comp_fact = ComponentsFactory(app_ref=self)
+    self.pages_fact = PagesFactory(app_ref=self)
     self.layout_fact = LayoutFactory(app_ref=self)
     #  setup the stacks for transitional views
     self.page_stack = self.layout_fact.page_stack
