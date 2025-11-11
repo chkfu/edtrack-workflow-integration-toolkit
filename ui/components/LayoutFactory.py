@@ -47,7 +47,7 @@ class LayoutFactory:
     #  learnt: to get total num, use stack.count()
     self.page_stack.setCurrentIndex(0)
 
-    print("[PagesFactory] initialised successfully.") 
+    print("[LayoutFactory] initialised successfully.") 
     
     
       
@@ -70,8 +70,6 @@ class LayoutFactory:
       list_item.setSizeHint(new_lb_widget.sizeHint())
       self.task_list_widget.addItem(list_item)
       self.task_list_widget.setItemWidget(list_item, new_lb_widget)
-
-
     #  outer frame
     task_sect = QWidget()
     task_sect_layout = QVBoxLayout()
@@ -130,14 +128,14 @@ class LayoutFactory:
     #  inner frame - right
     btn_reset = self.comp_fact.build_btn(btn_text="reset",
                               btn_event=lambda: event_reset_app(self.app_ref),
-                              btn_bgcolor="#fab005",
+                              btn_bgcolor=THEME_COLOR["yellow"],
                               btn_txtcolor=THEME_COLOR["dark"],
-                              btn_hover_bgcolor="#f08c00")
+                              btn_hover_bgcolor=THEME_COLOR["yellow_hvr"])
     btn_exit = self.comp_fact.build_btn(btn_text="exit", 
                               btn_event=lambda: event_close_app(self.app_ref),
-                              btn_bgcolor="#fa5252",
+                              btn_bgcolor=THEME_COLOR["red"],
                               btn_txtcolor=THEME_COLOR["dark"],
-                              btn_hover_bgcolor="#e03131")
+                              btn_hover_bgcolor=THEME_COLOR["red_hvr"])
     
     inner_rframe = QFrame()
     inner_rframe_layout = QHBoxLayout()

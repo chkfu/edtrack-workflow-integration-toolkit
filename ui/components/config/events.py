@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import (
-    QApplication, QLabel
+    QApplication, QWidget, QGridLayout
 )
 from ui.components.config.config import STEP_NAME_LIST
 
 
 
-#  METHODS - APP OPERATION
+#  METHODS - BUTTONS
 #  learnt: use app_instance replaced self, as self cannot be read outside class
 
 def event_reset_app(app_ref) -> None:
@@ -119,6 +119,9 @@ def update_workflow(app_ref,
     if label_widget:
         label_widget.setText(txt)
   
+  
+  
+  
 #  SUPPORTING METHODS
 
 def validate_qstacks(app_ref) -> None:  
@@ -129,3 +132,6 @@ def validate_qstacks(app_ref) -> None:
   if app_ref.page_stack.count() < 1:
     app_ref.comp_fact.build_reminder_box(title="Error",
                                         txt_msg="Page storage is empty.")
+    
+
+

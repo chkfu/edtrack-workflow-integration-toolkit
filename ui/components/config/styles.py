@@ -5,9 +5,15 @@ THEME_COLOR = {
     "light":   "#475F76",
     "pale":    "#C6D1D8",
     "gray":    "#999999",
-    "white":   "#ffffff",
+    "white":   "#FFFFFF",
+    "yellow": "#fab005",
+    "red": "#FA5252",
     "primary_hvr": "#455C75",
-    "white_hvr":   "#dddddd"
+    "mid_hvr": "#293D50",
+    "pale_hvr": "#9EA7AD",
+    "white_hvr":   "#DDDDDD",
+    "yellow_hvr": "#F08C00",
+    "red_hvr": "#E03131"
 }
 
 
@@ -15,7 +21,7 @@ THEME_COLOR = {
 #  WINDOW
 
 style_wd_default = {
-  "title": "EduTrack 🧭",
+  "title": "EdTrack 🧭",
   "resolution_width": 720,
   "resolution_height": 640,
   "f_fam": "Arial",

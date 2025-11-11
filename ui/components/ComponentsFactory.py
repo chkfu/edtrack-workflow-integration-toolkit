@@ -31,7 +31,7 @@ class ComponentsFactory:
                 lb_bold: bool=False,
                 lb_italic: bool=False,
                 lb_wrap: bool=False) -> QLabel:
-    lb = QLabel(lb_text.strip())
+    lb = QLabel(lb_text)
     font = lb.font()
     font.setFamily("Impact")
     font.setBold(lb_bold)

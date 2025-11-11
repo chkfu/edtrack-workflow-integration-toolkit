@@ -1,12 +1,16 @@
+from typing import Callable
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QWidget, QGridLayout, QVBoxLayout, QHBoxLayout
+    QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QVBoxLayout, QFrame
 )
 from ui.components.config.styles import (
     THEME_COLOR, style_content_panel_default, style_nav_sect_default,
 )
 from ui.components.config.events import (
     event_reset_app,event_next_btn,event_back_btn,
+)
+from ui.components.config.config import (
+  DATASET_LIST
 )
 
 
@@ -38,8 +42,9 @@ class PagesFactory:
     #  Work Panel Grid
     outer = QWidget()
     outer_layout = QGridLayout()
-    outer_layout = self.reuse_page_setting(inner_status_sect, inner_stat_sect, inner_nav_sect)
-    outer.setStyleSheet(style_content_panel_default)
+    outer_layout = self.reuse_page_setting(inner_status_sect=inner_status_sect,
+                                           inner_stat_sect=inner_stat_sect,
+                                           inner_nav_sect=inner_nav_sect)
     outer.setLayout(outer_layout)
     return outer
 
@@ -56,8 +61,10 @@ class PagesFactory:
     #  Work Panel Grid
     outer = QWidget()
     outer_layout = QGridLayout()
-    outer_layout = self.reuse_page_setting(inner_status_sect, inner_stat_sect, inner_nav_sect)
-    outer.setStyleSheet(style_content_panel_default)
+    outer_layout = self.reuse_page_setting(inner_status_sect=inner_status_sect,
+                                           inner_stat_sect=inner_stat_sect,
+                                           inner_nav_sect=inner_nav_sect)
+    outer.setStyleSheet(style_nav_sect_default)
     outer.setLayout(outer_layout)
     return outer
 
@@ -74,8 +81,10 @@ class PagesFactory:
     #  Work Panel Grid
     outer = QWidget()
     outer_layout = QGridLayout()
-    outer_layout = self.reuse_page_setting(inner_status_sect, inner_stat_sect, inner_nav_sect)
-    outer.setStyleSheet(style_content_panel_default)
+    outer_layout = self.reuse_page_setting(inner_status_sect=inner_status_sect,
+                                           inner_stat_sect=inner_stat_sect,
+                                           inner_nav_sect=inner_nav_sect)
+    outer.setStyleSheet(style_nav_sect_default)
     outer.setLayout(outer_layout)
     return outer
 
@@ -92,8 +101,10 @@ class PagesFactory:
     #  Work Panel Grid
     outer = QWidget()
     outer_layout = QGridLayout()
-    outer_layout = self.reuse_page_setting(inner_status_sect, inner_stat_sect, inner_nav_sect)
-    outer.setStyleSheet(style_content_panel_default)
+    outer_layout = self.reuse_page_setting(inner_status_sect=inner_status_sect,
+                                           inner_stat_sect=inner_stat_sect,
+                                           inner_nav_sect=inner_nav_sect)
+    outer.setStyleSheet(style_nav_sect_default)
     outer.setLayout(outer_layout)
     return outer
   
@@ -132,20 +143,16 @@ class PagesFactory:
   
 
   def create_stat_sect(self, target_page: int) -> QWidget | None:
-    
-    if target_page not in range(1, 5):
-      return
-    
-    MATCHING = {
-      "1": lambda: self.core_sect_import_dataset(),
-      "2": lambda: self.core_sect_clean_data(),
-      "3": lambda: self.core_sect_merge_tables(),
-      "4": lambda: self.core_sect_analyse_data()
-    }
-    
-    for index, fn in enumerate(MATCHING):
-      return fn if int(index) == target_page else None
-    
+      if target_page == 1:
+          return self.core_sect_import_dataset()
+      elif target_page == 2:
+          return self.core_sect_clean_data()
+      elif target_page == 3:
+          return self.core_sect_merge_tables()
+      elif target_page == 4:
+          return self.core_sect_analyse_data()
+      return None
+
     
   def create_nav_sect(self, 
                       enable_back: bool = False,
@@ -188,20 +195,56 @@ class PagesFactory:
 
 
   #  LAYER 4  -  SUBSTITUTE STATISTIC PANEL
-
+  
+  def browser_container(self) -> QWidget:
+      container_title = self.app_ref.comp_fact.build_label(lb_text="A.  Browser Section",
+                                                           lb_type="h3",
+                                                           lb_align=Qt.AlignLeft)
+      user_broswer = self.browser_comp_box(lb_text=DATASET_LIST[1]["data"], 
+                                          path_txt="C://Default/asdfdkasbfkdsabjkfgbkjdsabgkfa.jpg",
+                                          btn_text="Search",
+                                          btn_event=None)
+      comp_broswer = self.browser_comp_box(lb_text=DATASET_LIST[2]["data"], 
+                                            path_txt="C://Default/asdfdkasbfkdsabjkfgbkjdsabgkfa.jpg",
+                                            btn_text="Search",
+                                            btn_event=None)
+      activity_broswer = self.browser_comp_box(lb_text=DATASET_LIST[3]["data"], 
+                                              path_txt="C://Default/asdfdkasbfkdsabjkfgbkjdsabgkfa.jpg",
+                                              btn_text="Search",
+                                              btn_event=None)
+      #  scope: container
+      content = QWidget()
+      content_layout = QVBoxLayout()
+      content_layout.addWidget(container_title)
+      content_layout.addWidget(user_broswer)
+      content_layout.addWidget(comp_broswer)
+      content_layout.addWidget(activity_broswer)
+      content_layout.setAlignment(Qt.AlignTop) 
+      content_layout.setSpacing(12)
+      content_layout.setContentsMargins(0, 0, 0, 0) 
+      content.setLayout(content_layout)
+      
+      
+      return content
+    
+    
+    
+  #  CORE SECTION
   
   def core_sect_import_dataset(self) -> QWidget:
-    
-    #  outer
+    #  scope: core seciton
+    browser_container = self.browser_container()
     core_sect = QWidget()
-    core_sect_layout = QVBoxLayout()
-    # .....
+    core_sect_layout = QHBoxLayout()
+    core_sect_layout.addWidget(browser_container)
+    core_sect_layout.setSpacing(0)
+    core_sect_layout.setContentsMargins(0, 0, 0, 0)
     core_sect.setLayout(core_sect_layout)
     return core_sect
+    
   
   
   def core_sect_clean_data(self) -> QWidget:
-    
     #  outer
     core_sect = QWidget()
     core_sect_layout = QVBoxLayout()
@@ -227,8 +270,66 @@ class PagesFactory:
     core_sect_layout = QVBoxLayout()
     # .....
     core_sect.setLayout(core_sect_layout)
+    core_sect_layout.addStretch(0)
+    core_sect_layout.setContentsMargins(0, 0, 0, 0)
+    core_sect_layout.setSpacing(4)
     return core_sect
   
+   
+   
+  #  SUB-SECTIONS 
+  
+  
+  def browser_comp_box(self, 
+                       lb_text: str="", 
+                       path_txt: str="",
+                       btn_text:str="",
+                       btn_event: Callable | None =None):
+    #  components
+    title_label = self.app_ref.comp_fact.build_label(lb_text=lb_text,
+                                                     lb_type="h3",
+                                                     lb_txtcolor=THEME_COLOR["mid"],
+                                                     lb_align=Qt.AlignVCenter | Qt.AlignLeft)
+    path_label = self.app_ref.comp_fact.build_label(lb_text=path_txt,
+                                                    lb_type="p",
+                                                    lb_txtcolor=THEME_COLOR["mid"],
+                                                    lb_align=Qt.AlignVCenter | Qt.AlignLeft)
+    search_btn = self.app_ref.comp_fact.build_btn(btn_text=btn_text,
+                                                  btn_event=btn_event,
+                                                  btn_bgcolor=THEME_COLOR["white"],
+                                                  btn_txtcolor=THEME_COLOR["primary"],
+                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    #  path layer for spec styling
+    p_frame = QFrame()
+    p_frame_layout = QVBoxLayout()
+    p_frame.setStyleSheet("""
+        QFrame {
+            background-color: "#dddddd";
+            border-radius: 14px;
+            padding: 0px 4px;
+        }
+    """)
+    p_frame_layout.addWidget(path_label)
+    p_frame.setFixedWidth(320)
+    p_frame_layout.setContentsMargins(8, 0, 8, 0)
+    p_frame_layout.setSpacing(8)
+    p_frame.setLayout(p_frame_layout)
+    #  overall layer
+    frame = QFrame()
+    frame_layout = QGridLayout()
+    frame_layout.addWidget(title_label, 0, 0, 1, 2)
+    frame_layout.addWidget(p_frame, 1, 0, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(search_btn, 1, 1, alignment=Qt.AlignCenter)
+    frame_layout.setColumnStretch(1, 4)
+    frame_layout.setColumnStretch(2, 1)
+    frame_layout.setContentsMargins(0, 0, 0, 0)
+    frame_layout.setSpacing(8)
+    frame.setLayout(frame_layout)
+    return frame
+
+
+
+  #  OTHERS
   
   def reuse_page_setting(self,
                         inner_status_sect: QWidget,
