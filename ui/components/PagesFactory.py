@@ -4,11 +4,12 @@ from PyQt5.QtWidgets import (
     QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QVBoxLayout, QFrame,
     QFileDialog, QPushButton, QLabel
 )
+from core.config.paths import (PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT)
 from ui.components.config.styles import (
     THEME_COLOR, style_content_panel_default, style_nav_sect_default,
 )
 from ui.components.config.events import (
-    event_reset_app,event_next_btn,event_back_btn,
+    event_reset_app,event_next_btn,event_back_btn, browse_files
 )
 from ui.components.config.config import (
   DATASET_LIST
@@ -35,7 +36,11 @@ class PagesFactory:
     self.temp_table_user: pd.DataFrame = None
     self.temp_table_activity: pd.DataFrame = None
     self.temp_table_component: pd.DataFrame = None
-    
+    #  store temp labels (for reset)
+    #  learnt: emb to render the state again, unlike declared variables
+    self.temp_label_user: pd.DataFrame = None
+    self.temp_label_activity: pd.DataFrame = None
+    self.temp_label_component: pd.DataFrame = None
     
 
   #  LAYER 3  -  PAGES
@@ -200,9 +205,9 @@ class PagesFactory:
     nav.setLayout(nav_layout)
     return nav
   
-
-
-  #  LAYER 4  -  SUBSTITUTE STATISTIC PANEL
+   
+   
+  #  SUB-SECTIONS (PAGE 1)
   
   def create_browser_container(self) -> QWidget:
       container_title = self.app_ref.comp_fact.build_label(lb_text="A.  Browse Files",
@@ -228,62 +233,35 @@ class PagesFactory:
       content_layout.addWidget(comp_broswer)
       content_layout.addWidget(activity_broswer)
       content_layout.setAlignment(Qt.AlignTop) 
-      content_layout.setSpacing(8)
+      content_layout.setSpacing(4)
       content_layout.setContentsMargins(0, 8, 0, 0) 
       content.setLayout(content_layout)
       return content
     
     
-  def preview_file_dataset(self,
-                           target_path: str) -> pd.DataFrame:
-    #  identify the target again, becoz browsing comps has not trace
-    target_name: str | None = None
-    if target_path == self.temp_path_user:
-        flag = self.temp_path_user
-        target_name = "users"
-    elif target_path == self.temp_path_activity:
-        flag = self.temp_path_activity
-        target_name = "activities"
-    elif target_path == self.temp_path_component:
-        flag = self.temp_path_comp
-        target_name = "components"
-    else:
-        return
-    #  store the table temporarily, pending for confirmations
-    if target_name == "USERS":
-      self.temp_table_user = self.app_ref.data_loader.import_dataset(flag)
-    elif target_name == "ACTIVITIES":
-      self.temp_table_activity: pd.DataFrame = self.app_ref.data_loader.import_dataset(flag)
-    elif target_name == "COMPONENTS":
-      self.temp_table_component = self.app_ref.data_loader.import_dataset(flag)
-    
-  
   def create_preview_container(self) -> QFrame:
     title_label = self.app_ref.comp_fact.build_label(lb_text="B. Preview Datasets",
                                                   lb_type="h3",
                                                   lb_txtcolor=THEME_COLOR["primary"],
                                                   lb_align=Qt.AlignVCenter | Qt.AlignLeft)
     #   group frame
-    user_box= self.preview_comp_box(lb_text="Users Dataset", 
-                                  path_txt=self.temp_path_user,
-                                  btn_text="Preview",
-                                  btn_event=None)
-    activity_box = self.preview_comp_box(lb_text= "Activities Dataset", 
-                                  path_txt=self.temp_path_activity,
-                                  btn_text="Preview",
-                                  btn_event=None)
-    comp_box = self.preview_comp_box(lb_text= "Components Dataset", 
-                                  path_txt=self.temp_path_comp,
-                                  btn_text="Preview",
-                                  btn_event=None)
+    user_box= self.preview_comp_box(lb_text=DATASET_LIST[1]["data"], 
+                                    btn_text="Preview",
+                                    btn_event=lambda: self.event_preview_dataset(target_key=DATASET_LIST[1]["data"]))
+    comp_box = self.preview_comp_box(lb_text=DATASET_LIST[2]["data"], 
+                                        btn_text="Preview",
+                                        btn_event=lambda: self.event_preview_dataset(target_key=DATASET_LIST[2]["data"]))
+    activity_box = self.preview_comp_box(lb_text=DATASET_LIST[3]["data"], 
+                                      btn_text="Preview",
+                                      btn_event=lambda: self.event_preview_dataset(target_key=DATASET_LIST[3]["data"]))
     title_label.setFixedHeight(24)
     #  inner grid
     frame = QFrame()
     frame_layout = QGridLayout(frame)
     frame_layout.addWidget(title_label, 0, 0, 1, 3)
     frame_layout.addWidget(user_box, 1, 0)
-    frame_layout.addWidget(activity_box, 1, 1)
     frame_layout.addWidget(comp_box, 1, 2)
+    frame_layout.addWidget(activity_box, 1, 1)
     frame_layout.setColumnStretch(0, 1)
     frame_layout.setColumnStretch(1, 1)
     frame_layout.setColumnStretch(2, 1)
@@ -312,7 +290,6 @@ class PagesFactory:
     #  inner
     i_frame = QFrame()
     i_frame_layout = QVBoxLayout()
-    i_frame_layout.addWidget(import_btn)
     i_frame_layout.addWidget(import_btn, alignment=Qt.AlignVCenter | Qt.AlignLeft)
     i_frame_layout.setSpacing(0)
     i_frame_layout.setContentsMargins(24, 0, 0, 0)
@@ -326,9 +303,9 @@ class PagesFactory:
     frame_layout.setSpacing(8)
     return frame
   
-    
-    
-  #  CORE SECTION
+  
+  
+  #  SUB-SECTIONS (PAGE 4)
   
   def core_sect_import_dataset(self) -> QWidget:
     #  scope: core seciton
@@ -345,7 +322,6 @@ class PagesFactory:
     core_sect_layout.setContentsMargins(0, 0, 0, 0)
     core_sect.setLayout(core_sect_layout)
     return core_sect
-    
   
   
   def core_sect_clean_data(self) -> QWidget:
@@ -378,10 +354,10 @@ class PagesFactory:
     core_sect_layout.setContentsMargins(0, 0, 0, 0)
     core_sect_layout.setSpacing(4)
     return core_sect
-  
-   
-   
-  #  SUB-SECTIONS 
+    
+    
+    
+  #  MINOR COMPONENTS
   
   def browser_comp_box(self, 
                        lb_text: str="", 
@@ -402,9 +378,17 @@ class PagesFactory:
                                                   btn_bgcolor=THEME_COLOR["white"],
                                                   btn_txtcolor=THEME_COLOR["primary"],
                                                   btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    
+    #  update temp labels list
+    if lb_text == DATASET_LIST[1]["data"]:
+        self.temp_label_user = path_label
+    elif lb_text == DATASET_LIST[2]["data"]:
+        self.temp_label_comp = path_label
+    elif lb_text == DATASET_LIST[3]["data"]:
+        self.temp_label_activity = path_label
     #  learnt: .clicked is the signal itself, further connect to the function
-    search_btn.clicked.connect(lambda: self.broswse_files(target=path_label))
+    search_btn.clicked.connect(lambda: browse_files(app_ref=self.app_ref, 
+                                                    target=lb_text, 
+                                                    lb_widget=path_label))
     #  path layer for spec styling
     p_frame = QFrame()
     p_frame_layout = QVBoxLayout()
@@ -434,7 +418,6 @@ class PagesFactory:
   
   def preview_comp_box(self, 
                        lb_text: str="", 
-                       path_txt: str="",
                        btn_text:str="",
                        btn_event: Callable | None =None) -> QFrame:
       #  components
@@ -447,15 +430,13 @@ class PagesFactory:
                                                   btn_bgcolor=THEME_COLOR["white"],
                                                   btn_txtcolor=THEME_COLOR["primary"],
                                                   btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    #  avtivate btn event
-    preview_btn.clicked.connect(lambda: self.preview_file_dataset(target_path=path_txt))
     #  individual frame
     i_frame = QFrame()
     i_frame_layout = QVBoxLayout()
     i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
     i_frame_layout.addWidget(preview_btn, alignment=Qt.AlignCenter)
     i_frame_layout.setContentsMargins(0, 0, 0, 0)
-    i_frame_layout.setSpacing(4)
+    i_frame_layout.setSpacing(0)
     i_frame.setLayout(i_frame_layout)
     return i_frame
   
@@ -476,7 +457,7 @@ class PagesFactory:
                                                   btn_txtcolor=THEME_COLOR["primary"],
                                                   btn_hover_bgcolor=THEME_COLOR["white_hvr"])
     #  avtivate btn event
-    preview_btn.clicked.connect(lambda: self.preview_file_dataset(target_path=path_txt))
+    preview_btn.clicked.connect(lambda: self.event_preview_dataset(target_dataset=path_txt))
     #  individual frame
     i_frame = QFrame()
     i_frame_layout = QVBoxLayout()
@@ -488,9 +469,6 @@ class PagesFactory:
     return i_frame
 
 
-
-  #  OTHERS
-  
   def reuse_page_setting(self,
                         inner_status_sect: QWidget,
                         inner_stat_sect: QWidget,
