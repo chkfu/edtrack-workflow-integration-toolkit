@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QGridLayout
+    QApplication, QWidget, QGridLayout, QFileDialog
 )
 from ui.components.config.config import STEP_NAME_LIST
 
@@ -76,8 +76,33 @@ def event_next_btn(app_ref) -> None:
                                         txt_msg="Application failed to switch next steps and pages.")
   #  update tasks list
   update_workflow(app_ref, "next", curr_page)
+
+
+def broswe_files(app_ref, target):
+  # _ refers to file type, namely .csv, .json, .xml
+  file_name, _ = QFileDialog.getOpenFileName(app_ref.window, 
+                                          "Open File", 
+                                          "./data/raw", 
+                                          "CSV Files (*.csv);;JSON Files (*.json);;XML Files (*xml);;All Files (*)",
+                                          "CSV Files (*.csv)")
+  if file_name:
+    target.setText(str(file_name))
   
   
+
+
+#  SUPPORTING METHODS
+
+def validate_qstacks(app_ref) -> None:  
+  
+  if app_ref.page_stack is None:
+    app_ref.comp_fact.build_reminder_box(title="Error",
+                                        txt_msg="Page storage is not found.")
+  if app_ref.page_stack.count() < 1:
+    app_ref.comp_fact.build_reminder_box(title="Error",
+                                        txt_msg="Page storage is empty.")
+    
+
 def update_workflow(app_ref, 
                     target_action: str,
                     curr_page: int) -> None:
@@ -118,20 +143,3 @@ def update_workflow(app_ref,
     label_widget = list.itemWidget(list_item)
     if label_widget:
         label_widget.setText(txt)
-  
-  
-  
-  
-#  SUPPORTING METHODS
-
-def validate_qstacks(app_ref) -> None:  
-  
-  if app_ref.page_stack is None:
-    app_ref.comp_fact.build_reminder_box(title="Error",
-                                        txt_msg="Page storage is not found.")
-  if app_ref.page_stack.count() < 1:
-    app_ref.comp_fact.build_reminder_box(title="Error",
-                                        txt_msg="Page storage is empty.")
-    
-
-

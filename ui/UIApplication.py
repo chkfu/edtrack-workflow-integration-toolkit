@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 from ui.components import ComponentsFactory, LayoutFactory, PagesFactory
+from core import DataLoader
 
 
 #  CLASS
@@ -17,6 +18,7 @@ class UIApplication:
     self.comp_fact = None
     self.layout_fact = None
     self.pages_fact = None
+    self.data_loader = DataLoader()
     
     #  setup datasets
     self.df_users = None
