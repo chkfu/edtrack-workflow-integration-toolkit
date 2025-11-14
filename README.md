@@ -1,24 +1,29 @@
 ## Overview
 
-This project rebuild my earlier coursework from MSc Computer Science, University of York and focusing on **data handling**, **SQL database integration**, and **object-oriented programming (OOP)** in Python.
+A refactored version of my earlier coursework rebuilt into a modularised Python application. Redesigned the client-side workflow with a new PyQt5 interface, together with the server-side data-processing pipelines with modules of import/export, cleaning, transforming and visualising student activities logs.
 
-The practrice therefore focuses on the tasks in below:-
+It is designed to tailor-made a standard workflow for analysing student engagement and supports to export processed datasets into designated format and store persistent data in a SQL database.
 
-1. Building a **data analysis pipeline** with standard workflows for cleaning, preprocessing, restructuring, and visualisation.
-2. Refactoring sequential scripts into an **object-oriented structure** with maintainable components and modules.
-3. Managing **version control with Git CLI**, including commits, branching, and merges.
+</br>
+</br>
+
+## Features
+
+- Import/export datasets and connect to a SQL database
+- Form modular data-processing pipeline (Loader, Cleaner, Transformer, Visualiser, etc.)
+- Basic data visualisation with Matplotlib heatmaps and pivot tables
 
 </br>
 </br>
 
 ## Keywords
 
-![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
-![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-lightgrey?logo=pandas)
-![Matplotlib](https://img.shields.io/badge/Matplotlib-Visualisation-orange)
-![SQL](https://img.shields.io/badge/SQL-Database-yellow)
-![OOP](https://img.shields.io/badge/OOP-Design-blueviolet)
-![Git CLI](https://img.shields.io/badge/Git-CLI-black?logo=git)
+- python==3.10
+- pandas==2.3.3
+- numpy==2.3.4
+- PyQt5==5.15.11
+- mysql-connector-python==9.5.0
+- matplotlib==3.10.7
 
 </br>
 </br>
@@ -32,18 +37,17 @@ git clone https://github.com/chkfu/Practice_student-activities.git
 cd Practice_student-activities
 ```
 
-#### <i> 2a. Build Virtual Environment (macOS/Linux) </i>
+#### <i> 2. Build Virtual Environment </i>
 
 ```bash
+
 python -m venv .venv
+
+# macOS / Linux
 source .venv/bin/activate
-```
-
-#### <i> 2b. Build Virtual Environment (Windows) </i>
-
-```bash
-python -m venv .venv
+# Windows
 .venv\Scripts\activate
+
 ```
 
 #### <i> 3. Install Dependencies </i>
@@ -57,6 +61,21 @@ pip install -r requirements.txt
 ```bash
 python3 app.py
 ```
+
+</br>
+</br>
+
+## Project Structure
+
+</br>
+</br>
+
+## Demos
+
+</br>
+</br>
+
+## Future Improvement
 
 </br>
 </br>
