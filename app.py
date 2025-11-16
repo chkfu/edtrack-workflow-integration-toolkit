@@ -2,8 +2,9 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from models import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor, DataVisualiser
-from views import UserInterface
 from models.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
+from views import UserInterface
+from infra.DebugLogger import DebugLogger
 
 
 #  ENVIRONMENT
@@ -14,6 +15,10 @@ db_pw= os.getenv("DB_PW")
 db_host = os.getenv("DB_HOST")
 db_name = os.getenv("DB_NAME")
 db_port = os.getenv("DB_PORT")
+
+
+#  LOGGING
+logger = DebugLogger().setup_app_logger(file_name="debug.log")
 
 
 #  MAIN

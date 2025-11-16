@@ -78,7 +78,7 @@ In turn, printing helps to identify the location of the errors temporarily, but 
 
 For logging the error, specifically, ensure the logger has been set up at app.py entry point.
 ```
-imoprt logging
+from infra.DebugLogger import DebugLogger
 logger = DebugLogger().setup_app_logger(file_name="debug.log")
 ```
 

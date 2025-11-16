@@ -4,7 +4,14 @@ It bridges the UI interface and the deeper application logic,
 exercising the event instruction to normal applicaiton's rountine.
 """
 
+
+import logging
 from PyQt5.QtWidgets import QApplication
+
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -14,7 +21,7 @@ class AppController:
   #  CONSTRUCTOR
   def __init__(self, app_ref):
     self.app = app_ref
-    print("[AppController] initialised sucessfully.")
+    logger.info("[AppController] initialised sucessfully.")
 
 
   #  MEHTODS
@@ -56,6 +63,7 @@ class AppController:
                                                 txt_msg="The application has been reset.")
         
     except Exception as ex:
+      logger.error(f"{ex}", exc_info=True)
       raise SystemError(f"{ex}")
 
 
@@ -67,5 +75,6 @@ class AppController:
       if res:
         QApplication.quit()
     except Exception as ex:
+      logger.error(f"{ex}", exc_info=True)
       raise SystemError(f"{ex}")
     

@@ -8,7 +8,12 @@ temporary dataset loading.
 from PyQt5.QtWidgets import QFileDialog
 from views.components.config.views_config import DATASET_LIST
 import pandas as pd
+import logging
 
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 # CLASS
@@ -19,7 +24,7 @@ class FileController:
   
   def __init__(self, app_ref):
     self.app = app_ref
-    print("[FileController] initialised sucessfully.")
+    logger.info("[FileController] initialised sucessfully.")
     
     
     
@@ -27,34 +32,36 @@ class FileController:
   
   def browse_files(self, target, lb_widget) -> str | None:
     """ USE: indicate the designated file locaiton. """
-    
-    # _ refers to file type, namely .csv, .json, .xml
-    file_name, _ = QFileDialog.getOpenFileName(self.app.window, 
-                                            "Open File", 
-                                            "./data/raw", 
-                                            "CSV Files (*.csv);;JSON Files (*.json);;XML Files (*xml);;All Files (*)",
-                                            "CSV Files (*.csv)")
-    if not file_name:
-      return 
-    
-    lb_widget.setText(file_name)
-    
-    #  update temp path state, used to trace the correct dataframe to store
-    if target == DATASET_LIST[1]["data"]:
-        self.app.pages_fact.temp_path_user = file_name
-    elif target== DATASET_LIST[2]["data"]:
-        self.app.pages_fact.temp_path_activity = file_name
-    elif target == DATASET_LIST[3]["data"]:
-        self.app.pages_fact.temp_path_comp = file_name
-    
-    return file_name
+    try:
+      # _ refers to file type, namely .csv, .json, .xml
+      file_name, _ = QFileDialog.getOpenFileName(self.app.window, 
+                                              "Open File", 
+                                              "./data/raw", 
+                                              "CSV Files (*.csv);;JSON Files (*.json);;XML Files (*xml);;All Files (*)",
+                                              "CSV Files (*.csv)")
+      if not file_name:
+        return 
+      
+      lb_widget.setText(file_name)
+      
+      #  update temp path state, used to trace the correct dataframe to store
+      if target == DATASET_LIST[1]["data"]:
+          self.app.pages_fact.temp_path_user = file_name
+      elif target== DATASET_LIST[2]["data"]:
+          self.app.pages_fact.temp_path_activity = file_name
+      elif target == DATASET_LIST[3]["data"]:
+          self.app.pages_fact.temp_path_comp = file_name
+      logger.info(f"Browsed the selected file - {file_name}, {target}.")
+      return file_name
+
+    except Exception as ex:
+      logger.error(f"Failed to browse the selected file - {ex}", exc_info=True)
 
 
 #  ATTN: target_dataset would be critical debug point: type conflicts
   def preview_dataset(self,
                       target_key: str) -> pd.DataFrame:
     """ USE: store the designated dataset path to temp state """
-    
     #  validation
     path_map = {
       DATASET_LIST[1]["data"]: self.app.pages_fact.temp_path_user,
@@ -79,9 +86,11 @@ class FileController:
       elif target_key == DATASET_LIST[3]["data"]:
           self.app.temp_table_activity = temp_dataset
     #  1. sucess
+      logger.info(f"Previewed the selected file - {target_key}.")
       return temp_dataset
     #  2. failure
     except Exception as ex:
-        return self.app.comp_fact.build_reminder_box(title="Error",
-                                                    txt_msg="[Error] Failed to load the selected dataset.")
+      logger.error(f"Failed to browse the selected file - {ex}", exc_info=True)
+      return self.app.comp_fact.build_reminder_box(title="Error",
+                                                   txt_msg="[Error] Failed to load the selected dataset.")
     

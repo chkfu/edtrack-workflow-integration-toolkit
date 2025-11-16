@@ -6,7 +6,11 @@ preferred logic into user workflow.
 
 
 from views.components.config.views_config import STEP_NAME_LIST
+import logging
 
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -16,7 +20,7 @@ class NavController:
   #  CONSTRUCTOR
   def __init__(self, app_ref):
     self.app = app_ref
-    print("[NavController] initialised sucessfully.")
+    logger.info("[NavController] initialised sucessfully.")
 
 
   #  MEHTODS
@@ -62,9 +66,11 @@ class NavController:
     """ USE: check whether the pages workflow has been initialised. """
     
     if self.app.page_stack is None:
+      logger.error("Page stack is not found. Failed to operate the step flow.")
       self.app.comp_fact.build_reminder_box(title="Error",
                                           txt_msg="Page storage is not found.")
     if self.app.page_stack.count() < 1:
+      logger.error("No page is not found. Failed to operate the step flow.")
       self.app.comp_fact.build_reminder_box(title="Error",
                                           txt_msg="Page storage is empty.")
       
