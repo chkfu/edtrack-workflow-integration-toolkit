@@ -33,7 +33,7 @@ This file records the major version changes of the projects.
 - Fixed app crash during page switching with reset
 
 ### Removed
-- Deleted unused and deprecated dependencies and codes
+- Deleted unused and deprecated dependencies and modules
 
 
 
