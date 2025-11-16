@@ -1,5 +1,12 @@
 import pandas as pd
+import logging
 import hashlib
+
+
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -9,7 +16,7 @@ class DataPreprocessor:
   def __init__ (self, 
                 data_manager: object):
     self.data_manager = data_manager
-    print("[DataPreprocessor] initialised successfully.")
+    logger.info("[DataPreprocessor] initialised successfully.")
   
   
   #  METHODS  -  VALIDATION

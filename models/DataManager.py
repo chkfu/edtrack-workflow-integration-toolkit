@@ -1,12 +1,21 @@
 import pandas as pd
+import logging
 from models.config.monthList import MONNTH_LIST
 
+
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
+
+
+#  CLASS
 
 class DataManager:
   
   def __init__(self):
     self.col_name_list = None
-    print("[DataManager] initialised successfully.")
+    logger.info("[DataManager] initialised successfully.")
     
    
     
@@ -46,7 +55,7 @@ class DataManager:
     
     #  output
     output = target_df.drop(columns=[valid_col])
-    print(f"[DataManager] target column has been removed.")
+    logger.info(f"[DataManager] target column has been removed.")
     return output
     
     
@@ -69,7 +78,7 @@ class DataManager:
     
     #  output
     output = target_df[~matched_list]   # learnt: ~ sign as NOT operator
-    print(f"[DataManager] target row(s) has/have been removed.")
+    logger.info(f"[DataManager] target row(s) has/have been removed.")
     return output
   
       
@@ -89,7 +98,7 @@ class DataManager:
     
     # output
     output:  pd.DataFrame = target_df.rename(columns={valid_col: new_name_r})
-    print(f"[DataManager] the target column {target_col} has been renamed as {new_name_r}")
+    logger.info(f"[DataManager] the target column {target_col} has been renamed as {new_name_r}")
     return output
     
     
@@ -143,7 +152,7 @@ class DataManager:
       output=target_df_left.merge(target_df_right, left_on=valid_col_left, right_on=valid_col_right, how=merge_type, suffixes=("", "_y"))
     
     #  output
-    print("[DataManager] a new merged table has been created.")
+    logger.info("[DataManager] a new merged table has been created.")
     return output
     
   
@@ -170,7 +179,7 @@ class DataManager:
     
     #  output 
     output = pd.pivot_table(data=target_df, columns=valid_col_list, index=valid_row_list, values=valid_val, aggfunc=target_aggfunc, fill_value=target_filling)
-    print("[DataManager] a new pivot table has been created.")
+    logger.info("[DataManager] a new pivot table has been created.")
     return output
   
   

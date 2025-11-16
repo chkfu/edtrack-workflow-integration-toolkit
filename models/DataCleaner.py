@@ -1,6 +1,7 @@
 import re
 import statistics
 import pandas as pd
+import logging
 
   
   
@@ -12,7 +13,11 @@ DEFAULT_DTYPE_CONFIG: dict = {
   "datetime": ["Date", "Time"]
 }
   
-  
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
+
   
 #  CLASS
   
@@ -21,7 +26,7 @@ class DataCleaner:
   #  CONSTRUCTOR
 
   def __init__(self):
-    print("[DataCleaner] initialised successfully.")
+    logger.info("[DataCleaner] initialised successfully.")
     
     
     
@@ -39,11 +44,11 @@ class DataCleaner:
     if output is None:
       raise ValueError("[DataManager] target column is not found.")
     return output.strip()
-  
+
   
   def handle_duplication(self, target_df: pd.DataFrame) -> pd.DataFrame:
     output = target_df.drop_duplicates()
-    print("[DataCleaner] Duplicated record(s) has/have been removed.")
+    logger.info("[DataCleaner] Duplicated record(s) has/have been removed.")
     return output
   
   
@@ -90,6 +95,7 @@ class DataCleaner:
       return "Not Specified"
     return output
   
+  
   def manage_string_case(self, 
                          input: str, 
                          case: str="title") -> str:
@@ -121,6 +127,7 @@ class DataCleaner:
       series = series.fillna(temp_val)
     return series
   
+  
   def spec_cleaning_str(self, 
                         target_df: pd.DataFrame, 
                         target_col: str) -> pd.DataFrame:
@@ -132,6 +139,7 @@ class DataCleaner:
       output.loc[index, target_col] = temp_val
     return output
   
+  
   def spec_cleaning_int(self, 
                         target_df: pd.DataFrame, 
                         target_col: str) -> pd.DataFrame:
@@ -141,6 +149,7 @@ class DataCleaner:
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
     output[target_col] = output[target_col].round().astype("Int64")
     return output
+
 
   def spec_cleaning_float(self, 
                           target_df: pd.DataFrame, 
@@ -152,6 +161,7 @@ class DataCleaner:
     output[target_col] = output[target_col].round(2).astype("Float64")
     pd.options.display.float_format = "{:.2f}".format
     return output
+  
   
   def spec_cleaning_bool(self, 
                         target_df: pd.DataFrame, 
@@ -175,6 +185,7 @@ class DataCleaner:
                                               })
     output[target_col] = output[target_col].astype("boolean").fillna(False)
     return output
+  
   
   def spec_cleaning_datetime(self, 
               target_df: pd.DataFrame, 
@@ -200,27 +211,30 @@ class DataCleaner:
                           sort_item: str = "index", 
                           sort_ascending: bool | None = True) -> pd.DataFrame:
     
-    output = target_df.copy()
-    
-    #  validate data type
   
-    if not isinstance(target_df, pd.DataFrame):
-      raise TypeError("[DataCleaner] target dataframe must be a pandas DataFrame.")
-    if not isinstance(drop_missing, bool):
-      raise TypeError("[DataCleaner] the option for drop rows with missing cell must be boolean.")
+    #  validate data type
+    try:
+      output = target_df.copy()
+      if not isinstance(target_df, pd.DataFrame):
+        raise TypeError("[DataCleaner] target dataframe must be a pandas DataFrame.")
+      if not isinstance(drop_missing, bool):
+        raise TypeError("[DataCleaner] the option for drop rows with missing cell must be boolean.")
+      
+      #  execution
+      if drop_duplicated:
+        output  = self.handle_duplication(output)
+      if drop_missing:
+        output  = self.handle_na(output, drop_missing, na_subset_col)
+      if sort_item != "index" and sort_ascending is not None:
+        output  = self.handle_sort(output, sort_item, sort_ascending)
+      
+      #  output
+      if not output.empty:
+        logger.info("[DataCleaner] First cleaning is completed.")
+      return output
     
-    #  execution
-    if drop_duplicated:
-     output  = self.handle_duplication(output)
-    if drop_missing:
-     output  = self.handle_na(output, drop_missing, na_subset_col)
-    if sort_item != "index" and sort_ascending is not None:
-      output  = self.handle_sort(output, sort_item, sort_ascending)
-    
-    #  output
-    if not output.empty:
-      print("[DataCleaner] First cleaning is completed.")
-    return output
+    except Exception as ex:
+      logger.error("[DataCleaner] Failed to apply the first cleaniing.", exc_info=True)
   
   
   def second_data_cleaning(self, 
@@ -232,28 +246,30 @@ class DataCleaner:
   
     output = target_df.copy()
   
-    for dtype, list in default_dtype.items():
-      for col in list:
-        
-        if col not in target_df.columns:
-          continue
-        
-        if dtype == "string":
-          output = self.spec_cleaning_str(output, col)
-        if dtype == "integer":
-          output = self.spec_cleaning_int(output, col)
-        if dtype == "float":
-          output = self.spec_cleaning_float(output, col)
-        if dtype == "boolean":  
-          output = self.spec_cleaning_bool(output, col)  
-        if dtype == "datetime":
-          output = self.spec_cleaning_datetime(output, col)
-        print()
-                
-    #  output
-    if not output.empty:     
-      print("[DataCleaner] Second cleaning is completed.")    
-    return output
-    
-    
-    
+    try: 
+      for dtype, list in default_dtype.items():
+        for col in list:
+          
+          if col not in target_df.columns:
+            continue
+          
+          if dtype == "string":
+            output = self.spec_cleaning_str(output, col)
+          if dtype == "integer":
+            output = self.spec_cleaning_int(output, col)
+          if dtype == "float":
+            output = self.spec_cleaning_float(output, col)
+          if dtype == "boolean":  
+            output = self.spec_cleaning_bool(output, col)  
+          if dtype == "datetime":
+            output = self.spec_cleaning_datetime(output, col)
+          print()
+                  
+      #  output
+      if not output.empty:     
+        print("[DataCleaner] Second cleaning is completed.")    
+      return output
+      
+    except Exception as ex:
+      logger.error("[DataCleaner] Failed to apply the first cleaniing- {ex}.", exc_info=True)  
+      

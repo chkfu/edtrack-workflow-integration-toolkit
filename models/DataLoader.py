@@ -1,7 +1,13 @@
 import os
+import logging
 import dataframe_image as dfi
 import pandas as pd
 from matplotlib.figure import Figure
+
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -11,13 +17,13 @@ class DataLoader:
   #  Constructor
 
   def __init__(self):
-    print("[DataLoader] initialised successfully.")
+    logger.info("[DataLoader] initialised successfully.")
 
 
   #  Methods
 
   def import_dataset(self, path: str) -> pd.DataFrame:
-
+    try:
       #  check validity
       if not os.path.exists(path):
         raise FileNotFoundError("[DataLoader] import_dataset - the data path is not valid.")
@@ -34,15 +40,18 @@ class DataLoader:
         raise ValueError(f"[DataLoader] import_dataset - data path format is not .csv, .xml, or .json.")
       
       #  output
-      print("[DataLoader] upload files successfully.")
+      logger.info("[DataLoader] imported files successfully.")
       return output
+    
+    except Exception as ex:
+      logger.error("[DataLoader] Failed to upload the selected file.")
       
 
   def convert_dataset(self, dataframe: pd.DataFrame, fileType: str, fileName: str, destination: str = "output/tables/") -> None:
 
     try:
       if dataframe is None or dataframe.empty:
-        raise ValueError("DataLoader] failed to export diagram. pandas dataframe is missing.")
+        raise ValueError("[DataLoader] failed to export diagram. pandas dataframe is missing.")
       
       type_r = fileType.strip().lower()
       if type_r not in ["csv", "xml", "json", "png"]:
@@ -62,11 +71,11 @@ class DataLoader:
         raise ValueError("[DataLoader] import_dataset - data path format is not .csv, .xml, or .json.")
       
       #  output
-      print("[DataLoader] convert dataset successfully.")
+      logger.info("[DataLoader] convert dataset successfully.")
       return
     
     except Exception as ex:
-      raise Exception(f"[DataLoader] failed to convert diagram - {ex}")
+      logger.error(f"[DataLoader] failed to convert diagram - {ex}")
 
   
   
@@ -92,9 +101,9 @@ class DataLoader:
       else:
         raise ValueError("[DataLoader] import_dataset - data path format is not .png, .jpg, .tiff, .bmp")
       
-      print("[DataLoader] convert diagram successfully.")
+      logger.info("[DataLoader] convert diagram successfully.")
       return
       
     except Exception as ex:
-      raise Exception(f"[DataLoader] failed to convert diagram - {ex}")
+      logger.error(f"[DataLoader] failed to convert diagram - {ex}")
 

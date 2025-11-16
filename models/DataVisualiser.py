@@ -1,6 +1,12 @@
 import pandas as pd
+import logging
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -8,7 +14,7 @@ import seaborn as sns
 class DataVisualiser:
   
   def __init__ (self):
-    print("[DataVisualiser] initialised successfully.")
+    logger.info("[DataVisualiser] initialised successfully.")
     
     
   #  METHODS  -  DRAWING
@@ -46,8 +52,10 @@ class DataVisualiser:
       plt.tight_layout()
     
       figure = axes.get_figure()
+      logger.info("[DataVisualiser] New correlation heatmap generated sucessfully.")
       return figure, axes
     
     except Exception as ex:
-      raise Exception(f"[Error] failed to draw heatmap: {ex}")
+      logger.error(f"[DataVisualiser] failed to draw heatmap: {ex}", exc_info=True)
+      raise
     

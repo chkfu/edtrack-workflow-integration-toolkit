@@ -85,6 +85,7 @@ class NavController:
     
     #  error handling
     if target_action_r not in ["back", "next", "reset"]:
+      logger.warning("the instructed navigation is not in the option. Unable to execute.")
       return
     
     #  update the static list first
