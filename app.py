@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from core import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor, DataVisualiser
-from ui import UIApplication
+from views import UserInterface
 from core.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
 
 
@@ -298,8 +298,8 @@ def main():
   
 #  UI -  PyQt5
   
-ui_app = UIApplication()
-ui_app.run_app()
+user_interface = UserInterface()
+user_interface.run_app()
 
 
 

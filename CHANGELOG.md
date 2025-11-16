@@ -12,28 +12,23 @@ summaries for further maintenance.
 
 -->
 
-# Changelog.md
+# CHAGELOG
 
 This file records the major version changes of the projects.
 
-<br/>
+
 
 ## [0.1.1] - 2025-11-14
 
 ### Added
-
 - Added documentation files
 
 ### Edit
-
 - Updated README
 
-<br/>
+
 
 ## [0.1.0] - 2025-10-19
 
 ### Added
-
 - Initialised the project
-
-<br/>
