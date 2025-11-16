@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QVBoxLayout, QFrame,
     QFileDialog, QPushButton, QLabel
 )
-from core.config.paths import (PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT)
+from models.config.paths import (PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT)
 from ui.components.config.styles import (
     THEME_COLOR, style_content_panel_default, style_nav_sect_default,
 )

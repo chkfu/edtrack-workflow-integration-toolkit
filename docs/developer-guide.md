@@ -104,6 +104,41 @@ If the warning still exists, select the correct interpreter.
 Import warnings should disappear if correct version has been selected.
 
 
+### B. Missing Module
+
+
+After renaming, the ModuleNotFoundError may exist if the files still refer to the old path name. 
+
+
+1.  Case 1  -  changes not adopted
+
+Make sure the new name has been adopted and save completely.
+```
+ModuleNotFoundError: No module named 'core'
+```
+
+You may save and close all of the files. The issue will be resolved once the change has been made sucessfully. 
+
+
+2.  Case 2 - imported path not updated
+
+If a module has been renamed, but the import paths may not automatically updated and refer to the old name. Please check and ensure the new path name has been applied in these statements.
+
+```
+#  Before change:
+from core.config.monthList import MONNTH_LIST
+
+#  After change:
+from models.config.monthList import MONNTH_LIST
+```
+
+3.  Testing
+
+Please run the program again and see whether the error is still existed.
+```
+python3 app.py
+```
+
 
 ___
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from core.config.monthList import MONNTH_LIST
+from models.config.monthList import MONNTH_LIST
 
 
 class DataManager:

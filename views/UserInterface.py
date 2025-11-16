@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
 from controllers import AppController, NavController, FileController
-from core import DataLoader
+from models import DataLoader
 
 
 #  CLASS

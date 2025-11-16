@@ -1,9 +1,9 @@
 import os
 import pandas as pd
 from dotenv import load_dotenv
-from core import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor, DataVisualiser
+from models import DataLoader, SQLConnector, DataManager, DataCleaner, DataPreprocessor, DataVisualiser
 from views import UserInterface
-from core.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
+from models.config.paths import PATH_DATA_USER, PATH_DATA_ACTIVITY, PATH_DATA_COMPONENT
 
 
 #  ENVIRONMENT

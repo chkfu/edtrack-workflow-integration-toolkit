@@ -1,7 +1,7 @@
 import re
 import mysql.connector
 from mysql.connector import Error
-from core.config.SQLCommands import SQL_COMMANDS
+from models.config.SQLCommands import SQL_COMMANDS
 
 
 #  CLASS

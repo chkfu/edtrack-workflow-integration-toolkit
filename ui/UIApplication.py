@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 from ui.components import ComponentsFactory, LayoutFactory, PagesFactory
-from core import DataLoader
+from models import DataLoader
 
 
 #  CLASS
