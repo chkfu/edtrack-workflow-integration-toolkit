@@ -16,7 +16,7 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 </br>
 </br>
 
-## Keywords
+## Dependencies
 
 - python==3.10
 - pandas==2.3.3
@@ -75,13 +75,9 @@ python3 app.py
 </br>
 </br>
 
-## Future Improvement
-
-</br>
-</br>
 
 ---
 
 <i> Author: kchan </i>
 </br>
-<i> Last Updated: 3 November 2025 </i>
+<i> Last Updated: 16 November 2025 </i>
