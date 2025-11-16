@@ -66,10 +66,48 @@ ___
 
 ## IV. Error Handling
 
+### A. Logging 
+
+1. Using Logging, prevent print 
+
+Logging records important information in a log sheet, helping developers to traceback potential issues with designated checkpoint and timeline. It enables to categorise the logged items in different levels for debugging. 
+
+In turn, printing helps to identify the location of the errors temporarily, but it is unable to support programmers with concrete details. 
+
+2. Logger Setup 
+
+For logging the error, specifically, ensure the logger has been set up at app.py entry point.
+```
+imoprt logging
+logger = DebugLogger().setup_app_logger(file_name="debug.log")
+```
+
+You also need to call the logger again before you place the log in specific modules. For error logging, make sure 'exc_info=True' for trace message:
+```
+import logging
+log = logging.getLogger("APPLICATION")
+log.error(f"[AppController] failed to reset applicaiton - {ex}", exc_info=True)
+```
+
+3. Logging Criteria 
+
+Our practice based on the application workflow: 
+1. logging in script 
+2. reminding user with UI notifications 
+3. raising critical errors, terminating the workflow. 
+
+Among various moduls, the criteria:
+- models: both logging and raised error, ensure accurate data transformation 
+- views: UI notification preferred for consisstency, except logging for system crashes. 
+- controllers: logging cross-domain events preferred. Preventing the intersection beteen different logics impacted the board services consistencies. 
+- i/o: logging all pass and failed conditions, enabling further tracing errors that happened in the system entry and exit points.
 
 
+4. Logging Management
 
+The logger is packaged into a reusable module in the infra folder.  It prevents to create duplicated codes across the system, as well as considering future maintainece and expansion of the system structure.
 
+The log sheet will be store in the same folder for the logical file management.
 
 ___
 
