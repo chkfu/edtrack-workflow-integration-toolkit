@@ -5,7 +5,7 @@ preferred logic into user workflow.
 """
 
 
-from views.components.config.config import STEP_NAME_LIST
+from views.components.config.views_config import STEP_NAME_LIST
 
 
 

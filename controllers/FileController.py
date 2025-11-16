@@ -6,7 +6,7 @@ temporary dataset loading.
 
 
 from PyQt5.QtWidgets import QFileDialog
-from views.components.config.config import DATASET_LIST
+from views.components.config.views_config import DATASET_LIST
 import pandas as pd
 
 

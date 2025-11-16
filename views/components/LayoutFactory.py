@@ -4,10 +4,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QListWidgetItem
 )
 from PyQt5.QtGui import QFont
-from views.components.config.styles import (
+from views.components.config.views_styles import (
   THEME_COLOR, style_wd_default, style_topbar_default, style_wd_default_2, 
   style_sidebar_box_default)
-from views.components.config.config import STEP_NAME_LIST, DATASET_LIST
+from views.components.config.views_config import STEP_NAME_LIST, DATASET_LIST
 
 
 #  CLASS
@@ -27,10 +27,10 @@ class LayoutFactory:
     
     #  setup page stack
     self.page_stack = QStackedWidget()
-    self.page_1 = self.app.pages_fact.create_page_1()
-    self.page_2 = self.app.pages_fact.create_page_2()
-    self.page_3 = self.app.pages_fact.create_page_3()
-    self.page_4 = self.app.pages_fact.create_page_4()
+    self.page_1 = self.app.pages_fact.page_import.merge_sections()
+    self.page_2 = self.app.pages_fact.page_clean.merge_sections()
+    self.page_3 = self.app.pages_fact.page_merge.merge_sections()
+    self.page_4 = self.app.pages_fact.page_analyse.merge_sections()
 
     #  setup visualise list stack - widget based
     self.task_list_widget = None

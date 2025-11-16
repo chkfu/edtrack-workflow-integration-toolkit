@@ -1,7 +1,7 @@
 from typing import Callable
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QPushButton, QMessageBox
-from views.components.config.styles import (
+from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
     style_sidebar_listItem_default
 )

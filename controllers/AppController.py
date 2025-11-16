@@ -42,11 +42,8 @@ class AppController:
           self.app.pages_fact.temp_table_user = None
           self.app.pages_fact.temp_table_activity = None
           self.app.pages_fact.temp_table_component = None
-          #  view: PagesFactory reset
-          self.app.pages_fact.temp_label_user.setText("")
-          self.app.pages_fact.temp_label_comp.setText("")
-          self.app.pages_fact.temp_label_activity.setText("")  
-          
+          #  reset temp state in import page
+          self.app.pages_fact.page_import.page_refresh()
           #  follow-up event
           self.app.page_stack.setCurrentIndex(0)
         
