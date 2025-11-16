@@ -85,8 +85,8 @@ logger = DebugLogger().setup_app_logger(file_name="debug.log")
 You also need to call the logger again before you place the log in specific modules. For error logging, make sure 'exc_info=True' for trace message:
 ```
 import logging
-log = logging.getLogger("APPLICATION")
-log.error(f"[AppController] failed to reset applicaiton - {ex}", exc_info=True)
+logger = logging.getLogger("APPLICATION")
+logger.error(f"[AppController] failed to reset applicaiton - {ex}", exc_info=True)
 ```
 
 3. Logging Criteria 

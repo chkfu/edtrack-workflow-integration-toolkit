@@ -21,8 +21,8 @@ class PageImport(PageTemplate):
     
   #  METHODS
   def merge_sections(self):
-    #  status section
-    inner_status_sect = self.create_title_sect(sect_title="Step 1: Import Datasets", 
+    #  title section
+    inner_title_sect = self.create_title_sect(sect_title="Step 1: Import Datasets", 
                                                 sect_des="This step reads the dataset, checks its structure, and prepares it for cleaning and processing.")
     #  statistic section
     inner_stat_sect = self.create_stat_sect(target_page=1)
@@ -31,7 +31,7 @@ class PageImport(PageTemplate):
     
     #  Work Panel Grid
     page = QWidget()
-    page_layout = self.reuse_page_setting(inner_status_sect=inner_status_sect,
+    page_layout = self.reuse_page_setting(inner_title_sect=inner_title_sect,
                                            inner_stat_sect=inner_stat_sect,
                                            inner_nav_sect=inner_nav_sect)
     page.setLayout(page_layout)

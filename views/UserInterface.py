@@ -1,8 +1,14 @@
 import sys
+import logging
 from PyQt5.QtWidgets import QApplication, QWidget
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
 from controllers import AppController, NavController, FileController
 from models import DataLoader
+
+
+#  LOGGER
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -67,8 +73,10 @@ class UserInterface:
       self.setup_app()
       widget_window = self.layout_fact.create_window()
       self.finalise_app(widget=widget_window)
+      logger.info("User Interface started to run sucessfully.")
       
     except Exception as ex:
+      logger.error("User Interface crashed", exc_info=True)
       self.comp_fact.build_reminder_box(title="Error",
                                         txt_msg="Error 500: Please contact the administrator for your further action.")
       raise SystemError(f"{ex}")

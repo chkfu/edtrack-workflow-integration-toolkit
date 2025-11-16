@@ -18,7 +18,7 @@ class PageAnalyse(PageTemplate):
   #  METHODS  -  MAIN
   
   def merge_sections(self):
-    #  status section
+    #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 4: Analyse Data", 
                                                 sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
     #  statistic section

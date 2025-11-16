@@ -41,14 +41,14 @@ class PageTemplate:
                                                     lb_align=Qt.AlignLeft, 
                                                     lb_wrap=True)  
     # outer
-    status_sect = QWidget()
-    status_sect_layout  = QVBoxLayout()
-    status_sect_layout.addWidget(title)
-    status_sect_layout.addWidget(description)
-    status_sect_layout.setContentsMargins(0, 0, 0, 0)
-    status_sect_layout.setSpacing(0)
-    status_sect.setLayout(status_sect_layout)
-    return status_sect
+    title_sect = QWidget()
+    title_sect_layout  = QVBoxLayout()
+    title_sect_layout.addWidget(title)
+    title_sect_layout.addWidget(description)
+    title_sect_layout.setContentsMargins(0, 0, 0, 0)
+    title_sect_layout.setSpacing(0)
+    title_sect.setLayout(title_sect_layout)
+    return title_sect
   
 
   def create_stat_sect(self, target_page: int) -> QWidget | None:
