@@ -134,9 +134,13 @@ class DataManager:
     
     #  validate merge type
     if formatted_merge_type not in ["left", "right", "inner", "outer", "cross"]:
-      raise ValueError(f"[DataManager] failed to merge with {merge_type}. only accepted: inner, outer, left, right, and cross.")
+      err_msg = f"[DataManager] failed to merge with {merge_type}. only accepted: inner, outer, left, right, and cross."
+      logger.warning(err_msg)
+      raise ValueError(err_msg)
     if formatted_merge_type == "cross" and formatted_col_left == "index" and formatted_col_right == "index":
-      raise ValueError(f"[DataManager] cross merge method is not aapplicable for join indice.")
+      err_msg = f"[DataManager] cross merge method is not aapplicable for join indice."
+      logger.warning(err_msg)
+      raise ValueError(err_msg)
     
     #  merge tables
     if formatted_col_left == "index" and formatted_col_right== "index":

@@ -49,8 +49,7 @@ class LayoutFactory:
     print("[LayoutFactory] initialised successfully.") 
     
     
-      
-  #  LAYER 2 -  SIDEBAR
+    #  LAYER 3 -  SIDEBAR
 
   def create_task_sect(self) -> QWidget:
     #  sections

@@ -101,6 +101,7 @@ class DataCleaner:
                          case: str="title") -> str:
     case = case.lower()
     if case not in ["upper", "lower", "capitalize", "capitalise", "title"]:
+      logger.warning("the selected option is not valid text case.")
       return input.title()
     if case == "upper":
       output =  input.upper()
@@ -116,6 +117,7 @@ class DataCleaner:
                     series: pd.Series, 
                     filling: str="median") -> pd.Series:   
     if filling.lower() not in ["mean", "median", "mode"]:
+      logger.warning("the designated filling unit is not a valid option.")
       return series
     if filling == "mean":
       temp_val = series.mean()
@@ -242,7 +244,9 @@ class DataCleaner:
                            default_dtype: dict = DEFAULT_DTYPE_CONFIG) -> pd.DataFrame:
     
     if not isinstance(default_dtype, dict):
-      raise TypeError("[DataCleaner] the input default data types config is not in dict format.")
+      err_msg = "[DataCleaner] the input default data types config is not in dict format."
+      logger.warning(err_msg)
+      raise TypeError(err_msg)
   
     output = target_df.copy()
   
@@ -251,6 +255,7 @@ class DataCleaner:
         for col in list:
           
           if col not in target_df.columns:
+            logger.warning("the selected column is not found in the dataset.")
             continue
           
           if dtype == "string":
@@ -263,11 +268,10 @@ class DataCleaner:
             output = self.spec_cleaning_bool(output, col)  
           if dtype == "datetime":
             output = self.spec_cleaning_datetime(output, col)
-          print()
                   
       #  output
       if not output.empty:     
-        print("[DataCleaner] Second cleaning is completed.")    
+        logger.info("[DataCleaner] Second cleaning is completed.")    
       return output
       
     except Exception as ex:

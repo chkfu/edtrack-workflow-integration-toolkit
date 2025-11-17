@@ -55,7 +55,9 @@ class DataLoader:
       
       type_r = fileType.strip().lower()
       if type_r not in ["csv", "xml", "json", "png"]:
-        raise ValueError("[DataLoader] incorrect file type has been provided. please try again.")
+        err_msg = "[DataLoader] incorrect file type has been provided. please try again."
+        logger.warning(err_msg)
+        raise ValueError(err_msg)
       
       #  check job types
       if type_r == "csv":
@@ -86,7 +88,9 @@ class DataLoader:
     
     type_r = fileType.strip().lower()
     if type_r not in ["png", "jpg", "tiff", "bmp"]:
-      raise ValueError("[DataLoader] incorrect file type has been provided. please try again.")
+      err_msg = "[DataLoader] incorrect file type has been provided. please try again."
+      logger.warning(err_msg)
+      raise ValueError(err_msg)
     
     
     try:

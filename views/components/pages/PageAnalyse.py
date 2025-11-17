@@ -1,6 +1,12 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout
 from views.components.config.views_styles import style_nav_sect_default
 from views.components.pages.PageTemplate import PageTemplate
+import logging
+
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -12,7 +18,7 @@ class PageAnalyse(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
-    print("[PageAnalyse] initialised successfully.")
+    logger.info("[PageAnalyse] initialised successfully.")
     
     
   #  METHODS  -  MAIN

@@ -4,7 +4,12 @@ from PyQt5.QtWidgets import (
 )
 from views.components.config.views_styles import THEME_COLOR, style_nav_sect_default
 from views.components.config.views_config import DATASET_LIST
+import logging
 
+
+#  LOGGING
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -14,7 +19,7 @@ class PageTemplate:
   #  CONSTRUCTOR
   def __init__(self, app_ref):
     self.app = app_ref
-    print("[PageTemplate] initialised successfully.")
+    logger.info("[PageTemplate] initialised successfully.")
     
     
   #  METHODS
@@ -149,39 +154,6 @@ class PageTemplate:
     nav.setStyleSheet(style_nav_sect_default)
     nav.setLayout(nav_layout)
     return nav
-  
-  
-  def create_preview_container(self) -> QFrame:
-    title_label = self.app.comp_fact.build_label(lb_text="B. Preview Datasets",
-                                                  lb_type="h3",
-                                                  lb_txtcolor=THEME_COLOR["primary"],
-                                                  lb_align=Qt.AlignVCenter | Qt.AlignLeft)
-    #   group frame
-    user_box= self.preview_comp_box(lb_text=DATASET_LIST[1]["data"], 
-                                    btn_text="Preview",
-                                    btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[1]["data"]))
-    comp_box = self.preview_comp_box(lb_text=DATASET_LIST[2]["data"], 
-                                        btn_text="Preview",
-                                        btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[2]["data"]))
-    activity_box = self.preview_comp_box(lb_text=DATASET_LIST[3]["data"], 
-                                      btn_text="Preview",
-                                      btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[3]["data"]))
-    title_label.setFixedHeight(24)
-    #  inner grid
-    frame = QFrame()
-    frame_layout = QGridLayout(frame)
-    frame_layout.addWidget(title_label, 0, 0, 1, 3)
-    frame_layout.addWidget(user_box, 1, 0)
-    frame_layout.addWidget(comp_box, 1, 2)
-    frame_layout.addWidget(activity_box, 1, 1)
-    frame_layout.setColumnStretch(0, 1)
-    frame_layout.setColumnStretch(1, 1)
-    frame_layout.setColumnStretch(2, 1)
-    frame_layout.setRowStretch(0, 0)
-    frame_layout.setRowStretch(1, 0)
-    frame_layout.setContentsMargins(0, 16, 0, 0)
-    frame_layout.setSpacing(8)
-    return frame
   
   
   def reuse_page_setting(self,
