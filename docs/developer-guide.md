@@ -52,19 +52,93 @@ ___
 ### E. Technology Choice
 
 
-
 ___
 
 
 ## III。Project Structure
 
+The application adopts MVC pattern. 
 
+```
+models/        # Data layer: database management, data transformation 
+views/         # UI layer: all UI components and structure
+controllers/   # logic layer: bridge views and models, manage user workflow 
+docs/          # internal documentation and architectural diagrams
+infra/         # Infrastructure: logging
+scripts/       # One-off or less important codes 
+output/        # File generation: exported files and reports
+data/          # Raw input or interim processed data
+```
+
+Each modules therefore specialise their own duties and logically grouped, supporting the principle of "high cohersion" and "low coupling". This methods helps developers to save time and effort on future maintenance and testing, and enhances system's consistency and reliability with minimal impacts one another.
 
 
 ___
 
 
-## IV. Error Handling
+## IV. UI Guide
+
+### A. Rationale
+
+PyQt5 interfaces constructed by layers of widgets and layouts. Layout manages geometry, while widget manage appearance of styling. Widgets can adopt one layout, and the layout therein contains the subordinated widgets.
+
+The below codes is the minimal example to show how to build a container with a "Next" button inside:
+
+```
+def create_btn_container(self):
+    btn = QPushButton("Next")
+    box = QFrame()
+    layout = QHBoxLayout()
+    layout.addWidget(btn)   # ✅ assign the button into layout
+    box.setLayout(layout)   # ✅ widget adopt the layout
+    return box
+```
+
+However, widget is unable to adopt another widget, as well as layout
+```
+def create_btn_container(self):
+    btn = QPushButton("Next")
+    box = QFrame()
+
+    box.addWidget(btn)   # ❌ widget has no .addWidget method
+    box.setLayout(btn)   # ❌ btn is not a layout
+    
+    layout_1 = QHBoxLayout()
+    layout_2 = QVBoxLayout()
+    layout_1.addWidget(box_layout_2)  # ❌ layout_2 is not a widget
+    layout_1.setLayout()  # ❌ layout has no .setLayout method
+    return box
+```
+
+
+### B. Return Widget that being added
+
+Returning an adopted widget will be resulted in an error, as those items will be gone with no trace. Make sure that the outest widget (highest level) should be returned:
+
+```
+def create_btn_container(self):
+    btn = QPushButton("Next")
+    box = QFrame()
+    layout = QHBoxLayout()
+    layout.addWidget(btn) 
+    box.setLayout(layout) 
+    return btn   # ❌ the btn is no longer existed
+```
+
+
+### C. Table Missing Values
+
+PyQt5 tables requires stringify data for visualisation; otherwise, the values will be gone missing.  Convert all values into string before you add them into the table body.
+
+```
+item = str(target_df.iloc[row, col])  # ✅ convert the value to string first
+table.setItem(row, col, QTableWidgetItem(item))
+```
+
+___
+
+
+## V. Error Handling
 
 ### A. Logging 
 
@@ -98,7 +172,7 @@ Our practice based on the application workflow:
 
 Among various moduls, the criteria:
 - models: both logging and raised error, ensure accurate data transformation 
-- views: UI notification preferred for consisstency, except logging for system crashes. 
+- views: UI notification preferred for tency, except logging for system crashes. 
 - controllers: logging cross-domain events preferred. Preventing the intersection beteen different logics impacted the board services consistencies. 
 - i/o: logging all pass and failed conditions, enabling further tracing errors that happened in the system entry and exit points.
 
@@ -112,8 +186,7 @@ The log sheet will be store in the same folder for the logical file management.
 ___
 
 
-
-## V. Trouble-shooting
+## VI. Trouble-shooting
 
 ### A. Missing imports (dependencies, eg. PyQt5)
 
@@ -164,10 +237,10 @@ If a module has been renamed, but the import paths may not automatically updated
 
 ```
 #  Before change:
-from core.config.monthList import MONNTH_LIST
+from core.config.monthList import MONTH_LIST
 
 #  After change:
-from models.config.monthList import MONNTH_LIST
+from models.config.monthList import MONTH_LIST
 ```
 
 3.  Testing
@@ -177,15 +250,14 @@ Please run the program again and see whether the error is still existed.
 python3 app.py
 ```
 
+___
+
+
+## VII. Limitation
+
+
 
 ___
 
 
-## VI. Limitation
-
-
-
-___
-
-
-## V. Future Improvements
+## VIII. Future Improvements

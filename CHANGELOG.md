@@ -18,18 +18,30 @@ This file records the major version changes of the projects.
 
 
 
+## [0.1.2] - 
+
+### Added
+- Added logging for error handling
+
+### Edited
+- Updated documentation
+- Refactored one-off codes into scripts
+
+
+
+
 ## [0.1.1] - 2025-11-16
 
 ### Added
 - Added documentation files
 - Added MVC structure for logic seperation
 
-### Edit
+### Edited
 - Updated README
 - Refactored pages classes for modularisation
 - Refactored events into controllers for MVC structure
 
-### Fix
+### Fixed
 - Fixed app crash during page switching with reset
 
 ### Removed

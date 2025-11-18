@@ -65,8 +65,8 @@ class FileController:
     #  validation
     path_map = {
       DATASET_LIST[1]["data"]: self.app.pages_fact.temp_path_user,
-      DATASET_LIST[2]["data"]: self.app.pages_fact.temp_path_comp,
-      DATASET_LIST[3]["data"]: self.app.pages_fact.temp_path_activity
+      DATASET_LIST[2]["data"]: self.app.pages_fact.temp_path_activity,
+      DATASET_LIST[3]["data"]: self.app.pages_fact.temp_path_comp
     }  
     if target_key not in path_map:
       return self.app.comp_fact.build_reminder_box(title="Error",
@@ -80,11 +80,24 @@ class FileController:
     try:
       temp_dataset = self.app.data_loader.import_dataset(target_path)
       if target_key == DATASET_LIST[1]["data"]:
-          self.app.temp_table_user = temp_dataset
+        print(temp_dataset)
+        self.app.temp_table_user = temp_dataset
+        self.app.comp_fact.build_popup_wd(wd_title="Preview",
+                                          popup_title="Preview: User Dataset",
+                                          popup_content=self.app.comp_fact.build_table_view(
+                                            target_df=self.app.temp_table_user))
       elif target_key == DATASET_LIST[2]["data"]:
-          self.app.temp_table_component = temp_dataset
+        self.app.temp_table_activity = temp_dataset
+        self.app.comp_fact.build_popup_wd(wd_title="Preview",
+                                          popup_title="Preview: Activity Dataset",
+                                          popup_content=self.app.comp_fact.build_table_view(
+                                            target_df=self.app.temp_table_activity))
       elif target_key == DATASET_LIST[3]["data"]:
-          self.app.temp_table_activity = temp_dataset
+        self.app.temp_table_component = temp_dataset
+        self.app.comp_fact.build_popup_wd(wd_title="Preview",
+                                          popup_title="Preview: Component Dataset",
+                                          popup_content=self.app.comp_fact.build_table_view(
+                                            target_df=self.app.temp_table_component))
     #  1. sucess
       logger.info(f"Previewed the selected file - {target_key}.")
       return temp_dataset

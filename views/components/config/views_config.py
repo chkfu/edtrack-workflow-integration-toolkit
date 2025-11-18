@@ -27,11 +27,11 @@ DATASET_LIST = [
     "status": False
   },
   {
-    "data": "Dataset - Components",
+    "data": "Dataset - Activities",
     "status": False
   },
   {
-    "data": "Dataset - Activities",
+    "data": "Dataset - Components",
     "status": False
   },
   {
