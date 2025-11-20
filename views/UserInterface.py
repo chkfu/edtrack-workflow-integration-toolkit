@@ -2,7 +2,7 @@ import sys
 import logging
 from PyQt5.QtWidgets import QApplication, QWidget
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
-from controllers import AppController, NavController, FileController
+from controllers import AppController, NavController, FileController, ValidController
 from models import DataLoader
 
 
@@ -37,6 +37,7 @@ class UserInterface:
     self.app_cont = AppController(self)
     self.nav_cont = NavController(self)
     self.file_cont = FileController(self)
+    self.valid_cont = ValidController(self)
     
     #  setup datasets
     self.df_users = None

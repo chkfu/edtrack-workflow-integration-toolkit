@@ -6,7 +6,7 @@ temporary dataset loading.
 
 
 from PyQt5.QtWidgets import QFileDialog
-from views.components.config.views_config import DATASET_LIST
+from views.components.config.views_config import DATASET_LIST, RAW_COL_SCHEMA
 import pandas as pd
 import logging
 
@@ -79,8 +79,11 @@ class FileController:
     #  store target dataset in temp states for preview
     try:
       temp_dataset = self.app.data_loader.import_dataset(target_path)
+      if not self.app.valid_cont.validate_preview_df(lb_text=target_key, 
+                                                     target_state=temp_dataset,
+                                                     target_schema=RAW_COL_SCHEMA):
+        return
       if target_key == DATASET_LIST[1]["data"]:
-        print(temp_dataset)
         self.app.temp_table_user = temp_dataset
         self.app.comp_fact.build_popup_wd(wd_title="Preview",
                                           popup_title="Preview: User Dataset",
@@ -106,4 +109,8 @@ class FileController:
       logger.error(f"Failed to browse the selected file - {ex}", exc_info=True)
       return self.app.comp_fact.build_reminder_box(title="Error",
                                                    txt_msg="[Error] Failed to load the selected dataset.")
+      
+      
+  def export_preview(self):
+    print("export_preview")
     

@@ -1,11 +1,11 @@
 import pandas as pd
 import logging
 from typing import Callable
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-  QLabel, QPushButton, QMessageBox, QDialog, QVBoxLayout, QWidget,
-  QFrame, QHBoxLayout, QGridLayout, QScrollArea, QTableWidget,
-  QTableWidgetItem
+  QLabel, QPushButton, QMessageBox, QDialog, QVBoxLayout, QFrame, QHBoxLayout, 
+  QGridLayout, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView
 )
 from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
@@ -26,7 +26,7 @@ class ComponentsFactory:
   
   def __init__(self, app_ref):
     self.app = app_ref
-    print("[ComponentsFactory] initialised successfully.") 
+    logger.info("[ComponentsFactory] initialised successfully.") 
 
 
   #  build components
@@ -142,31 +142,43 @@ class ComponentsFactory:
   def build_table_view(self,
                      target_df: pd.DataFrame):
     
+    PRVIEW_ROW_MAX = 100
+    
     #  validation
     if not isinstance(target_df, pd.DataFrame):
       err_msg = "Imported table is invalid."
       logger.error(err_msg, exc_info=True)
       raise ValueError()
-    #  interface
+    #  Impactface
     table = QTableWidget()
-    rows, cols = target_df.shape
+    display_df = target_df.head(PRVIEW_ROW_MAX)
+    rows, cols = display_df.shape
     table.setRowCount(rows)
     table.setColumnCount(cols)
     #  loop for filling
     
     for row in range(rows):
       for col in range(cols):
-        item = str(target_df.iloc[row, col])
-        table.setHorizontalHeaderLabels([str(col) for col in target_df[:100].columns])
-        table.setItem(row, col, QTableWidgetItem(item))
-    table.setStyleSheet("color: #333333; border: 1px solid #333333")
+        #  cell val
+        cell_val = str(display_df.iloc[row, col])
+        tb_cell = QTableWidgetItem(cell_val)
+        tb_cell.setTextAlignment(Qt.AlignCenter)
+        font = QFont("Inter", 12)
+        tb_cell.setFont(font)
+        #  table management
+        #  leanrt: use sub-fn in horizontalHeader to manage
+        table.setHorizontalHeaderLabels([str(col) for col in display_df[:100].columns])
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        table.setItem(row, col, QTableWidgetItem(tb_cell))
+    table.setStyleSheet("border: 0.5px solid #333333")
     return table
   
   
   def build_popup_wd(self, 
                      wd_title:str="Untitled",
+                     target_table="",
                      popup_title:str="Untitled",
-                     popup_content: Callable | None = None):
+                     popup_content: Callable | None = None) -> QFrame:
     
     #  title sect
     def add_title_box() -> QFrame:
@@ -185,7 +197,7 @@ class ComponentsFactory:
       return box
     
     #  grpah
-    def add_content_box():
+    def add_content_box() -> QScrollArea:
       #  component
       diagram = popup_content
       #  frame
@@ -196,14 +208,14 @@ class ComponentsFactory:
       return frame
     
     #  button sect
-    def add_option_box() -> QFrame:
+    def add_option_box(target_window: QDialog) -> QFrame:
       box_export_btn = self.build_btn(btn_text="Export", 
-                                  btn_event=None, 
+                                  btn_event=lambda: self.app.file_cont.export_preview(), 
                                   btn_bgcolor=THEME_COLOR["white"],
                                   btn_txtcolor=THEME_COLOR["primary"],
                                   btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-      box_back_btn = self.build_btn(btn_text="Confirmed", 
-                                  btn_event=None, 
+      box_confirm_btn = self.build_btn(btn_text="Confirmed", 
+                                  btn_event=target_window.close,
                                   btn_bgcolor=THEME_COLOR["primary"],
                                   btn_txtcolor=THEME_COLOR["white"],
                                   btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
@@ -211,16 +223,11 @@ class ComponentsFactory:
       #  add
       box_layout = QHBoxLayout()
       box_layout.addWidget(box_export_btn)
-      box_layout.addWidget(box_back_btn)
+      box_layout.addWidget(box_confirm_btn)
       box_layout.setSpacing(0)
       box_layout.setContentsMargins(0, 0, 0, 0)
       box.setLayout(box_layout)
       return box
-    
-    #  setup components
-    p_title = add_title_box()
-    p_content = add_content_box()
-    p_opt = add_option_box()
     
     #  frame
     window = QDialog()
@@ -228,6 +235,11 @@ class ComponentsFactory:
     #  learnt: setModal, prevent users manage main window simultanously
     window.setModal(True)
     window.setFixedSize(600, 600)
+    #  setup components after window created
+    p_title = add_title_box()
+    p_content = add_content_box()
+    p_opt = add_option_box(target_window=window)
+    #  continue
     window_layout = QGridLayout()
     window_layout.addWidget(p_title, 1, 0)
     window_layout.addWidget(p_content, 2, 0)
@@ -237,7 +249,6 @@ class ComponentsFactory:
     window_layout.setRowStretch(3, 4)
     window_layout.setSpacing(0)
     window_layout.setContentsMargins(0, 0, 0, 0)
-    window.setStyleSheet("background-color: #C6D1D8; border: 1px solid red;")
     window.setLayout(window_layout)
     window.exec()
-      
+    

@@ -8,6 +8,12 @@ from views.components.config.views_styles import (
   THEME_COLOR, style_wd_default, style_topbar_default, style_wd_default_2, 
   style_sidebar_box_default)
 from views.components.config.views_config import STEP_NAME_LIST, DATASET_LIST
+import logging
+
+
+#  LOGGER
+
+logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -46,7 +52,7 @@ class LayoutFactory:
     #  learnt: to get total num, use stack.count()
     self.page_stack.setCurrentIndex(0)
 
-    print("[LayoutFactory] initialised successfully.") 
+    logger.info("[LayoutFactory] initialised successfully.") 
     
     
     #  LAYER 3 -  SIDEBAR

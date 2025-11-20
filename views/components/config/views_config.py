@@ -1,4 +1,4 @@
-STEP_NAME_LIST = [
+STEP_NAME_LIST: list = [
     {
       "step": "1: Import Datasets", 
       "visited": True
@@ -17,7 +17,7 @@ STEP_NAME_LIST = [
     }
 ]
 
-DATASET_LIST = [
+DATASET_LIST: list = [
   {
     "data": "MySQL Database", 
     "status": False
@@ -39,3 +39,9 @@ DATASET_LIST = [
     "status": False
   }
 ]
+
+RAW_COL_SCHEMA: dict = {
+  "Dataset - Users": ["Date","Time", "User Full Name *Anonymized"],
+  "Dataset - Activities": ["User Full Name *Anonymized", "Component", "Action", "Target"],
+  "Dataset - Components": ["Component", "Code"]
+}

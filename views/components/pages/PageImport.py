@@ -4,9 +4,10 @@ from PyQt5.QtWidgets import (
     QWidget, QGridLayout, QVBoxLayout, QVBoxLayout, QFrame
 )
 from views.components.config.views_styles import THEME_COLOR
-from views.components.config.views_config import DATASET_LIST
+from views.components.config.views_config import DATASET_LIST, RAW_COL_SCHEMA
 from views.components.pages.PageTemplate import PageTemplate
 import logging
+import pandas as pd
 
 
 #  LOGGING
@@ -216,7 +217,9 @@ class PageImport(PageTemplate):
                        lb_text: str="", 
                        btn_text:str="",
                        btn_event: Callable | None =None) -> QFrame:
-      #  components
+    
+  
+    #  components
     preview_label = self.app.comp_fact.build_label(lb_text=lb_text,
                                                       lb_type="h3",
                                                       lb_txtcolor=THEME_COLOR["mid"],
