@@ -8,7 +8,7 @@ from models import DataLoader
 
 #  LOGGER
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("USER_INTERFACE")
 
 
 #  CLASS
@@ -79,5 +79,5 @@ class UserInterface:
     except Exception as ex:
       logger.error("User Interface crashed", exc_info=True)
       self.comp_fact.build_reminder_box(title="Error",
-                                        txt_msg="Error 500: Please contact the administrator for your further action.")
+                                        txt_msg="Please contact the administrator for your further action.")
       raise SystemError(f"{ex}")

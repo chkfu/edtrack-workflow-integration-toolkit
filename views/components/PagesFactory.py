@@ -1,6 +1,12 @@
 import pandas as pd
+import logging
 from views.components.pages import PageImport, PageClean, PageMerge, PageAnalyse
 
+
+
+#  LOGGER
+
+logger = logging.getLogger("PAGES_FACTORY")
 
 
 #  CLASS
@@ -31,3 +37,5 @@ class PagesFactory:
     self.page_clean = PageClean(app_ref)
     self.page_merge = PageMerge(app_ref)
     self.page_analyse = PageAnalyse(app_ref)
+    #  log
+    logger.info("initialised successfully.") 

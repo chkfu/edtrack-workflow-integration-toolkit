@@ -6,7 +6,7 @@ import logging
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("PAGE_CLEAN")
 
 
 
@@ -19,7 +19,7 @@ class PageClean(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
-    logger.info("[PageClean] initialised successfully.")
+    logger.info("initialised successfully.")
     
     
   #  METHODS

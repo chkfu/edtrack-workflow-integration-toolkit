@@ -5,7 +5,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
   QLabel, QPushButton, QMessageBox, QDialog, QVBoxLayout, QFrame, QHBoxLayout, 
-  QGridLayout, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView
+  QGridLayout, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView, 
+  QComboBox
 )
 from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
@@ -15,7 +16,7 @@ from views.components.config.views_styles import (
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("COMPONENT_FACTORY")
 
 
 #  CLASS
@@ -26,7 +27,7 @@ class ComponentsFactory:
   
   def __init__(self, app_ref):
     self.app = app_ref
-    logger.info("[ComponentsFactory] initialised successfully.") 
+    logger.info("initialised successfully.") 
 
 
   #  build components
@@ -108,6 +109,20 @@ class ComponentsFactory:
     msg.setStandardButtons(QMessageBox.Ok)
     msg.exec_()
     return msg
+  
+  
+  def build_dropdown(self, 
+                     target_options: list,
+                     target_default: int,
+                     event: Callable | None=None) -> QComboBox:
+    #  setup
+    combo = QComboBox()
+    combo.addItems(target_options)
+    combo.setCurrentIndex(target_default)
+    #  udpate
+    if event:
+      combo.currentTextChanged.connect(event)
+    return combo
     
     
   #  section child items
@@ -163,8 +178,6 @@ class ComponentsFactory:
         cell_val = str(display_df.iloc[row, col])
         tb_cell = QTableWidgetItem(cell_val)
         tb_cell.setTextAlignment(Qt.AlignCenter)
-        font = QFont("Inter", 12)
-        tb_cell.setFont(font)
         #  table management
         #  leanrt: use sub-fn in horizontalHeader to manage
         table.setHorizontalHeaderLabels([str(col) for col in display_df[:100].columns])
@@ -173,12 +186,17 @@ class ComponentsFactory:
     table.setStyleSheet("border: 0.5px solid #333333")
     return table
   
-  
+  test_xxx = pd.DataFrame({"hi": [1, 2, 3]})
   def build_popup_wd(self, 
                      wd_title:str="Untitled",
-                     target_table="",
+                     target_df=test_xxx,
                      popup_title:str="Untitled",
                      popup_content: Callable | None = None) -> QFrame:
+
+
+    print("*******************")
+    print(target_df)
+    print("*******************")
     
     #  title sect
     def add_title_box() -> QFrame:
@@ -208,26 +226,38 @@ class ComponentsFactory:
       return frame
     
     #  button sect
-    def add_option_box(target_window: QDialog) -> QFrame:
-      box_export_btn = self.build_btn(btn_text="Export", 
-                                  btn_event=lambda: self.app.file_cont.export_preview(), 
+    def add_option_box(target_window: QDialog, 
+                       target_df: pd.DataFrame, 
+                       target_format: str) -> QFrame:
+      #  components
+      export_lb = self.build_label(lb_text="Export Format:",
+                                   lb_txtcolor="white")
+      export_ddlist = self.build_dropdown(target_options=[".csv", ".xml", ".json", ".png"],
+                                          target_default=0)
+      export_btn = self.build_btn(btn_text="Export", 
+                                  #  Leanrt: .currentText() for getting drop list option
+                                  btn_event=lambda: self.app.file_cont.export_preview(target_df=target_df,
+                                                                                      target_format=export_ddlist.currentText()), 
                                   btn_bgcolor=THEME_COLOR["white"],
                                   btn_txtcolor=THEME_COLOR["primary"],
                                   btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-      box_confirm_btn = self.build_btn(btn_text="Confirmed", 
-                                  btn_event=target_window.close,
-                                  btn_bgcolor=THEME_COLOR["primary"],
-                                  btn_txtcolor=THEME_COLOR["white"],
-                                  btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
-      box = QFrame()
-      #  add
-      box_layout = QHBoxLayout()
-      box_layout.addWidget(box_export_btn)
-      box_layout.addWidget(box_confirm_btn)
-      box_layout.setSpacing(0)
-      box_layout.setContentsMargins(0, 0, 0, 0)
-      box.setLayout(box_layout)
-      return box
+      box_confirm_btn = self.build_btn(btn_text="Back", 
+                            btn_event=target_window.close,
+                            btn_bgcolor=THEME_COLOR["primary"],
+                            btn_txtcolor=THEME_COLOR["white"],
+                            btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+      #  grid frame
+      box_export_grid = QFrame()
+      grid_layout = QGridLayout()
+      grid_layout.addWidget(export_lb, 0, 0)
+      grid_layout.addWidget(export_ddlist, 1, 0)
+      grid_layout.addWidget(export_btn, 0, 1, 2, 1)
+      grid_layout.addWidget(box_confirm_btn, 0, 2, 2, 1)
+      grid_layout.addWidget(box_confirm_btn)
+      grid_layout.setSpacing(0)
+      box_export_grid.setLayout(grid_layout)
+      
+      return box_export_grid
     
     #  frame
     window = QDialog()
@@ -238,7 +268,9 @@ class ComponentsFactory:
     #  setup components after window created
     p_title = add_title_box()
     p_content = add_content_box()
-    p_opt = add_option_box(target_window=window)
+    p_opt = add_option_box(target_window=window,
+                           target_df=target_df,
+                           target_format=".csv")
     #  continue
     window_layout = QGridLayout()
     window_layout.addWidget(p_title, 1, 0)

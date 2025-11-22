@@ -6,7 +6,7 @@ import seaborn as sns
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("DATA_VISUALISER")
 
 
 #  CLASS
@@ -14,7 +14,7 @@ logger = logging.getLogger("APPLICATION")
 class DataVisualiser:
   
   def __init__ (self):
-    logger.info("[DataVisualiser] initialised successfully.")
+    logger.info("initialised successfully.")
     
     
   #  METHODS  -  DRAWING
@@ -52,10 +52,10 @@ class DataVisualiser:
       plt.tight_layout()
     
       figure = axes.get_figure()
-      logger.info("[DataVisualiser] New correlation heatmap generated sucessfully.")
+      logger.info("New correlation heatmap generated sucessfully.")
       return figure, axes
     
     except Exception as ex:
-      logger.error(f"[DataVisualiser] failed to draw heatmap: {ex}", exc_info=True)
+      logger.error(f"failed to draw heatmap: {ex}", exc_info=True)
       raise
     

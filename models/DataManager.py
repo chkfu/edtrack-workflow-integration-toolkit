@@ -20,21 +20,11 @@ class DataManager:
    
     
   #  METHOD - REUSE
-  
-  def validate_col(self, target_df: pd.DataFrame, target_col: str) -> str:
-    #  for index
-    if target_col.strip().lower() == "index":
-      return "index"
-    #  for columns
-    output = next((col for col in target_df.columns if col.strip().lower() == target_col.strip().lower()), None)
-    if output is None:
-      raise ValueError("[DataManager] target column is not found.")
-    return output.strip()
     
   def update_valid_lists(self, target_df: pd.DataFrame, target_parameter: list, valid_list: list) -> None: 
     for el in target_parameter:
       testing_el = str(el)
-      valid_el = self.validate_col(target_df=target_df, target_col=testing_el)
+      valid_el = self.app.valid_cont.validate_col(target_df=target_df, target_col=testing_el)
       if valid_el:
         valid_list.append(valid_el) 
     
@@ -51,7 +41,7 @@ class DataManager:
       raise TypeError("[DataManager] target column must be a string.")
     
     #  validate column
-    valid_col: str = self.validate_col(target_df=target_df, target_col=target_col)
+    valid_col: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  output
     output = target_df.drop(columns=[valid_col])
@@ -70,7 +60,7 @@ class DataManager:
       raise TypeError("[DataManager] target input must be a list of strings.")
     
     #  validate column
-    valid_col: str = self.validate_col(target_df=target_df, target_col=target_col)
+    valid_col: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  validate row
     rows_removal: list = [el.strip().lower() for el in target_rows]
@@ -91,7 +81,7 @@ class DataManager:
       raise TypeError(f"[DataManager] target column {target_col} must be a string.")
     
     #  validate column
-    valid_col: str = self.validate_col(target_df=target_df, target_col=target_col)
+    valid_col: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  convert name
     new_name_r: str = str(new_name).strip()
@@ -124,11 +114,11 @@ class DataManager:
     valid_col_left: str | None = None
     valid_col_right: str | None = None
     if formatted_col_left != "index":
-      valid_col_left = self.validate_col(target_df=target_df_left, target_col=target_col_left)
+      valid_col_left = self.app.valid_cont.validate_col(target_df=target_df_left, target_col=target_col_left)
     else:
       valid_col_left = "index"
     if formatted_col_right != "index":
-      valid_col_right: str = self.validate_col(target_df=target_df_right, target_col=target_col_right)
+      valid_col_right: str = self.app.valid_cont.validate_col(target_df=target_df_right, target_col=target_col_right)
     else:
       valid_col_right = "index"
     
@@ -179,7 +169,7 @@ class DataManager:
 
     self.update_valid_lists(target_df, target_cols, valid_col_list)
     self.update_valid_lists(target_df,target_rows, valid_row_list)
-    valid_val: str = self.validate_col(target_df=target_df, target_col=target_val)
+    valid_val: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_val)
     
     #  output 
     output = pd.pivot_table(data=target_df, columns=valid_col_list, index=valid_row_list, values=valid_val, aggfunc=target_aggfunc, fill_value=target_filling)
@@ -197,12 +187,12 @@ class DataManager:
     month_col: str = "Month"
     
     #  validate col name
-    target_col_r = self.validate_col(target_df, target_col)
-    target_row_r = self.validate_col(target_df, target_row)
-    date_col = self.validate_col(target_df, date_col)
+    target_col_r = self.app.valid_cont.validate_col(target_df, target_col)
+    target_row_r = self.app.valid_cont.validate_col(target_df, target_row)
+    date_col = self.app.valid_cont.validate_col(target_df, date_col)
     
     #  grouping monthly in new column, remove date column
-    date_col_r = self.validate_col(target_df, date_col)
+    date_col_r = self.app.valid_cont.validate_col(target_df, date_col)
     output[month_col] = output[date_col_r].dt.month
     output = self.remove_col(output, date_col_r)
     
@@ -236,9 +226,9 @@ class DataManager:
     }
 
     #  validate column names
-    target_row_r: str = self.validate_col(target_df, target_row)
-    target_val_r: str = self.validate_col(target_df, target_val)
-    date_col_r: str = self.validate_col(target_df, date_col)
+    target_row_r: str = self.app.valid_cont.validate_col(target_df, target_row)
+    target_val_r: str = self.app.valid_cont.validate_col(target_df, target_val)
+    date_col_r: str = self.app.valid_cont.validate_col(target_df, date_col)
     
     output[stat_names["month_col"]] = output[date_col_r].dt.month
     output = self.remove_col(output, date_col_r)

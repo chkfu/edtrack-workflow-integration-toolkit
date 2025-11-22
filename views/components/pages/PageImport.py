@@ -12,7 +12,7 @@ import pandas as pd
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("PAGE_IMPORT")
 
 
 #  CLASS
@@ -23,7 +23,7 @@ class PageImport(PageTemplate):
   #  CONSTRUCTOR
   def __init__(self, app_ref):
     super().__init__(app_ref)
-    logger.info("[PageImport] initialised successfully.")
+    logger.info("initialised successfully.")
     
     
   #  METHODS

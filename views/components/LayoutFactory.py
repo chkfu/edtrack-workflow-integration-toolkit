@@ -13,7 +13,7 @@ import logging
 
 #  LOGGER
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("LAYOUT_FACTORY")
 
 
 #  CLASS
@@ -52,7 +52,7 @@ class LayoutFactory:
     #  learnt: to get total num, use stack.count()
     self.page_stack.setCurrentIndex(0)
 
-    logger.info("[LayoutFactory] initialised successfully.") 
+    logger.info("initialised successfully.") 
     
     
     #  LAYER 3 -  SIDEBAR

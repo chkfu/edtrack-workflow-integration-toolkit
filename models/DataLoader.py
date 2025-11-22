@@ -7,7 +7,7 @@ from matplotlib.figure import Figure
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("DATA_LOADER")
 
 
 #  CLASS
@@ -17,7 +17,7 @@ class DataLoader:
   #  Constructor
 
   def __init__(self):
-    logger.info("[DataLoader] initialised successfully.")
+    logger.info("initialised successfully.")
 
 
   #  Methods
@@ -26,7 +26,7 @@ class DataLoader:
     try:
       #  check validity
       if not os.path.exists(path):
-        raise FileNotFoundError("[DataLoader] import_dataset - the data path is not valid.")
+        raise FileNotFoundError("import_dataset - the data path is not valid.")
       fileFormat: str = os.path.splitext(path)[-1].lower()    #  learnt: to detect file format
       
       #  check job type
@@ -37,58 +37,59 @@ class DataLoader:
       elif fileFormat == ".xml":
         output: pd.DataFrame = pd.read_xml(path)
       else:
-        raise ValueError(f"[DataLoader] import_dataset - data path format is not .csv, .xml, or .json.")
+        raise ValueError(f"import_dataset - data path format is not .csv, .xml, or .json.")
       
       #  output
-      logger.info("[DataLoader] imported files successfully.")
+      logger.info("imported files successfully.")
       return output
     
     except Exception as ex:
-      logger.error("[DataLoader] Failed to upload the selected file.")
+      logger.error("Failed to upload the selected file.")
       
 
-  def convert_dataset(self, dataframe: pd.DataFrame, fileType: str, fileName: str, destination: str = "output/tables/") -> None:
+  def convert_dataset(self, dataframe: pd.DataFrame, fileType: str, destination: str) -> None:
 
     try:
       if dataframe is None or dataframe.empty:
-        raise ValueError("[DataLoader] failed to export diagram. pandas dataframe is missing.")
+        raise ValueError("failed to export diagram. pandas dataframe is missing.")
       
       type_r = fileType.strip().lower()
-      if type_r not in ["csv", "xml", "json", "png"]:
-        err_msg = "[DataLoader] incorrect file type has been provided. please try again."
+      if type_r not in [".csv", ".xml", ".json", ".png"]:
+        err_msg = "incorrect file type has been provided. please try again."
         logger.warning(err_msg)
         raise ValueError(err_msg)
       
       #  check job types
-      if type_r == "csv":
-        dataframe.to_csv(destination + fileName + ".csv", index=False)
-      elif type_r == "xml":
-        dataframe.to_xml(destination + fileName + ".xml", index=False)
-      elif type_r == "json":
+      if type_r == ".csv":
+        dataframe.to_csv(destination, index=False)
+      elif type_r == ".xml":
+        dataframe.to_xml(destination, index=False)
+      elif type_r == ".json":
         #  learnt: orient="records" for dict type (json-like)
-        dataframe.to_json(destination + fileName + ".json", orient="records", indent=4) 
-      elif type_r == "png":
-        dfi.export(dataframe, destination + fileName + ".png")
+        dataframe.to_json(destination, orient="records", indent=4) 
+      elif type_r == ".png":
+        dfi.export(dataframe, destination)
       else:
-        raise ValueError("[DataLoader] import_dataset - data path format is not .csv, .xml, or .json.")
+        raise ValueError("Data path format is not .csv, .xml, or .json.")
       
       #  output
-      logger.info("[DataLoader] convert dataset successfully.")
+      logger.info("Convert dataset successfully.")
       return
     
     except Exception as ex:
-      logger.error(f"[DataLoader] failed to convert diagram - {ex}")
+      logger.error(f"Failed to convert diagram - {ex}", exc_info=True)
+      raise Exception(f"{ex}")
 
   
   
-  def convert_diagram(self, plt_figure: Figure, fileType: str, fileName: str, destination: str="output/diagrams/", target_dpi: int=300) -> None:
+  def convert_diagram(self, plt_figure: Figure, fileType: str, fileName: str, destination: str, target_dpi: int=300) -> None:
     
     if plt_figure is None:
-      raise ValueError("[DataLoader] failed to export diagram. matplotlib figure is missing.")
+      raise ValueError("failed to export diagram. matplotlib figure is missing.")
     
     type_r = fileType.strip().lower()
     if type_r not in ["png", "jpg", "tiff", "bmp"]:
-      err_msg = "[DataLoader] incorrect file type has been provided. please try again."
+      err_msg = "incorrect file type has been provided. please try again."
       logger.warning(err_msg)
       raise ValueError(err_msg)
     
@@ -103,11 +104,11 @@ class DataLoader:
       elif type_r == "bmp":
         plt_figure.savefig(destination + fileName + ".bmp", dpi=target_dpi)
       else:
-        raise ValueError("[DataLoader] import_dataset - data path format is not .png, .jpg, .tiff, .bmp")
+        raise ValueError("import_dataset - data path format is not .png, .jpg, .tiff, .bmp")
       
-      logger.info("[DataLoader] convert diagram successfully.")
+      logger.info("convert diagram successfully.")
       return
       
     except Exception as ex:
-      logger.error(f"[DataLoader] failed to convert diagram - {ex}")
+      logger.error(f"failed to convert diagram - {ex}")
 

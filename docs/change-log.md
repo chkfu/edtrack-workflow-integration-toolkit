@@ -16,41 +16,52 @@ summaries for further maintenance.
 
 This file records the major version changes of the projects.
 
+<br/>
 
 
-## [0.1.2] - 
+## [0.1.2] - 2025-11-22
 
 ### Added
-- Added logging for error handling
+
+- Implemented DebugLogger for application-wide logging
+- Added ValidController for validation methods
+- Added DataController for connecting models and views
 
 ### Edited
+
+- Completed PageImport workflow and UI integration
 - Updated documentation
-- Refactored one-off codes into scripts
+- Refactored one-off codes into scripts folder
 
-
+<br/>
 
 
 ## [0.1.1] - 2025-11-16
 
 ### Added
+
 - Added documentation files
 - Added MVC structure for logic seperation
 
 ### Edited
+
 - Updated README
 - Refactored pages classes for modularisation
 - Refactored events into controllers for MVC structure
 
 ### Fixed
+
 - Fixed app crash during page switching with reset
 
 ### Removed
+
 - Deleted unused and deprecated dependencies and modules
 
-
+<br/>
 
 
 ## [0.1.0] - 2025-10-19
 
 ### Added
+
 - Initialised the project

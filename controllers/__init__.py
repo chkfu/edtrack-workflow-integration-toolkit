@@ -2,6 +2,7 @@ from controllers.AppController import AppController
 from controllers.NavController import NavController
 from controllers.FileController import FileController
 from controllers.ValidController import ValidController
+from controllers.DataController import DataController
 
 
 
@@ -11,4 +12,5 @@ from controllers.ValidController import ValidController
 __all__ = ["AppController",
            "NavController",
            "FileController",
-           "ValidController"]
+           "ValidController",
+           "DataController"]

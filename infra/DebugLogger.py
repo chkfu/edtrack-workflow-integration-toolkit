@@ -11,7 +11,7 @@ class DebugLogger:
   #  CONSTRUCTOR
   
   def __init__(self):
-    print("[DebugLogger] initialised sucessfully.")
+    pass
     
   
   #  METHODS

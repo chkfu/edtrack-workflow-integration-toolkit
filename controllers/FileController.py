@@ -13,7 +13,7 @@ import logging
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("FILE_CONTROLLER")
 
 
 # CLASS
@@ -87,20 +87,20 @@ class FileController:
         self.app.temp_table_user = temp_dataset
         self.app.comp_fact.build_popup_wd(wd_title="Preview",
                                           popup_title="Preview: User Dataset",
-                                          popup_content=self.app.comp_fact.build_table_view(
-                                            target_df=self.app.temp_table_user))
+                                          target_df=self.app.temp_table_user,
+                                          popup_content=self.app.comp_fact.build_table_view(target_df=self.app.temp_table_user))
       elif target_key == DATASET_LIST[2]["data"]:
         self.app.temp_table_activity = temp_dataset
         self.app.comp_fact.build_popup_wd(wd_title="Preview",
+                                          target_df=self.app.temp_table_activity,
                                           popup_title="Preview: Activity Dataset",
-                                          popup_content=self.app.comp_fact.build_table_view(
-                                            target_df=self.app.temp_table_activity))
+                                          popup_content=self.app.comp_fact.build_table_view(target_df=self.app.temp_table_activity))
       elif target_key == DATASET_LIST[3]["data"]:
         self.app.temp_table_component = temp_dataset
         self.app.comp_fact.build_popup_wd(wd_title="Preview",
+                                          target_df=self.app.temp_table_component,
                                           popup_title="Preview: Component Dataset",
-                                          popup_content=self.app.comp_fact.build_table_view(
-                                            target_df=self.app.temp_table_component))
+                                          popup_content=self.app.comp_fact.build_table_view(target_df=self.app.temp_table_component))
     #  1. sucess
       logger.info(f"Previewed the selected file - {target_key}.")
       return temp_dataset
@@ -111,6 +111,59 @@ class FileController:
                                                    txt_msg="[Error] Failed to load the selected dataset.")
       
       
-  def export_preview(self):
-    print("export_preview")
+  def export_preview(self,
+                     target_df: pd.DataFrame,
+                     target_format: str=".csv"):
+    
+    #  validate parameters
+    if not isinstance(target_df, pd.DataFrame):
+      err_msg: str = "The selected dataset is not in pandas dataframe format."
+      self.app.comp_fact.build_reminder_box(title="Error", txt_msg=err_msg)
+      logger.error(err_msg, exc_info=True)
+      return
+    
+    #  slightly formatting, enhance error tolerance
+    target_format_r: str = str(target_format).strip().lower()
+    target_format_r = target_format_r if target_format_r.startswith(".") else f".{target_format_r}"
+    
+    if target_format_r not in [".csv", ".xml", ".xlsx", ".json", ".png"]:
+      err_msg: str = "The selected dataset is not in pandas dataframe format."
+      self.app.comp_fact.build_reminder_box(title="Error", txt_msg=err_msg)
+      logger.error(err_msg, exc_info=True)
+      return
+    
+    #  Learnt: form the whitelist for filtering
+    format_dict: dict = {
+        ".csv": "CSV Files (*.csv)",
+        ".json": "JSON Files (*.json)",
+        ".xlsx": "Excel Files (*.xlsx)",
+        ".xml": "XML Files (*.xml)"
+    }
+    #  Learnt: suceed case -> target, failed case -> "All Files"
+    target_criteria = format_dict.get(target_format_r, "All Files (*)")
+    
+    try:
+      #  search file
+      file, _ = QFileDialog.getSaveFileName(
+        self.app.window,
+        "Save As",
+        f"output{target_format_r}", 
+        target_criteria
+      )
+      
+      if not file:
+        logger.warning("File not found, No export task.")
+        return
+      
+      self.app.data_loader.convert_dataset(dataframe=target_df, 
+                                            fileType=target_format_r,
+                                            destination=file)
+      suceed_msg: str = f"The new file has been stored at {file}."
+      logger.info(suceed_msg)
+      self.app.comp_fact.build_reminder_box(title="Success", 
+                                            txt_msg=suceed_msg)
+    
+    except Exception as ex:
+      logger.error(f"file path not found. unable to export the selected dataset. {ex}", exc_info=True)
+      self.app.comp_fact.build_reminder_box("Error", f"{ex}")
     

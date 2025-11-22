@@ -3,13 +3,7 @@ from PyQt5.QtWidgets import (
     QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QVBoxLayout, QFrame
 )
 from views.components.config.views_styles import THEME_COLOR, style_nav_sect_default
-from views.components.config.views_config import DATASET_LIST
-import logging
 
-
-#  LOGGING
-
-logger = logging.getLogger("APPLICATION")
 
 
 #  CLASS
@@ -19,7 +13,7 @@ class PageTemplate:
   #  CONSTRUCTOR
   def __init__(self, app_ref):
     self.app = app_ref
-    logger.info("[PageTemplate] initialised successfully.")
+    pass
     
     
   #  METHODS

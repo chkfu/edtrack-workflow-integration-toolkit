@@ -16,7 +16,7 @@ DEFAULT_DTYPE_CONFIG: dict = {
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("DATA_CLEANER")
 
   
 #  CLASS
@@ -26,29 +26,15 @@ class DataCleaner:
   #  CONSTRUCTOR
 
   def __init__(self):
-    logger.info("[DataCleaner] initialised successfully.")
+    logger.info("initialised successfully.")
     
     
     
   #  METHOD -  SUPPORTING  -  Fisrt Screening
   
-  def validate_col(self, 
-                   target_df: pd.DataFrame, 
-                   target_col: str) -> str:
-    
-    #  for index
-    if target_col.strip().lower() == "index":
-      return "index"
-    #  for columns
-    output = next((col for col in target_df.columns if col.strip().lower() == target_col.strip().lower()), None)
-    if output is None:
-      raise ValueError("[DataManager] target column is not found.")
-    return output.strip()
-
-  
   def handle_duplication(self, target_df: pd.DataFrame) -> pd.DataFrame:
     output = target_df.drop_duplicates()
-    logger.info("[DataCleaner] Duplicated record(s) has/have been removed.")
+    logger.info("Duplicated record(s) has/have been removed.")
     return output
   
   
@@ -75,7 +61,7 @@ class DataCleaner:
     if target_col == "index":
       output = target_df.sort_index(ascending=is_ascending)
     else:
-      valid_col = self.validate_col(target_df, target_col)
+      valid_col = self.app.valid_cont.validate_col(target_df, target_col)
       output = target_df.sort_values(by=valid_col, ascending=is_ascending)
     return output
   
@@ -218,9 +204,9 @@ class DataCleaner:
     try:
       output = target_df.copy()
       if not isinstance(target_df, pd.DataFrame):
-        raise TypeError("[DataCleaner] target dataframe must be a pandas DataFrame.")
+        raise TypeError("target dataframe must be a pandas DataFrame.")
       if not isinstance(drop_missing, bool):
-        raise TypeError("[DataCleaner] the option for drop rows with missing cell must be boolean.")
+        raise TypeError("the option for drop rows with missing cell must be boolean.")
       
       #  execution
       if drop_duplicated:
@@ -232,11 +218,11 @@ class DataCleaner:
       
       #  output
       if not output.empty:
-        logger.info("[DataCleaner] First cleaning is completed.")
+        logger.info("First cleaning is completed.")
       return output
     
     except Exception as ex:
-      logger.error("[DataCleaner] Failed to apply the first cleaniing.", exc_info=True)
+      logger.error("Failed to apply the first cleaniing.", exc_info=True)
   
   
   def second_data_cleaning(self, 
@@ -244,7 +230,7 @@ class DataCleaner:
                            default_dtype: dict = DEFAULT_DTYPE_CONFIG) -> pd.DataFrame:
     
     if not isinstance(default_dtype, dict):
-      err_msg = "[DataCleaner] the input default data types config is not in dict format."
+      err_msg = "the input default data types config is not in dict format."
       logger.warning(err_msg)
       raise TypeError(err_msg)
   
@@ -271,9 +257,9 @@ class DataCleaner:
                   
       #  output
       if not output.empty:     
-        logger.info("[DataCleaner] Second cleaning is completed.")    
+        logger.info("Second cleaning is completed.")    
       return output
       
     except Exception as ex:
-      logger.error("[DataCleaner] Failed to apply the first cleaniing- {ex}.", exc_info=True)  
+      logger.error("Failed to apply the first cleaniing- {ex}.", exc_info=True)  
       

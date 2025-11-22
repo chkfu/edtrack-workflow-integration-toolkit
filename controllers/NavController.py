@@ -10,7 +10,7 @@ import logging
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("NAV_CONTROLLER")
 
 
 #  CLASS

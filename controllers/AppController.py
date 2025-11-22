@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QApplication
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("APP_CONTROLLER")
 
 
 #  CLASS

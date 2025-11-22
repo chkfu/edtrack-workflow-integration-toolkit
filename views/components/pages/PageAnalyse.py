@@ -6,7 +6,7 @@ import logging
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("PAGE_ANALYSE")
 
 
 #  CLASS
@@ -18,7 +18,7 @@ class PageAnalyse(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
-    logger.info("[PageAnalyse] initialised successfully.")
+    logger.info("initialised successfully.")
     
     
   #  METHODS  -  MAIN
