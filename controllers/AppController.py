@@ -41,23 +41,19 @@ class AppController:
           self.app.df_components = None
           self.app.df_processed = None
           self.app.df_merged = None
-          self.app.df_pivot = None
           #  state: PagesFactory reset
-          self.app.pages_fact.temp_path_user = None
-          self.app.pages_fact.temp_path_activity = None
-          self.app.pages_fact.temp_path_comp = None
-          self.app.pages_fact.temp_table_user = None
-          self.app.pages_fact.temp_table_activity = None
-          self.app.pages_fact.temp_table_component = None
+          self.app.pages_fact.temp_path_users = None
+          self.app.pages_fact.temp_path_activities = None
+          self.app.pages_fact.temp_path_components = None
           #  reset temp state in import page
-          self.app.pages_fact.page_import.page_refresh()
+          self.app.pages_fact.page_import.reset_state_pageImport()
           #  follow-up event
           self.app.page_stack.setCurrentIndex(0)
         
           # update task list
           self.app.nav_cont.update_workflow(target_action="reset", 
                                             curr_page=0)
-        
+          
           #  confirmation
           self.app.comp_fact.build_reminder_box(title="Confirmation",
                                                 txt_msg="The application has been reset.")

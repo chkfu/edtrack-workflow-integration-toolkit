@@ -21,4 +21,4 @@ class DataController:
   
   def __init__(self, app_ref):
     self.app = app_ref
-    logger.info("[FileController] initialised sucessfully.")
+    logger.info("initialised sucessfully.")

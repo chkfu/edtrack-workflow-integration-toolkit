@@ -163,7 +163,7 @@ class ComponentsFactory:
     if not isinstance(target_df, pd.DataFrame):
       err_msg = "Imported table is invalid."
       logger.error(err_msg, exc_info=True)
-      raise ValueError()
+      raise ValueError(err_msg)
     #  Impactface
     table = QTableWidget()
     display_df = target_df.head(PRVIEW_ROW_MAX)
@@ -171,6 +171,10 @@ class ComponentsFactory:
     table.setRowCount(rows)
     table.setColumnCount(cols)
     #  loop for filling
+    
+    #  table head for once setup, prevent repeated
+    table.setHorizontalHeaderLabels([str(col) for col in display_df[:100].columns])
+    table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
     
     for row in range(rows):
       for col in range(cols):
@@ -180,23 +184,15 @@ class ComponentsFactory:
         tb_cell.setTextAlignment(Qt.AlignCenter)
         #  table management
         #  leanrt: use sub-fn in horizontalHeader to manage
-        table.setHorizontalHeaderLabels([str(col) for col in display_df[:100].columns])
-        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         table.setItem(row, col, QTableWidgetItem(tb_cell))
     table.setStyleSheet("border: 0.5px solid #333333")
     return table
   
-  test_xxx = pd.DataFrame({"hi": [1, 2, 3]})
   def build_popup_wd(self, 
-                     wd_title:str="Untitled",
-                     target_df=test_xxx,
+                     wd_title:str,
+                     target_df: pd.DataFrame,
                      popup_title:str="Untitled",
                      popup_content: Callable | None = None) -> QFrame:
-
-
-    print("*******************")
-    print(target_df)
-    print("*******************")
     
     #  title sect
     def add_title_box() -> QFrame:
@@ -252,7 +248,6 @@ class ComponentsFactory:
       grid_layout.addWidget(export_lb, 0, 0)
       grid_layout.addWidget(export_ddlist, 1, 0)
       grid_layout.addWidget(export_btn, 0, 1, 2, 1)
-      grid_layout.addWidget(box_confirm_btn, 0, 2, 2, 1)
       grid_layout.addWidget(box_confirm_btn)
       grid_layout.setSpacing(0)
       box_export_grid.setLayout(grid_layout)

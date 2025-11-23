@@ -26,7 +26,25 @@ class PageImport(PageTemplate):
     logger.info("initialised successfully.")
     
     
-  #  METHODS
+  #  METHODS -  MAIN
+  
+  def core_sect_import_dataset(self) -> QWidget:
+    #  scope: core seciton
+    browser_container = self.create_browser_container()
+    preview_container = self.create_preview_container()
+    # import_container = self.create_import_container()
+    #  outer
+    core_sect = QWidget()
+    core_sect_layout = QVBoxLayout()
+    core_sect_layout.addWidget(browser_container, alignment=Qt.AlignTop)
+    core_sect_layout.addWidget(preview_container, alignment=Qt.AlignTop)
+    # core_sect_layout.addWidget(import_container, alignment=Qt.AlignTop)
+    core_sect_layout.setSpacing(4)
+    core_sect_layout.setContentsMargins(0, 0, 0, 0)
+    core_sect.setLayout(core_sect_layout)
+    return core_sect
+  
+  
   def merge_sections(self):
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 1: Import Datasets", 
@@ -44,6 +62,8 @@ class PageImport(PageTemplate):
     page.setLayout(page_layout)
     return page
   
+
+  #  METHODS -  CONTAINERS
   
   def create_browser_container(self) -> QWidget:
       container_title = self.app.comp_fact.build_label(lb_text="A.  Browse Files",
@@ -51,23 +71,20 @@ class PageImport(PageTemplate):
                                                            lb_align=Qt.AlignLeft)
       user_broswer = self.browser_comp_box(lb_text=DATASET_LIST[1]["data"], 
                                           path_txt="",
-                                          btn_text="Search",
-                                          btn_event=None)
-      comp_broswer = self.browser_comp_box(lb_text=DATASET_LIST[2]["data"], 
+                                          btn_text="Search")
+      activity_broswer = self.browser_comp_box(lb_text=DATASET_LIST[2]["data"], 
                                             path_txt="",
-                                            btn_text="Search",
-                                            btn_event=None)
-      activity_broswer = self.browser_comp_box(lb_text=DATASET_LIST[3]["data"], 
+                                            btn_text="Search")
+      comp_broswer = self.browser_comp_box(lb_text=DATASET_LIST[3]["data"], 
                                               path_txt="",
-                                              btn_text="Search",
-                                              btn_event=None)
+                                              btn_text="Search")
       #  scope: container
       content = QWidget()
       content_layout = QVBoxLayout()
       content_layout.addWidget(container_title)
-      content_layout.addWidget(user_broswer)
-      content_layout.addWidget(comp_broswer)
+      content_layout.addWidget(user_broswer)   
       content_layout.addWidget(activity_broswer)
+      content_layout.addWidget(comp_broswer)
       content_layout.setAlignment(Qt.AlignTop) 
       content_layout.setSpacing(4)
       content_layout.setContentsMargins(0, 8, 0, 0) 
@@ -84,10 +101,10 @@ class PageImport(PageTemplate):
     user_box= self.preview_comp_box(lb_text=DATASET_LIST[1]["data"], 
                                     btn_text="Preview",
                                     btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[1]["data"]))
-    comp_box = self.preview_comp_box(lb_text=DATASET_LIST[2]["data"], 
+    activity_box  = self.preview_comp_box(lb_text=DATASET_LIST[2]["data"], 
                                         btn_text="Preview",
                                         btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[2]["data"]))
-    activity_box = self.preview_comp_box(lb_text=DATASET_LIST[3]["data"], 
+    comp_box = self.preview_comp_box(lb_text=DATASET_LIST[3]["data"], 
                                       btn_text="Preview",
                                       btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[3]["data"]))
     title_label.setFixedHeight(24)
@@ -96,8 +113,8 @@ class PageImport(PageTemplate):
     frame_layout = QGridLayout(frame)
     frame_layout.addWidget(title_label, 0, 0, 1, 3)
     frame_layout.addWidget(user_box, 1, 0)
-    frame_layout.addWidget(comp_box, 1, 1)
-    frame_layout.addWidget(activity_box, 1, 2)
+    frame_layout.addWidget(activity_box, 1, 1)
+    frame_layout.addWidget(comp_box, 1, 2)
     frame_layout.setColumnStretch(0, 1)
     frame_layout.setColumnStretch(1, 1)
     frame_layout.setColumnStretch(2, 1)
@@ -108,19 +125,17 @@ class PageImport(PageTemplate):
     return frame
 
   
-  def create_import_container(self,
-                              btn_text:str="",
-                              btn_event: Callable | None =None) -> QFrame:
+  def create_import_container(self) -> QFrame:
     title_label = self.app.comp_fact.build_label(lb_text="C. Import Datasets",
                                                   lb_type="h3",
                                                   lb_txtcolor=THEME_COLOR["primary"],
                                                   lb_align=Qt.AlignVCenter | Qt.AlignLeft)
     
     import_btn = self.app.comp_fact.build_btn(btn_text="Import",
-                                                  btn_event=btn_event,
-                                                  btn_bgcolor=THEME_COLOR["white"],
-                                                  btn_txtcolor=THEME_COLOR["primary"],
-                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+                                              btn_event=self.app.file_cont.import_datasets,
+                                              btn_bgcolor=THEME_COLOR["white"],
+                                              btn_txtcolor=THEME_COLOR["primary"],
+                                              btn_hover_bgcolor=THEME_COLOR["white_hvr"])
     #   group frame
     title_label.setFixedHeight(24)
     #  inner
@@ -140,21 +155,8 @@ class PageImport(PageTemplate):
     return frame
   
   
-  def core_sect_import_dataset(self) -> QWidget:
-    #  scope: core seciton
-    browser_container = self.create_browser_container()
-    preview_container = self.create_preview_container()
-    import_container = self.create_import_container()
-    #  outer
-    core_sect = QWidget()
-    core_sect_layout = QVBoxLayout()
-    core_sect_layout.addWidget(browser_container, alignment=Qt.AlignTop)
-    core_sect_layout.addWidget(preview_container, alignment=Qt.AlignTop)
-    core_sect_layout.addWidget(import_container, alignment=Qt.AlignTop)
-    core_sect_layout.setSpacing(4)
-    core_sect_layout.setContentsMargins(0, 0, 0, 0)
-    core_sect.setLayout(core_sect_layout)
-    return core_sect
+  
+  #  METHODS -  BOXES
   
   
   def browser_comp_box(self, 
@@ -178,13 +180,13 @@ class PageImport(PageTemplate):
                                                   btn_hover_bgcolor=THEME_COLOR["white_hvr"])
     #  update temp labels list
     if lb_text == DATASET_LIST[1]["data"]:
-        self.temp_label_user = path_label
+        self.app.pages_fact.temp_label_users = path_label
     elif lb_text == DATASET_LIST[2]["data"]:
-        self.temp_label_comp = path_label
+        self.app.pages_fact.temp_label_activities = path_label
     elif lb_text == DATASET_LIST[3]["data"]:
-        self.temp_label_activity = path_label
+        self.app.pages_fact.temp_label_components = path_label
     #  learnt: .clicked is the signal itself, further connect to the function
-    search_btn.clicked.connect(lambda: self.app.file_cont.browse_files(target=lb_text, 
+    search_btn.clicked.connect(lambda: self.app.file_cont.browse_files(target_key=lb_text, 
                                                                        lb_widget=path_label))
     #  path layer for spec styling
     p_frame = QFrame()
@@ -265,3 +267,24 @@ class PageImport(PageTemplate):
     i_frame_layout.setSpacing(0)
     i_frame.setLayout(i_frame_layout)
     return i_frame
+  
+  
+  #  OTHERS
+  
+  def reset_state_pageImport(self) -> None:
+    
+    parent = self.app.pages_fact
+    
+    #  state reset 
+    parent.temp_path_users = None
+    parent.temp_path_activities = None
+    parent.temp_path_components = None
+    
+    #  UI reset
+    if parent.temp_label_users:
+        parent.temp_label_users.setText("")
+    if parent.temp_label_activities:
+        parent.temp_label_activities.setText("")
+    if parent.temp_label_components:
+        parent.temp_label_components.setText("")
+      

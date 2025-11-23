@@ -1,5 +1,7 @@
 from views import UserInterface
 from infra.DebugLogger import DebugLogger
+import inspect
+import models.SQLConnector
 
 
 #  LOGGING
@@ -13,6 +15,7 @@ def main():
   
   #  UI -  PyQt5
   user_interface = UserInterface()
+  print("SQLConnector from:", inspect.getfile(models.SQLConnector))
   user_interface.run_app()
   
 #  OUTPUT

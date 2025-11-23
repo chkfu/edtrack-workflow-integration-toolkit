@@ -1,9 +1,16 @@
 import sys
+import os
 import logging
 from PyQt5.QtWidgets import QApplication, QWidget
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
 from controllers import AppController, NavController, FileController, ValidController
-from models import DataLoader
+from models import SQLConnector, DataLoader
+from dotenv import load_dotenv
+
+
+
+#  ENVIRONMENT
+load_dotenv(dotenv_path="config.env")
 
 
 #  LOGGER
@@ -31,6 +38,11 @@ class UserInterface:
     self.pages_fact = None
     
     #  setup pipeline
+    self.sql_connector = SQLConnector(host=os.getenv("DB_HOST"),
+                                      user=os.getenv("DB_USER"),
+                                      password=os.getenv("DB_PW"),
+                                      database = os.getenv("DB_NAME"),
+                                      port= os.getenv("DB_PORT"))
     self.data_loader = DataLoader()
     
     #  setup controllers

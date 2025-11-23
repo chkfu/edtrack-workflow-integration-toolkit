@@ -12,7 +12,8 @@ SQL_COMMANDS = {
       CREATE TABLE IF NOT EXISTS Users (
         user_id         INT           AUTO_INCREMENT PRIMARY KEY,
         user_name       VARCHAR(20)   NOT NULL,
-        date            DATETIME      NOT NULL
+        date            DATE          NOT NULL,
+        time            TIME          NOT NULL
       );
     """,
     
