@@ -26,7 +26,7 @@ class PageMerge(PageTemplate):
   def merge_sections(self):
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 3: Merge Tables", 
-                                                sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
+                                              sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
     #  statistic section
     inner_stat_sect = self.create_stat_sect(target_page=3)
     #  nav section
