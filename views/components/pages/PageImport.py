@@ -39,7 +39,8 @@ class PageImport(PageTemplate):
     core_sect_layout.addWidget(browser_container, alignment=Qt.AlignTop)
     core_sect_layout.addWidget(preview_container, alignment=Qt.AlignTop)
     # core_sect_layout.addWidget(import_container, alignment=Qt.AlignTop)
-    core_sect_layout.setSpacing(4)
+    core_sect_layout.setAlignment(Qt.AlignTop)
+    core_sect_layout.setSpacing(8)
     core_sect_layout.setContentsMargins(0, 0, 0, 0)
     core_sect.setLayout(core_sect_layout)
     return core_sect
@@ -87,7 +88,7 @@ class PageImport(PageTemplate):
       content_layout.addWidget(comp_broswer)
       content_layout.setAlignment(Qt.AlignTop) 
       content_layout.setSpacing(4)
-      content_layout.setContentsMargins(0, 8, 0, 0) 
+      content_layout.setContentsMargins(0, 0, 0, 0) 
       content.setLayout(content_layout)
       return content
     

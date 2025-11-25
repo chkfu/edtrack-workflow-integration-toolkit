@@ -1,6 +1,7 @@
 import pandas as pd
 import logging
 from state.DatasetState import DatasetState
+from views.components.config.views_config import DATASET_LIST
 
 
 #  CLASS
@@ -17,15 +18,16 @@ class CleaningState:
     self.ds_components = DatasetState()
     
     #  identify curr state
-    self.clean_target = "users"
+    opt_list = [item["data"] for item in DATASET_LIST[1:4]]
+    self.clean_target = opt_list[0]
     
     #  methods - switching datasets
     def get_clean_target(self) -> str:
-      if self.clean_target == "users":
+      if self.clean_target == opt_list[0]:
         return self.ds_users
-      elif self.clean_target == "activities":
+      elif self.clean_target == opt_list[1]:
         return self.ds_activities
-      elif self.ds_components == "components":
+      elif self.ds_components == opt_list[2]:
         return self.ds_components
       else:
         raise ValueError("Data cleaning target is not found.")
