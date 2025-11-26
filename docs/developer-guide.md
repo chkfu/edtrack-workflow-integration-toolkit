@@ -26,7 +26,7 @@ It is a desktop application to be utilised for cleaning and transforming student
 
 ## II. Environment Setup
 
-Run the project with Python 13.3+ version.
+Run the project with Python 3.13+ version.
 
 ### A. Create the virtual environment:
 ```
@@ -115,7 +115,7 @@ Under MVC structure, the Application's logic, behavior and display perform indep
 
 ```
 [Action]  ->  [Widget]  ->  [Validation]  ->  [Data Handling]  ->  [Result]  ->  [Updated Widget]
- (user)        (view)       (controller)       (model, if need)  (controller)         (view)   
+ (user)        (view)       (controller)      (model, if need)   (controller)        (view)   
 ```
 
 #### (1) Button Events
@@ -227,10 +227,12 @@ Our practice based on the application workflow:
 (c) raising critical errors, terminating the workflow.
 
 Among various modules, the criteria:
-- models: both logging and raised error, ensure accurate data transformation
-- views: UI notification preferred for tency, except logging for system crashes.
-- controllers: logging cross-domain events preferred. Preventing the intersection between different logics impacted the board services' consistencies.
-- i/o: logging all pass and failed conditions, enabling further tracing errors that happened in the system entry and exit points.
+| Layer | Notes |
+|-------|-------|
+| **models** | Both logging and raised error, ensure accurate data transformation. |
+| **views** | UI notification preferred for tency, except logging for system crashes. |
+| **controllers** | Logging cross-domain events preferred. Preventing the intersection between different logics impacted the board services' consistencies. |
+| **I/O** | logging all pass and failed conditions, enabling further tracing errors that happened in the system entry and exit points. |
 
 
 #### (4) Logging Management
@@ -250,7 +252,7 @@ If you encounter the warning message:
 
 "Import "pandas" could not be resolved."
 
-#### (1) Check whether Python 13.3+ has been installed, and re-install the dependencies:
+#### (1) Check whether Python 3.13+ has been installed, and re-install the dependencies:
 ```
 $ pip install -r requirements.txt
 ```
@@ -263,8 +265,8 @@ $ python3 -c "import PyQt5; print('PyQt5 installed')"
 If the warning still exists, select the correct interpreter.
 
 (a) Open VS code, and press:
-\-  macOS: Cmd + Shift + P
-\-  Windows: Ctrl + Shift + P
+- macOS: `Cmd + Shift + P`
+- Windows: `Ctrl + Shift + P`
 (b) Select "Python: Select Interpreter"
 (c) Select "Python 3.13.0 (.venv)"
 
@@ -299,7 +301,7 @@ from models.config.monthList import MONTH_LIST
 
 Please run the program again and see whether the error still exists.
 ```
-python3 app.py
+$ python3 app.py
 ```
 
 ___
