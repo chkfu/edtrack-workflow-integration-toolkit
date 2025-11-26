@@ -24,7 +24,7 @@ This file records the major version changes of the projects.
 
 ### Added
 
-- Added tabs structure for sub-pages setting
+- Added tabs structure for reusable sub-pages setting
 - Added states folder for global state management
 
 ### Edited

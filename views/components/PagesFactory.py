@@ -24,10 +24,6 @@ class PagesFactory:
     self.temp_path_users: str = None
     self.temp_path_activities: str = None
     self.temp_path_components: str = None
-    # #  store temp tables
-    # self.temp_table_user: pd.DataFrame = None
-    # self.temp_table_activity: pd.DataFrame = None
-    # self.temp_table_component: pd.DataFrame = None
     #  store temp labels (for reset)
     #  learnt: emb to render the state again, unlike declared variables
     self.temp_label_users: QLabel = None
