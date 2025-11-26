@@ -19,6 +19,29 @@ This file records the major version changes of the projects.
 <br/>
 
 
+
+## [0.1.2] - 
+
+### Added
+
+- Added tabs structure for sub-pages setting
+- Added states folder for global state management
+
+### Edited
+
+- Updated documentation
+
+### Fixed
+
+- Fixed earlier component generation bugs
+
+### Removed
+
+- Deleted script folder, considering models logic need to be adjust for UI
+
+<br/>
+
+
 ## [0.1.2] - 2025-11-22
 
 ### Added

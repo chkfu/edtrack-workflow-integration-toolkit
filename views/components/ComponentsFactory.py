@@ -6,12 +6,13 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
   QLabel, QPushButton, QMessageBox, QDialog, QVBoxLayout, QFrame, QHBoxLayout, 
   QGridLayout, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView, 
-  QComboBox
+  QComboBox, QWidget, QButtonGroup, QRadioButton
 )
 from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
     style_sidebar_listItem_default
 )
+from views.components.config.views_config import DATASET_LIST
 
 
 #  LOGGING
@@ -84,7 +85,7 @@ class ComponentsFactory:
     if btn_event:
       btn.clicked.connect(btn_event)
     return btn
-    
+  
     
   def build_msg_box(self,
                     title: str | None, 
@@ -188,6 +189,7 @@ class ComponentsFactory:
     table.setStyleSheet("border: 0.5px solid #333333")
     return table
   
+  
   def build_popup_wd(self, 
                      wd_title:str,
                      target_df: pd.DataFrame,
@@ -279,3 +281,116 @@ class ComponentsFactory:
     window.setLayout(window_layout)
     window.exec()
     
+    
+  #  component box
+  
+  def browser_comp_box(self, 
+                       lb_text: str="", 
+                       path_txt: str="",
+                       btn_text:str="",
+                       btn_event: Callable | None =None) -> QFrame:
+    #  components
+    title_label = self.app.comp_fact.build_label(lb_text=lb_text,
+                                                     lb_type="h3",
+                                                     lb_txtcolor=THEME_COLOR["mid"],
+                                                     lb_align=Qt.AlignVCenter | Qt.AlignLeft)
+    path_label = self.app.comp_fact.build_label(lb_text=path_txt,
+                                                    lb_type="p",
+                                                    lb_txtcolor=THEME_COLOR["mid"],
+                                                    lb_align=Qt.AlignVCenter | Qt.AlignLeft)
+    search_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
+                                                  btn_event=btn_event,
+                                                  btn_bgcolor=THEME_COLOR["white"],
+                                                  btn_txtcolor=THEME_COLOR["primary"],
+                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    #  update temp labels list
+    if lb_text == DATASET_LIST[1]["data"]:
+        self.app.pages_fact.temp_label_users = path_label
+    elif lb_text == DATASET_LIST[2]["data"]:
+        self.app.pages_fact.temp_label_activities = path_label
+    elif lb_text == DATASET_LIST[3]["data"]:
+        self.app.pages_fact.temp_label_components = path_label
+    #  learnt: .clicked is the signal itself, further connect to the function
+    search_btn.clicked.connect(lambda: self.app.file_cont.browse_files(target_key=lb_text, 
+                                                                       lb_widget=path_label))
+    #  path layer for spec styling
+    p_frame = QFrame()
+    p_frame_layout = QVBoxLayout()
+    p_frame.setStyleSheet("""
+        QFrame {
+            background-color: "#dddddd";
+            border-radius: 14px;
+            padding: 0px 4px;
+        }
+    """)
+    p_frame_layout.addWidget(path_label)
+    p_frame.setFixedWidth(320)
+    p_frame_layout.setContentsMargins(8, 0, 8, 0)
+    p_frame_layout.setSpacing(8)
+    p_frame.setLayout(p_frame_layout)
+    #  overall layer
+    frame = QFrame()
+    frame_layout = QGridLayout()
+    frame_layout.addWidget(title_label, 0, 0, 1, 2)
+    frame_layout.addWidget(p_frame, 1, 0, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(search_btn, 1, 1, alignment=Qt.AlignCenter)
+    frame_layout.setContentsMargins(0, 0, 0, 0)
+    frame_layout.setSpacing(0)
+    frame.setLayout(frame_layout)
+    return frame
+  
+  
+  def preview_comp_box(self, 
+                       lb_text: str="", 
+                       btn_text:str="",
+                       btn_event: Callable | None =None) -> QFrame:
+    
+  
+    #  components
+    preview_label = self.app.comp_fact.build_label(lb_text=lb_text,
+                                                      lb_type="h3",
+                                                      lb_txtcolor=THEME_COLOR["mid"],
+                                                      lb_align=Qt.AlignVCenter | Qt.AlignCenter)
+    preview_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
+                                                  btn_event=btn_event,
+                                                  btn_bgcolor=THEME_COLOR["white"],
+                                                  btn_txtcolor=THEME_COLOR["primary"],
+                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    #  individual frame
+    i_frame = QFrame()
+    i_frame_layout = QVBoxLayout()
+    i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
+    i_frame_layout.addWidget(preview_btn, alignment=Qt.AlignCenter)
+    i_frame_layout.setContentsMargins(0, 0, 0, 0)
+    i_frame_layout.setSpacing(0)
+    i_frame.setLayout(i_frame_layout)
+    return i_frame
+  
+  
+  def build_radio_group(self, 
+                        target_list: list,
+                        target_event: Callable=None,
+                        is_horizontal: bool=True):
+    
+    #  Learnt: QButtonGroup is also a logical object, still need an visual body
+    container = QWidget()
+    group = QButtonGroup()
+    if is_horizontal:
+      group_layout = QHBoxLayout()
+    else:
+      group_layout = QVBoxLayout()
+    
+    for index, opt in enumerate(target_list):
+      btn = QRadioButton(opt)
+      group.addButton(btn, index)
+      group_layout.addWidget(btn)
+      
+    if target_event:
+      group.buttonClicked.connect(lambda el: target_event(el.text()))
+      
+    group_layout.setSpacing(8)
+    group_layout.setAlignment(Qt.AlignLeft)
+    group_layout.setContentsMargins(0, 0, 0, 0) 
+    container.setLayout(group_layout)
+    
+    return {"widget": container, "group": group}

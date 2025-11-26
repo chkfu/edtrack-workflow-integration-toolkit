@@ -25,7 +25,9 @@ class UserInterface:
   def __init__(self):
     
     #  setup this app
-    self.app = None
+    #  Remarks: either setup QApplication at first, or setup other components in another function
+    #           the order of QApplication always superior than others
+    self.app = QApplication(sys.argv)
     self.window = None
     
     #  setup factory classes
@@ -33,9 +35,12 @@ class UserInterface:
     Reminder: set None, prevent access controller or components before
               application initialised
     """
-    self.comp_fact = None
-    self.layout_fact = None
-    self.pages_fact = None
+    
+    #  Learnt: from less dependent to most dependent, prevent initialising conflicts
+    #          (i.e. create before lower layer exists - nothing to be created)
+    self.comp_fact = ComponentsFactory(app_ref=self)
+    self.pages_fact = PagesFactory(app_ref=self)
+    self.layout_fact = LayoutFactory(app_ref=self)
     
     #  setup pipeline
     self.sql_connector = SQLConnector(host=os.getenv("DB_HOST"),
@@ -57,20 +62,11 @@ class UserInterface:
     self.df_components = None
     self.df_processed = None
     self.df_merged = None
+    
+    #  setup page stack
+    self.page_stack = self.layout_fact.page_stack
 
     
-    
-  #  METHODS - SETUP
-    
-  def setup_app(self) -> None:
-    #  allow child class to use parent constructors
-    self.app = QApplication(sys.argv)
-    #  setup child classes
-    self.comp_fact = ComponentsFactory(app_ref=self)
-    self.pages_fact = PagesFactory(app_ref=self)
-    self.layout_fact = LayoutFactory(app_ref=self)
-    #  setup the stacks for transitional views
-    self.page_stack = self.layout_fact.page_stack
 
   def finalise_app(self, widget: QWidget) -> None:
     widget.show()
@@ -83,7 +79,6 @@ class UserInterface:
     
     try:  
       #  prepare ui
-      self.setup_app()
       widget_window = self.layout_fact.create_window()
       self.finalise_app(widget=widget_window)
       logger.info("User Interface started to run sucessfully.")

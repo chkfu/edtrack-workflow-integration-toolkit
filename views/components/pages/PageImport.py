@@ -70,13 +70,13 @@ class PageImport(PageTemplate):
       container_title = self.app.comp_fact.build_label(lb_text="A.  Browse Files",
                                                            lb_type="h3",
                                                            lb_align=Qt.AlignLeft)
-      user_broswer = self.browser_comp_box(lb_text=DATASET_LIST[1]["data"], 
+      user_broswer = self.app.comp_fact.browser_comp_box(lb_text=DATASET_LIST[1]["data"], 
                                           path_txt="",
                                           btn_text="Search")
-      activity_broswer = self.browser_comp_box(lb_text=DATASET_LIST[2]["data"], 
+      activity_broswer = self.app.comp_fact.browser_comp_box(lb_text=DATASET_LIST[2]["data"], 
                                             path_txt="",
                                             btn_text="Search")
-      comp_broswer = self.browser_comp_box(lb_text=DATASET_LIST[3]["data"], 
+      comp_broswer = self.app.comp_fact.browser_comp_box(lb_text=DATASET_LIST[3]["data"], 
                                               path_txt="",
                                               btn_text="Search")
       #  scope: container
@@ -99,13 +99,13 @@ class PageImport(PageTemplate):
                                                   lb_txtcolor=THEME_COLOR["primary"],
                                                   lb_align=Qt.AlignVCenter | Qt.AlignLeft)
     #   group frame
-    user_box= self.preview_comp_box(lb_text=DATASET_LIST[1]["data"], 
+    user_box= self.app.comp_fact.preview_comp_box(lb_text=DATASET_LIST[1]["data"], 
                                     btn_text="Preview",
                                     btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[1]["data"]))
-    activity_box  = self.preview_comp_box(lb_text=DATASET_LIST[2]["data"], 
+    activity_box  = self.app.comp_fact.preview_comp_box(lb_text=DATASET_LIST[2]["data"], 
                                         btn_text="Preview",
                                         btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[2]["data"]))
-    comp_box = self.preview_comp_box(lb_text=DATASET_LIST[3]["data"], 
+    comp_box = self.app.comp_fact.preview_comp_box(lb_text=DATASET_LIST[3]["data"], 
                                       btn_text="Preview",
                                       btn_event=lambda: self.app.file_cont.preview_dataset(target_key=DATASET_LIST[3]["data"]))
     title_label.setFixedHeight(24)
@@ -159,115 +159,31 @@ class PageImport(PageTemplate):
   
   #  METHODS -  BOXES
   
-  
-  def browser_comp_box(self, 
-                       lb_text: str="", 
-                       path_txt: str="",
-                       btn_text:str="",
-                       btn_event: Callable | None =None) -> QFrame:
-    #  components
-    title_label = self.app.comp_fact.build_label(lb_text=lb_text,
-                                                     lb_type="h3",
-                                                     lb_txtcolor=THEME_COLOR["mid"],
-                                                     lb_align=Qt.AlignVCenter | Qt.AlignLeft)
-    path_label = self.app.comp_fact.build_label(lb_text=path_txt,
-                                                    lb_type="p",
-                                                    lb_txtcolor=THEME_COLOR["mid"],
-                                                    lb_align=Qt.AlignVCenter | Qt.AlignLeft)
-    search_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
-                                                  btn_event=btn_event,
-                                                  btn_bgcolor=THEME_COLOR["white"],
-                                                  btn_txtcolor=THEME_COLOR["primary"],
-                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    #  update temp labels list
-    if lb_text == DATASET_LIST[1]["data"]:
-        self.app.pages_fact.temp_label_users = path_label
-    elif lb_text == DATASET_LIST[2]["data"]:
-        self.app.pages_fact.temp_label_activities = path_label
-    elif lb_text == DATASET_LIST[3]["data"]:
-        self.app.pages_fact.temp_label_components = path_label
-    #  learnt: .clicked is the signal itself, further connect to the function
-    search_btn.clicked.connect(lambda: self.app.file_cont.browse_files(target_key=lb_text, 
-                                                                       lb_widget=path_label))
-    #  path layer for spec styling
-    p_frame = QFrame()
-    p_frame_layout = QVBoxLayout()
-    p_frame.setStyleSheet("""
-        QFrame {
-            background-color: "#dddddd";
-            border-radius: 14px;
-            padding: 0px 4px;
-        }
-    """)
-    p_frame_layout.addWidget(path_label)
-    p_frame.setFixedWidth(320)
-    p_frame_layout.setContentsMargins(8, 0, 8, 0)
-    p_frame_layout.setSpacing(8)
-    p_frame.setLayout(p_frame_layout)
-    #  overall layer
-    frame = QFrame()
-    frame_layout = QGridLayout()
-    frame_layout.addWidget(title_label, 0, 0, 1, 2)
-    frame_layout.addWidget(p_frame, 1, 0, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(search_btn, 1, 1, alignment=Qt.AlignCenter)
-    frame_layout.setContentsMargins(0, 0, 0, 0)
-    frame_layout.setSpacing(0)
-    frame.setLayout(frame_layout)
-    return frame
-  
-  
-  def preview_comp_box(self, 
-                       lb_text: str="", 
-                       btn_text:str="",
-                       btn_event: Callable | None =None) -> QFrame:
-    
-  
-    #  components
-    preview_label = self.app.comp_fact.build_label(lb_text=lb_text,
-                                                      lb_type="h3",
-                                                      lb_txtcolor=THEME_COLOR["mid"],
-                                                      lb_align=Qt.AlignVCenter | Qt.AlignCenter)
-    preview_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
-                                                  btn_event=btn_event,
-                                                  btn_bgcolor=THEME_COLOR["white"],
-                                                  btn_txtcolor=THEME_COLOR["primary"],
-                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    #  individual frame
-    i_frame = QFrame()
-    i_frame_layout = QVBoxLayout()
-    i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
-    i_frame_layout.addWidget(preview_btn, alignment=Qt.AlignCenter)
-    i_frame_layout.setContentsMargins(0, 0, 0, 0)
-    i_frame_layout.setSpacing(0)
-    i_frame.setLayout(i_frame_layout)
-    return i_frame
-  
-  
-  def import_comp_box(self, 
-                       lb_text: str="", 
-                       path_txt: str="",
-                       btn_text:str="") -> QFrame:
-      #  components
-    preview_label = self.app.comp_fact.build_label(lb_text=lb_text,
-                                                  lb_type="h3",
-                                                  lb_txtcolor=THEME_COLOR["mid"],
-                                                  lb_align=Qt.AlignVCenter | Qt.AlignCenter)
-    preview_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
-                                                  btn_event="None",
-                                                  btn_bgcolor=THEME_COLOR["white"],
-                                                  btn_txtcolor=THEME_COLOR["primary"],
-                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    #  avtivate btn event
-    preview_btn.clicked.connect(lambda: self.app.file_cont.preview_dataset(target_dataset=path_txt))
-    #  individual frame
-    i_frame = QFrame()
-    i_frame_layout = QVBoxLayout()
-    i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
-    i_frame_layout.addWidget(preview_btn, alignment=Qt.AlignCenter)
-    i_frame_layout.setContentsMargins(0, 8, 0, 0)
-    i_frame_layout.setSpacing(0)
-    i_frame.setLayout(i_frame_layout)
-    return i_frame
+  # def import_comp_box(self, 
+  #                      lb_text: str="", 
+  #                      path_txt: str="",
+  #                      btn_text:str="") -> QFrame:
+  #     #  components
+  #   preview_label = self.app.comp_fact.build_label(lb_text=lb_text,
+  #                                                 lb_type="h3",
+  #                                                 lb_txtcolor=THEME_COLOR["mid"],
+  #                                                 lb_align=Qt.AlignVCenter | Qt.AlignCenter)
+  #   preview_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
+  #                                                 btn_event="None",
+  #                                                 btn_bgcolor=THEME_COLOR["white"],
+  #                                                 btn_txtcolor=THEME_COLOR["primary"],
+  #                                                 btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+  #   #  avtivate btn event
+  #   preview_btn.clicked.connect(lambda: self.app.file_cont.preview_dataset(target_dataset=path_txt))
+  #   #  individual frame
+  #   i_frame = QFrame()
+  #   i_frame_layout = QVBoxLayout()
+  #   i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
+  #   i_frame_layout.addWidget(preview_btn, alignment=Qt.AlignCenter)
+  #   i_frame_layout.setContentsMargins(0, 8, 0, 0)
+  #   i_frame_layout.setSpacing(8)
+  #   i_frame.setLayout(i_frame_layout)
+  #   return i_frame
   
   
   #  OTHERS

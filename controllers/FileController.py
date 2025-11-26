@@ -114,7 +114,7 @@ class FileController:
     target_path = path_map[target_key]
     if not target_path:
       return self.app.comp_fact.build_reminder_box(title="Error",
-                                                  txt_msg="[Error] Failed to search the path of selected dataset.")
+                                                   txt_msg="[Error] Failed to search the path of selected dataset.")
 
     #  store target dataset in temp states for preview
     #  remarks: needs to try-catch for data-loader, considering SQL might crash

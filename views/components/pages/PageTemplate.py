@@ -28,17 +28,17 @@ class PageTemplate:
 
      # inner - title
     title = self.app.comp_fact.build_label(lb_text=sect_title, 
-                                                lb_type="h2", 
-                                                lb_align=Qt.AlignVCenter | Qt.AlignLeft,
-                                                lb_bold=True)
+                                          lb_type="h2", 
+                                          lb_align=Qt.AlignVCenter | Qt.AlignLeft,
+                                          lb_bold=True)
     title.setFixedHeight(32)
     
     # inner - item list
     description = self.app.comp_fact.build_label(lb_text=sect_des, 
-                                                    lb_txtcolor=THEME_COLOR["mid"],
-                                                    lb_type="h3", 
-                                                    lb_align=Qt.AlignLeft, 
-                                                    lb_wrap=True)  
+                                                lb_txtcolor=THEME_COLOR["mid"],
+                                                lb_type="h3", 
+                                                lb_align=Qt.AlignLeft, 
+                                                lb_wrap=True)  
     # outer
     title_sect = QWidget()
     title_sect_layout  = QVBoxLayout()
@@ -159,10 +159,10 @@ class PageTemplate:
       layout.addWidget(inner_stat_sect, 1, 0)
       layout.addWidget(inner_nav_sect, 2, 0)
       layout.setRowStretch(0, 2)
-      layout.setRowStretch(1, 8)
-      layout.setRowStretch(2, 1)
+      layout.setRowStretch(1, 10)
+      layout.setRowStretch(2, 2)
       layout.setContentsMargins(24, 16, 24, 24)
-      layout.setSpacing(12)
+      layout.setSpacing(8)
       return layout
   
   
