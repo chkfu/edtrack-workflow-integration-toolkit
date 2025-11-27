@@ -53,7 +53,7 @@ ___
 ___
 
 
-## III。Project Structure
+## III. Project Structure
 
 The application adopts MVC pattern. 
 

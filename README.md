@@ -1,7 +1,7 @@
 ## EdTrack - Data Integration Toolkit
 
 <br/>
----
+
 
 ### I. Overview
 
@@ -10,7 +10,7 @@ A refactored version of my earlier coursework rebuilt into a modularised Python 
 It is designed to tailor-made a standard workflow for analysing student engagement and supports exporting processed datasets into designated format and storing persistent data in a SQL database.
 
 <br/>
----
+___
 
 ## II. Features
 
@@ -19,13 +19,13 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 - Basic data visualisation with Matplotlib heatmaps and pivot tables
 
 <br/>
----
+___
 
 ## III. Architecture
 
 
 <br/>
----
+___
 
 ## IV. Project Structure
 
@@ -45,7 +45,7 @@ views/         # UI layer: all UI components and structure workflow
 ```
 
 <br/>
----
+___
 
 ## IV. Workflow
 
@@ -53,7 +53,7 @@ views/         # UI layer: all UI components and structure workflow
 
 ```
 [Action]  ->  [Views]  ->  [Controllers]  ->  [Models]  ->  [Controllers]  ->  [Views]
- (user)        (widgets)       (controller)    (data pipeline)                 
+ (user)        (widgets)    (controller)    (data pipeline)                 
 ```
 
 Controllers bridge between the views and the models, handling user instruction and forwarding tasks to data or state operations.
@@ -63,8 +63,8 @@ Controllers bridge between the views and the models, handling user instruction a
 The Data Pipelines processes data with staged modules which enables data handling procedures to be flexibly swapped, extended and reused without breaking the workflow.
 
 ```
-[Loader] -> [Cleaner] -> [Manager] -> [Preprocessor] -> [Manager] -> [Visualiser] -> [Loader]
-(import)   (cleaning)    (merge)    (feature engineer) (transform)   (visualise)     (export)
+[Loader]  ->  [Cleaner]  ->  [Manager]  ->  [Preprocessor]  ->  [Manager]  ->  [Visualiser]  ->  [Loader]
+(import)      (cleaning)      (merge)      (feature engineer)  (transform)      (visualise)      (export)
 ```
 
 ### C. Views - User Interface
@@ -76,7 +76,7 @@ The User Interface applies a four-tier layer to integrate the layouts, pages, an
 ```
 
 <br/>
----
+___
 
 ## VI. Installation
 
@@ -107,7 +107,7 @@ $ python3 app.py
 ```
 
 <br/>
----
+___
 
 ## VII. Usage Guide
 
@@ -139,7 +139,7 @@ The Content is the work panel for the application, enabling users to adjust the 
 (5) Reset Button: Restores the current page to default settings.
 
 <br/>
----
+___
 
 ## VIII. Dependencies
 - Python 3.10
@@ -151,7 +151,7 @@ The Content is the work panel for the application, enabling users to adjust the 
 See `requirements.txt` for the full package list.
 
 <br/>
----
+___
 
 <i> Author: kchan </i>
 </br>

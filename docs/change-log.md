@@ -26,6 +26,7 @@ This file records the major version changes of the projects.
 
 - Added tabs structure for reusable sub-pages setting
 - Added states folder for global state management
+- Added project structure, workflow and user guide in readme.md
 
 ### Edited
 
