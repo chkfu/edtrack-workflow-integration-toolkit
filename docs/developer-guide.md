@@ -14,7 +14,7 @@ specific structure.
 
 [TOC]
 
-___
+<br/>
 
 
 ## I. Overview
@@ -44,13 +44,13 @@ $ python app.py
 
 ```
 
-___
+<br/>
 
 
 ## II. Architecture Rationale
 
 
-___
+<br/>
 
 
 ## III. Project Structure
@@ -71,8 +71,7 @@ views/         # UI layer: all UI components and structure workflow
 Each module groups logically and specialises their own duties, separating a clear layer structure with the principle of high cohesion and low coupling.  This arrangement helps to prevent cross-dependent logic with complex relations, improving future maintenance and testing with module reusability and system consistency.
 
 
-___
-
+<br/>
 
 ## IV.  Workflow Logic
 
@@ -127,7 +126,7 @@ The controller firstly validates the inputs and then proceeds the action itself,
 Finally, the pop-up window will display the diagram based on the data result, completing the request-response cycle.
 
 
-___
+<br/>
 
 
 ## V. User Interface Guide
@@ -189,7 +188,7 @@ item = str(target_df.iloc[row, col])  # ✅ convert the value to string first
 table.setItem(row, col, QTableWidgetItem(item))
 ```
 
-___
+<br/>
 
 
 ## VI Error Handling
@@ -241,7 +240,7 @@ The logger is packaged into a reusable module in the infra folder.  It prevents 
 
 The log sheet will be stored in the same folder for logical file management.
 
-___
+<br/>
 
 
 ## VII. Trouble-shooting
@@ -304,14 +303,14 @@ Please run the program again and see whether the error still exists.
 $ python3 app.py
 ```
 
-___
+<br/>
 
 
 ## VII. Limitation
 
 
 
-___
+<br/>
 
 
 ## VIII. Future Improvements

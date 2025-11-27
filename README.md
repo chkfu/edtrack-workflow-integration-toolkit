@@ -17,22 +17,16 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 - Form modular data-processing pipeline (Loader, Cleaner, Transformer, Visualiser, etc.)
 - Basic data visualisation with Matplotlib heatmaps and pivot tables
 
-<br/>
-
-## III. Demonstration
-
-*Browse and preview dataset*
 ![UI Demo](docs/demo/demo_import-export_01.gif)
 
+<br/>
+
+## III. Architecture
+
 
 <br/>
 
-## IV. Architecture
-
-
-<br/>
-
-## V. Project Structure
+## IV. Project Structure
 
 The application adopts an MVC pattern.
 
@@ -51,7 +45,7 @@ views/         # UI layer: all UI components and structure workflow
 
 <br/>
 
-## VI. Workflow
+## V. Workflow
 
 ### A. High-level Overview
 
@@ -82,7 +76,7 @@ The User Interface applies a four-tier layer to integrate the layouts, pages, an
 
 <br/>
 
-## VII. Installation
+## VI. Installation
 
  <i> Clone the Project </i>
 
@@ -112,7 +106,7 @@ $ python3 app.py
 
 <br/>
 
-## VIII. Usage Guide
+## VII. Usage Guide
 
 ### A. Initialise the Program
 
@@ -144,7 +138,7 @@ The Content is the work panel for the application, enabling users to adjust the 
 
 <br/>
 
-## IX. Dependencies
+## VIII. Dependencies
 - Python 3.10
 - pandas 2.3.3
 - numpy 2.3.4

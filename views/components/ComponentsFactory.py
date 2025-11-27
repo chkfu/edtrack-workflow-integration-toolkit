@@ -248,10 +248,14 @@ class ComponentsFactory:
       box_export_grid = QFrame()
       grid_layout = QGridLayout()
       grid_layout.addWidget(export_lb, 0, 0)
-      grid_layout.addWidget(export_ddlist, 1, 0)
-      grid_layout.addWidget(export_btn, 0, 1, 2, 1)
-      grid_layout.addWidget(box_confirm_btn)
-      grid_layout.setSpacing(0)
+      grid_layout.addWidget(export_ddlist, 0, 1, alignment=Qt.AlignLeft)
+      grid_layout.addWidget(export_btn, 0, 2)
+      grid_layout.addWidget(box_confirm_btn, 0, 3)
+      export_lb.setMaximumWidth(100)
+      export_ddlist.setMaximumWidth(100)
+      
+      grid_layout.setContentsMargins(8, 0, 8, 0)
+      grid_layout.setSpacing(8)
       box_export_grid.setLayout(grid_layout)
       
       return box_export_grid
