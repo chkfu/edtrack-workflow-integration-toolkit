@@ -22,7 +22,7 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 ## III. Demonstration
 
 *Browse and preview dataset*
-![UI Demo](docs/demo/demo_import-export_1.gif)
+![UI Demo](docs/demo/demo_import-export_01.gif)
 
 
 <br/>
