@@ -10,7 +10,6 @@ A refactored version of my earlier coursework rebuilt into a modularised Python 
 It is designed to tailor-made a standard workflow for analysing student engagement and supports exporting processed datasets into designated format and storing persistent data in a SQL database.
 
 <br/>
-___
 
 ## II. Features
 
@@ -19,15 +18,21 @@ ___
 - Basic data visualisation with Matplotlib heatmaps and pivot tables
 
 <br/>
-___
 
-## III. Architecture
+## III. Demonstration
+
+*Browse and preview dataset*
+![UI Demo](docs/demo/demo_import-export_1.gif)
 
 
 <br/>
-___
 
-## IV. Project Structure
+## IV. Architecture
+
+
+<br/>
+
+## V. Project Structure
 
 The application adopts an MVC pattern.
 
@@ -45,18 +50,17 @@ views/         # UI layer: all UI components and structure workflow
 ```
 
 <br/>
-___
 
-## IV. Workflow
+## VI. Workflow
 
 ### A. High-level Overview
+
+Controllers bridge between the views and the models, handling user instruction and forwarding tasks to data or state operations.
 
 ```
 [Action]  ->  [Views]  ->  [Controllers]  ->  [Models]  ->  [Controllers]  ->  [Views]
  (user)        (widgets)    (controller)    (data pipeline)                 
 ```
-
-Controllers bridge between the views and the models, handling user instruction and forwarding tasks to data or state operations.
 
 ### B. Models - Data Pipelines
 
@@ -68,6 +72,7 @@ The Data Pipelines processes data with staged modules which enables data handlin
 ```
 
 ### C. Views - User Interface
+
 The User Interface applies a four-tier layer to integrate the layouts, pages, and reusable components together in the decoupled and modularised structure.
 
 ```
@@ -76,9 +81,8 @@ The User Interface applies a four-tier layer to integrate the layouts, pages, an
 ```
 
 <br/>
-___
 
-## VI. Installation
+## VII. Installation
 
  <i> Clone the Project </i>
 
@@ -107,9 +111,8 @@ $ python3 app.py
 ```
 
 <br/>
-___
 
-## VII. Usage Guide
+## VIII. Usage Guide
 
 ### A. Initialise the Program
 
@@ -121,8 +124,9 @@ $ python3 app.py
 ### B. Navigation Bar
 
 The Navigation Bar handling user behabior which is relevant to application lifecycle:
-(1)  Reset button: Clears all temporary states and restores global default settings.
-(2)  Exit button: Safely shuts down all running processes.
+
+(1) Reset button: Clears all temporary states and restores global default settings.<br/>
+(2) Exit button: Safely shuts down all running processes.<br/>
 
 ### C. Side Bar
 
@@ -132,16 +136,15 @@ The Side Bar display the workflow progress and the dataset status.
 
 The Content is the work panel for the application, enabling users to adjust the configurations for data transformation and further analysis.
 
-(1) Browse button: Opens a file dialog to select an input dataset.
-(2) Preview button: Displays a pop-up window with tables or diagrams, including export options.
-(3) Export Button: Opens a file dialog to choose an output destination.
-(4) Navigation Button: Moves between workflow pages.
-(5) Reset Button: Restores the current page to default settings.
+(1) Browse button: Opens a file dialog to select an input dataset.<br/>
+(2) Preview button: Displays a pop-up window with tables or diagrams, including export options.<br/>
+(3) Export Button: Opens a file dialog to choose an output destination.<br/>
+(4) Navigation Button: Moves between workflow pages.<br/>
+(5) Reset Button: Restores the current page to default settings.<br/>
 
 <br/>
-___
 
-## VIII. Dependencies
+## IX. Dependencies
 - Python 3.10
 - pandas 2.3.3
 - numpy 2.3.4
@@ -151,7 +154,6 @@ ___
 See `requirements.txt` for the full package list.
 
 <br/>
-___
 
 <i> Author: kchan </i>
 </br>
