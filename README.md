@@ -17,20 +17,32 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 - Form modular data-processing pipeline (Loader, Cleaner, Transformer, Visualiser, etc.)
 - Basic data visualisation with Matplotlib heatmaps and pivot tables
 
-![UI Demo](docs/demo/demo_import-export_01.gif)
+<p>
+  <img src="docs/demo/demo_import-export_01.gif" width="60%">
+</p>
 
 <br/>
 
 ## III. Architecture
 
+###  A.  Overall Design
+
+This project adopts a modular, layered architecture that separates UI, logic, and data operations to maintain clarity, scalability and maintainability.
+
+
+### B.  MVC Layered Structure
+
+The system follows an MVC-inspired structure: views handle UI components, controllers coordinate behaviours, and models manage data operations.
+
+
+### C.  Object-oriented Programming
+
+The system applies OOP to break data handling and workflow logic into small, independent modules following single-responsibility principles. Encapsulation and abstraction decoupled the modules and enable new features to be extended or overridden without impact the overall structure.
+
 
 <br/>
 
 ## IV. Project Structure
-
-The application adopts an MVC pattern.
-
-Each module only specialises in single responsibility to maintain the clean and independent system, making future testing maintenance and extension simpler.
 
 ```
 controllers/   # logic layer: bridge views and models, manage user
@@ -49,8 +61,6 @@ views/         # UI layer: all UI components and structure workflow
 
 ### A. High-level Overview
 
-Controllers bridge between the views and the models, handling user instruction and forwarding tasks to data or state operations.
-
 ```
 [Action]  ->  [Views]  ->  [Controllers]  ->  [Models]  ->  [Controllers]  ->  [Views]
  (user)        (widgets)    (controller)    (data pipeline)                 
@@ -58,16 +68,12 @@ Controllers bridge between the views and the models, handling user instruction a
 
 ### B. Models - Data Pipelines
 
-The Data Pipelines processes data with staged modules which enables data handling procedures to be flexibly swapped, extended and reused without breaking the workflow.
-
 ```
 [Loader]  ->  [Cleaner]  ->  [Manager]  ->  [Preprocessor]  ->  [Manager]  ->  [Visualiser]  ->  [Loader]
 (import)      (cleaning)      (merge)      (feature engineer)  (transform)      (visualise)      (export)
 ```
 
 ### C. Views - User Interface
-
-The User Interface applies a four-tier layer to integrate the layouts, pages, and reusable components together in the decoupled and modularised structure.
 
 ```
 [UserInterface]  -> [LayoutFactory]  ->  [PageFactory]  ->  [ComponentFactory]
@@ -117,7 +123,7 @@ $ python3 app.py
 
 ### B. Navigation Bar
 
-The Navigation Bar handling user behabior which is relevant to application lifecycle:
+The Navigation Bar handling user behavior which is relevant to application lifecycle:
 
 (1) Reset button: Clears all temporary states and restores global default settings.<br/>
 (2) Exit button: Safely shuts down all running processes.<br/>
