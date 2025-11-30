@@ -34,13 +34,13 @@ class ComponentsFactory:
   #  build components
   
   def build_label(self, 
-                lb_text: str | None,
-                lb_type: str="p",
-                lb_txtcolor: str=THEME_COLOR["primary"],
-                lb_align: Qt.AlignmentFlag=Qt.AlignCenter,
-                lb_bold: bool=False,
-                lb_italic: bool=False,
-                lb_wrap: bool=False) -> QLabel:
+                  lb_text: str | None,
+                  lb_type: str="p",
+                  lb_txtcolor: str=THEME_COLOR["primary"],
+                  lb_align: Qt.AlignmentFlag=Qt.AlignCenter,
+                  lb_bold: bool=False,
+                  lb_italic: bool=False,
+                  lb_wrap: bool=False) -> QLabel:
     lb = QLabel(lb_text)
     font = lb.font()
     font.setFamily("Impact")
@@ -378,7 +378,8 @@ class ComponentsFactory:
     
     #  Learnt: QButtonGroup is also a logical object, still need an visual body
     container = QWidget()
-    group = QButtonGroup()
+    #  Learnt: will go to gabage if not add parent container
+    group = QButtonGroup(container)
     if is_horizontal:
       group_layout = QHBoxLayout()
     else:
@@ -388,9 +389,10 @@ class ComponentsFactory:
       btn = QRadioButton(opt)
       group.addButton(btn, index)
       group_layout.addWidget(btn)
-      
+    
+    #  Learnt: 2 options can be returned
     if target_event:
-      group.buttonClicked.connect(lambda el: target_event(el.text()))
+      group.buttonClicked.connect(lambda el: target_event(el.text(), el.isChecked()))
       
     group_layout.setSpacing(8)
     group_layout.setAlignment(Qt.AlignLeft)

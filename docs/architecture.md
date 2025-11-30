@@ -78,7 +78,13 @@ state/         # State management: handle state for cross-modules
 views/         # UI layer: all UI components and structure workflow
 ```
 
-### C. High-level Overview
+
+<br/>
+
+##  III.  Layers Architecture
+
+
+###  A.  Controllers - Logic
 
 Controllers bridge between the views and the models, handling user instruction and forwarding tasks to data or state operations.
 
@@ -88,11 +94,8 @@ Controllers bridge between the views and the models, handling user instruction a
 ```
 
 
-<br/>
 
-##  III.  Layers Architecture
-
-###  A. Models - Data Pipeline Modules
+###  B. Models - Data Pipeline Modules
 
 ```
 | Module       | Responsibility                                                                             |
@@ -104,7 +107,7 @@ Controllers bridge between the views and the models, handling user instruction a
 | Visualiser | Produces preview diagrams for visual display. |
 ```
 
-###  B. Models - Data Pipelines
+###  C. Models - Data Pipelines
 
 The Data Pipelines processes data with staged modules which enables data handling procedures to be flexibly swapped, extended and reused without breaking the workflow.
 
@@ -113,7 +116,7 @@ The Data Pipelines processes data with staged modules which enables data handlin
 (import)      (cleaning)      (merge)      (feature engineer)  (transform)      (visualise)      (export)
 ```
 
-###  C.  Views - UI Composition
+###  D.  Views - UI Composition
 
 ```
 | Module         | Responsibility                                                                             |
@@ -124,7 +127,7 @@ The Data Pipelines processes data with staged modules which enables data handlin
 | ComponentFactory | Creates reusable UI components and grouped toolkits to maintain visual and behavioural consistency. |
 ```
 
-###  D.  Views - User Interface
+###  E.  Views - User Interface
 
 The User Interface applies a four-tier layer to integrate the layouts, pages, and reusable components together in the decoupled and modularised structure.
 
@@ -138,4 +141,3 @@ The User Interface applies a four-tier layer to integrate the layouts, pages, an
                                             |------> [Qt Components]
                                                      (page object(s))
 ```
-

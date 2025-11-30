@@ -6,7 +6,9 @@ import pandas as pd
 #          centialised control in CleanState
 class DatasetState:
   
-  def __init__(self):
+  def __init__(self, state_name: str):
+    
+    self.state_name = state_name 
     
     #  DataFrame Management
     self.data_raw: pd.DataFrame = None
@@ -52,12 +54,14 @@ class DatasetState:
   def toggle_enable_empty(self) -> None:
     self.enable_empty = not self.enable_empty
     
-  def toggle_enable_sort(self) -> None:
-    self.enable_sort = not self.enable_sort
+  def set_enable_sort(self, target_opt: bool) -> None:
+    self.enable_sort = target_opt
     
-  def set_sort_col(self, target_col: str, ascending=True):
+  def set_sort_col(self, target_col: str) -> None:
     self.sort_col = target_col
-    self.sort_ascending = ascending
+
+  def set_sort_ascending(self, target_opt: bool | None) -> None:
+    self.sort_ascending = target_opt
     
     
   #  set advanced cleaning opt

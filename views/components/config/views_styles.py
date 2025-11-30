@@ -83,7 +83,44 @@ style_nav_sect_default = """
   QWidget {{
     padding: 4px;
     }}
+  
   """
+  
+#  LAYER 4 - PAGES
+
+style_tab_border = """
+    QTabWidget {
+        background: transparent;
+        border: none;
+    }
+    QTabWidget::pane {
+        background: transparent;
+        border: none;
+    }
+    """
+
+style_tab_scroll = """
+    QScrollArea {
+        border: none;
+        background: transparent;
+    }
+    QScrollBar:vertical {
+        width: 2px;
+        background: transparent;
+        margin: 0px;
+    }
+    QScrollBar::handle:vertical {
+        background: #23405b;
+        min-height: 16px;
+        border-radius: 3px;
+    }
+    QScrollBar::add-line, QScrollBar::sub-line {
+        height: 0px;
+    }
+    QScrollBar::handle:vertical:hover {
+        background: #365b7d;
+    }
+"""
 
 
 #  LABELS

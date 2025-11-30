@@ -20,7 +20,7 @@ This file records the major version changes of the projects.
 
 
 
-## [0.1.2] - 
+## [0.1.3] - Nov 29, 2025
 
 ### Added
 
@@ -43,7 +43,7 @@ This file records the major version changes of the projects.
 <br/>
 
 
-## [0.1.2] - 2025-11-22
+## [0.1.2] - Nov 22, 2025
 
 ### Added
 
@@ -60,7 +60,7 @@ This file records the major version changes of the projects.
 <br/>
 
 
-## [0.1.1] - 2025-11-16
+## [0.1.1] - Nov 16, 2025
 
 ### Added
 
@@ -84,7 +84,7 @@ This file records the major version changes of the projects.
 <br/>
 
 
-## [0.1.0] - 2025-10-19
+## [0.1.0] - Oct 19, 2025
 
 ### Added
 

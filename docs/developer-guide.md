@@ -13,6 +13,13 @@ specific structure.
 # DEVELOPMENT GUIDE
 
 [TOC]
+#### I. Overview
+#### II. Environment Setup
+#### III. Project Structure
+#### IV.  Workflow Logic
+#### V. User Interface Guide
+#### VI Error Handling
+#### VII. Limitation and Future Improvements
 
 <br/>
 
@@ -296,7 +303,7 @@ from core.config.monthList import MONTH_LIST
 from models.config.monthList import MONTH_LIST
 ```
 
-##### (3) Testing
+#### (3) Testing
 
 Please run the program again and see whether the error still exists.
 ```
@@ -306,11 +313,13 @@ $ python3 app.py
 <br/>
 
 
-## VII. Limitation
+## VII. Limitation and Future Improvements
 
 
 
 <br/>
 
 
-## VIII. Future Improvements
+<i> Author: kchan </i>
+</br>
+<i> Last Updated: Nov 29, 2025 </i>

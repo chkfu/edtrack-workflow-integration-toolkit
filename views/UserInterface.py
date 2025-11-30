@@ -3,8 +3,11 @@ import os
 import logging
 from PyQt5.QtWidgets import QApplication, QWidget
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
-from controllers import AppController, NavController, FileController, ValidController
-from models import SQLConnector, DataLoader
+from controllers import (
+  AppController, NavController, FileController, ValidController, CleanController
+)
+from models import SQLConnector
+from states import CleanState, DatasetState
 from dotenv import load_dotenv
 
 
@@ -30,6 +33,13 @@ class UserInterface:
     self.app = QApplication(sys.argv)
     self.window = None
     
+    #  setup controllers
+    self.app_cont = AppController(self)
+    self.nav_cont = NavController(self)
+    self.file_cont = FileController(self)
+    self.valid_cont = ValidController(self)
+    self.clean_cont = CleanController(self)
+    
     #  setup factory classes
     """ 
     Reminder: set None, prevent access controller or components before
@@ -42,20 +52,16 @@ class UserInterface:
     self.pages_fact = PagesFactory(app_ref=self)
     self.layout_fact = LayoutFactory(app_ref=self)
     
+    #  centralised global states
+    self.clean_state = CleanState()
+    
     #  setup pipeline
     self.sql_connector = SQLConnector(host=os.getenv("DB_HOST"),
                                       user=os.getenv("DB_USER"),
                                       password=os.getenv("DB_PW"),
                                       database = os.getenv("DB_NAME"),
                                       port= os.getenv("DB_PORT"))
-    self.data_loader = DataLoader()
-    
-    #  setup controllers
-    self.app_cont = AppController(self)
-    self.nav_cont = NavController(self)
-    self.file_cont = FileController(self)
-    self.valid_cont = ValidController(self)
-    
+  
     #  setup datasets
     self.df_users = None
     self.df_activities = None

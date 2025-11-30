@@ -1,9 +1,9 @@
-## EdTrack - Data Integration Toolkit
+# EdTrack - Data Integration Toolkit
 
 <br/>
 
 
-### I. Overview
+## I. Overview
 
 A refactored version of my earlier coursework rebuilt into a modularised Python application. Redesigned the client-side workflow with a new PyQt5 interface, together with the server-side data-processing pipelines with modules of import/export, cleaning, transforming and visualising student activities logs.
 
@@ -24,6 +24,9 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 <br/>
 
 ## III. Architecture
+
+<i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
+
 
 ###  A.  Overall Design
 
@@ -63,7 +66,7 @@ views/         # UI layer: all UI components and structure workflow
 
 ```
 [Action]  ->  [Views]  ->  [Controllers]  ->  [Models]  ->  [Controllers]  ->  [Views]
- (user)        (widgets)    (controller)    (data pipeline)                 
+ (user)      (widgets)      (controller)    (data pipeline)                 
 ```
 
 ### B. Models - Data Pipelines
@@ -145,11 +148,14 @@ The Content is the work panel for the application, enabling users to adjust the 
 <br/>
 
 ## VIII. Dependencies
-- Python 3.10
-- pandas 2.3.3
-- numpy 2.3.4
-- PyQt5 5.15.11
-- matplotlib 3.10.7
+
+| Category | Package    | Version |
+|----------|------------|---------|
+| Runtime  | Python     | 3.10    |
+| Library  | pandas     | 2.3.3   |
+| Library  | numpy      | 2.3.4   |
+| UI       | PyQt5      | 5.15.11 |
+| Plotting | matplotlib | 3.10.7  |
 
 See `requirements.txt` for the full package list.
 

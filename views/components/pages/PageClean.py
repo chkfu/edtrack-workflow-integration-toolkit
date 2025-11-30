@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import (
   QWidget, QGridLayout, QVBoxLayout, QRadioButton, QButtonGroup, QFrame,
-  QHBoxLayout, QCheckBox, QScrollArea, QTabWidget, QLabel
+  QHBoxLayout, QCheckBox, QScrollArea, QTabWidget, QLabel, QDialog
 )
 from PyQt5.QtCore import Qt
 from views.components.config.views_config import DATASET_LIST
 from views.components.config.views_styles import THEME_COLOR
-from views.components.config.views_styles import style_nav_sect_default
+from views.components.config.views_styles import (
+  style_nav_sect_default, style_tab_scroll, style_tab_border
+)
 from views.components.pages.PageTemplate import PageTemplate
 import logging
 from typing import Callable
@@ -42,10 +44,13 @@ class PageClean(PageTemplate):
     for title in target_ds_list:
       tab = self.build_cleaning_tab(target_title=title)
       self.tab_group.addTab(tab, title)
+    
+    #  Learnt: currentChanged method brings index naturally
+    self.tab_group.currentChanged.connect(lambda index: self.app.clean_cont.handle_clean_tab_switch(target_index=index))
     logger.info("initialised successfully.")
     
-   
-    
+
+ 
   #  METHODS
   
   def merge_sections(self):
@@ -70,16 +75,7 @@ class PageClean(PageTemplate):
   # Override
   def core_sect_clean_data(self) -> QWidget:
     tab = self.tab_group
-    tab.setStyleSheet("""
-    QTabWidget {
-        background: transparent;
-        border: none;
-    }
-    QTabWidget::pane {
-        background: transparent;
-        border: none;
-    }
-    """)
+    tab.setStyleSheet(style_tab_border)
     return tab
   
 
@@ -100,28 +96,7 @@ class PageClean(PageTemplate):
     #  scroll
     scroll = QScrollArea()
     scroll.setWidgetResizable(True)
-    scroll.setStyleSheet("""
-    QScrollArea {
-        border: none;
-        background: transparent;
-    }
-    QScrollBar:vertical {
-        width: 2px;
-        background: transparent;
-        margin: 0px;
-    }
-    QScrollBar::handle:vertical {
-        background: #23405b;
-        min-height: 16px;
-        border-radius: 3px;
-    }
-    QScrollBar::add-line, QScrollBar::sub-line {
-        height: 0px;
-    }
-    QScrollBar::handle:vertical:hover {
-        background: #365b7d;
-    }
-""")
+    scroll.setStyleSheet(style_tab_scroll)
     scroll.setWidget(core_sect)
     return scroll
   
@@ -223,9 +198,8 @@ class PageClean(PageTemplate):
   def build_rm_duplicate_box(self) -> QWidget:
     
     #  declaration
-    OPT_LIST = ["Remove duplicates for all columns.",
-                "Remove duplications for selected columns ONLY.",
-                "Keep unchanged."]
+    OPT_LIST = ["Remove Duplicates",
+                "Keep Unchanged."]
     
     #  components
     title_lb = self.app.comp_fact.build_label(lb_text="1. Remove Duplicates",
@@ -234,8 +208,8 @@ class PageClean(PageTemplate):
                                               lb_align=Qt.AlignLeft,
                                               lb_bold=True)
     radio_group = self.app.comp_fact.build_radio_group(target_list=OPT_LIST,
-                                         target_event=None,
-                                         is_horizontal=False)
+                                                       target_event=None,
+                                                       is_horizontal=False)
     
     #  frame
     frame = QWidget()
@@ -279,9 +253,8 @@ class PageClean(PageTemplate):
   def build_handle_sort_box(self) -> QWidget:
     
     #  declaration
-    OPT_LIST = ["Sort Ascendingly.",
-                "Sort Decencdingly.",
-                "Keep unsorted."]
+    OPT_LIST = ["Reorder Records.",
+                "Keep Unsorted."]
     # components
     title_lb = self.app.comp_fact.build_label(lb_text="3. Sorting",
                                             lb_type="h3",
@@ -289,7 +262,9 @@ class PageClean(PageTemplate):
                                             lb_align=Qt.AlignLeft,
                                             lb_bold=True)
     radio_group = self.app.comp_fact.build_radio_group(target_list=OPT_LIST,
-                                         target_event=None,
+                                         target_event=lambda text, checked: self.app.clean_cont.handle_clean_sort_opt(target_list=OPT_LIST,
+                                                                                                                      text=text,
+                                                                                                                      checked=checked),
                                          is_horizontal=False)
     #  frame
     frame = QWidget()
@@ -303,7 +278,64 @@ class PageClean(PageTemplate):
     return frame
   
   
+
+  #  POP-UP WINDOWS (for state management)
+  
+  def build_sort_popup(self) -> QWidget:
+    
+    #  identify target dataframe
+    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+    if curr_ds_key == self.app.clean_state.opt_list[0]:
+      target_dataframe = self.app.df_users
+    elif curr_ds_key == self.app.clean_state.opt_list[1]:
+      target_dataframe = self.app.df_activities
+    elif curr_ds_key == self.app.clean_state.opt_list[2]:
+      target_dataframe = self.app.df_components
+    else:
+      err_msg: str = "incorrect dataset key has been catched."
+      logger.error(err_msg, exc_info=True)
+      return
+    
+    #  setup options
+    OPT_LIST = ["--- Please Select ---"] + list(target_dataframe.columns)
+    ORDER_LIST = ["--- Please Select ---", "Ascending", "Descending"]
+    
+    pop_wd = QDialog()
+  
+    #  components
+    opt_lb = self.app.comp_fact.build_label(lb_text="Target Column:",
+                                            lb_txtcolor=THEME_COLOR["white"])
+    order_lb = self.app.comp_fact.build_label(lb_text="Sorting Order:",
+                                              lb_txtcolor=THEME_COLOR["white"])
+    opt_dd = self.app.comp_fact.build_dropdown(target_options=OPT_LIST,
+                                                target_default=0,
+                                                event=lambda el: self.app.clean_cont.select_sort_opt(selected_opt=el))
+    order_dd = self.app.comp_fact.build_dropdown(target_options=ORDER_LIST,
+                                                 target_default=0,
+                                                 event=lambda el: self.app.clean_cont.select_sort_order(selected_opt=el))
+    close_btn = self.app.comp_fact.build_btn(btn_text="Back", 
+                                             btn_event=lambda: self.app.clean_cont.close_clean_sort_popup(target_popup=pop_wd),
+                                             btn_bgcolor=THEME_COLOR["primary"],
+                                             btn_txtcolor=THEME_COLOR["white"],
+                                             btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+    btn_box = QWidget()
+    btn_box_layout = QHBoxLayout()
+    btn_box_layout.addWidget(close_btn, alignment=Qt.AlignCenter)
+    btn_box.setLayout(btn_box_layout)
+    #  frame
+    pop_wd.setWindowTitle("Sorting Options")
+    pop_wd_layout = QGridLayout()
+    pop_wd_layout.addWidget(opt_lb, 0, 0)
+    pop_wd_layout.addWidget(opt_dd, 0, 1)
+    pop_wd_layout.addWidget(order_lb, 1, 0)
+    pop_wd_layout.addWidget(order_dd, 1, 1)
+    pop_wd_layout.addWidget(order_dd, 1, 1)
+    pop_wd_layout.addWidget(btn_box, 2, 0, 1, 2, alignment=Qt.AlignCenter)
+    pop_wd.setLayout(pop_wd_layout)
+    return pop_wd
+  
+  
   
   #  RESET
   
-  
+    

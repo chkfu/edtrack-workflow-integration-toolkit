@@ -6,6 +6,7 @@ temporary dataset loading.
 
 
 from PyQt5.QtWidgets import QFileDialog
+from models.DataLoader import DataLoader
 from views.components.config.views_config import DATASET_LIST, RAW_COL_SCHEMA
 import pandas as pd
 import logging
@@ -24,6 +25,7 @@ class FileController:
   
   def __init__(self, app_ref):
     self.app = app_ref
+    self.data_loader = DataLoader()
     logger.info("[FileController] initialised sucessfully.")
     
   
@@ -72,7 +74,7 @@ class FileController:
       #  task 3: store the temp dataframe table
       
       #  load datasets and check whether it matched the designated schema
-      temp_df = self.app.data_loader.import_dataset(file_name)
+      temp_df = self.data_loader.import_dataset(file_name)
       if not self.app.valid_cont.validate_preview_df(
             lb_text=target_key,
             target_state=temp_df,
@@ -119,7 +121,7 @@ class FileController:
     #  store target dataset in temp states for preview
     #  remarks: needs to try-catch for data-loader, considering SQL might crash
     try:
-      temp_dataset = self.app.data_loader.import_dataset(target_path)
+      temp_dataset = self.data_loader.import_dataset(target_path)
       if not self.app.valid_cont.validate_preview_df(lb_text=target_key, 
                                                      target_state=temp_dataset,
                                                      target_schema=RAW_COL_SCHEMA):
@@ -197,7 +199,7 @@ class FileController:
         logger.warning("File not found, No export task.")
         return
       
-      self.app.data_loader.convert_dataset(dataframe=target_df, 
+      self.data_loader.convert_dataset(dataframe=target_df, 
                                             fileType=target_format_r,
                                             destination=file)
       suceed_msg: str = f"The new file has been stored at {file}."
