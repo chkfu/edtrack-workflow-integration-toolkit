@@ -17,6 +17,7 @@ class DatasetState:
     
     #  Basic Cleaning
     self.enable_duplicate: bool = False
+    self.handle_duplicate_cols = []
     self.enable_empty: bool = False
     self.enable_sort: bool = False
     self.sort_col: str = "index"
@@ -48,10 +49,27 @@ class DatasetState:
   
   #  set basic cleaning opt
     
-  def toggle_enable_duplicate(self) -> None:
-    self.enable_duplicate = not self.enable_duplicate
+  def set_enable_duplicate(self, target_opt: bool | None) -> None:
+    self.enable_duplicate = target_opt
+    
+    
+  def set_handle_duplicate_cols(self, target_action: str, target_col: str | list) -> None:
+    target_action_r = target_action.strip().lower()
+    if target_action_r == "push":
+      if target_col not in self.handle_duplicate_cols:
+        self.handle_duplicate_cols.append(target_col)
+    elif target_action_r == "pull":
+      if target_col in self.handle_duplicate_cols:
+        self.handle_duplicate_cols.remove(target_col)
+    elif target_action_r == "replace":
+      self.handle_duplicate_cols = target_col
+    elif target_action_r == "empty":
+      self.handle_duplicate_cols = list()
+    else:
+      return
   
-  def toggle_enable_empty(self) -> None:
+  
+  def set_enable_empty(self) -> None:
     self.enable_empty = not self.enable_empty
     
   def set_enable_sort(self, target_opt: bool) -> None:

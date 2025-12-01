@@ -9,6 +9,7 @@ from views.components.config.views_styles import (
   style_nav_sect_default, style_tab_scroll, style_tab_border
 )
 from views.components.pages.PageTemplate import PageTemplate
+from states import DatasetState
 import logging
 from typing import Callable
 import pandas as pd
@@ -102,7 +103,6 @@ class PageClean(PageTemplate):
   
   
     
-    
   #  METHODS - CONTAINER
   
   def build_tb_opt_container(self, target_title) -> QFrame:
@@ -151,8 +151,6 @@ class PageClean(PageTemplate):
     return frame
   
   
-  
-  
   def build_clean_btn_box(self) -> QWidget:
     #  components
     reset_lb = self.app.comp_fact.build_label(lb_text="1a. Empty option and select again.",
@@ -194,7 +192,6 @@ class PageClean(PageTemplate):
   
   #  METHODS - BOX
   
-  
   def build_rm_duplicate_box(self) -> QWidget:
     
     #  declaration
@@ -208,7 +205,9 @@ class PageClean(PageTemplate):
                                               lb_align=Qt.AlignLeft,
                                               lb_bold=True)
     radio_group = self.app.comp_fact.build_radio_group(target_list=OPT_LIST,
-                                                       target_event=None,
+                                                       target_event=lambda text, checked: self.app.clean_cont.handle_clean_dup_opt(target_list=OPT_LIST,
+                                                                                                                                  text=text,
+                                                                                                                                  checked=checked),
                                                        is_horizontal=False)
     
     #  frame
@@ -261,11 +260,12 @@ class PageClean(PageTemplate):
                                             lb_txtcolor=THEME_COLOR["mid"],
                                             lb_align=Qt.AlignLeft,
                                             lb_bold=True)
-    radio_group = self.app.comp_fact.build_radio_group(target_list=OPT_LIST,
-                                         target_event=lambda text, checked: self.app.clean_cont.handle_clean_sort_opt(target_list=OPT_LIST,
+    radio_group = self.app.comp_fact.build_radio_group(
+                                        target_list=OPT_LIST,
+                                        target_event=lambda text, checked: self.app.clean_cont.handle_clean_sort_opt(target_list=OPT_LIST,
                                                                                                                       text=text,
                                                                                                                       checked=checked),
-                                         is_horizontal=False)
+                                        is_horizontal=False)
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
@@ -278,13 +278,10 @@ class PageClean(PageTemplate):
     return frame
   
   
-
   #  POP-UP WINDOWS (for state management)
   
-  def build_sort_popup(self) -> QWidget:
-    
-    #  identify target dataframe
-    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+  
+  def identify_target_df(self, curr_ds_key: str) -> DatasetState:
     if curr_ds_key == self.app.clean_state.opt_list[0]:
       target_dataframe = self.app.df_users
     elif curr_ds_key == self.app.clean_state.opt_list[1]:
@@ -295,10 +292,73 @@ class PageClean(PageTemplate):
       err_msg: str = "incorrect dataset key has been catched."
       logger.error(err_msg, exc_info=True)
       return
+    return target_dataframe
+  
+  
+  def build_dup_popup(self) -> QWidget:
+    
+    pop_wd = QDialog()
+    
+    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+    target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
+    col_options = list(target_dataframe.columns)
+    checkbox_list: list = []
+    OPT_LIST = ["--- Please Select ---", 
+                "Apply to ALL columns", 
+                "Apply to Specific columns"]
+    
+    #  drow down components
+    opt_lb = self.app.comp_fact.build_label(lb_text="Handle Mode:",
+                                            lb_txtcolor=THEME_COLOR["white"])
+    opt_dd = self.app.comp_fact.build_dropdown(target_options=OPT_LIST,
+                                                target_default=0,
+                                                event=lambda text: self.app.clean_cont.select_clean_dup_dropdown(selected_opt=text,
+                                                                                                                  opt_list=OPT_LIST,
+                                                                                                                  cb_list=checkbox_list))
+    cb_lb = self.app.comp_fact.build_label(lb_text="Target Columns:",
+                                            lb_txtcolor=THEME_COLOR["white"])
+    close_btn = self.app.comp_fact.build_btn(btn_text="Back", 
+                                             btn_event=lambda: self.app.clean_cont.close_clean_dup_popup(target_popup=pop_wd),
+                                             btn_bgcolor=THEME_COLOR["primary"],
+                                             btn_txtcolor=THEME_COLOR["white"],
+                                             btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+    #  checkbox components
+    
+    cb_box = QWidget()
+    cb_box_layout = QVBoxLayout()
+    for column in col_options:
+      checkbox = self.app.comp_fact.build_checkbox(target_name=column,
+                                                   target_event=lambda target_state, target_name=column:
+      #  Learnt: early binding col, prevent all points to last col
+      self.app.clean_cont.select_clean_dup_checkbox(target_state=target_state,
+                                                      target_name=target_name))
+      cb_box_layout.addWidget(checkbox)
+      checkbox_list.append(checkbox)
+    cb_box.setLayout(cb_box_layout)
+    
+    #  frame
+    pop_wd.setWindowTitle("Duplicate Options")
+    pop_wd_layout = QGridLayout()
+    pop_wd_layout.addWidget(opt_lb, 0, 0, alignment=Qt.AlignLeft)
+    pop_wd_layout.addWidget(opt_dd, 0, 1)
+    pop_wd_layout.addWidget(cb_lb, 1, 0, alignment=Qt.AlignLeft)
+    pop_wd_layout.addWidget(cb_box, 1, 1)
+    pop_wd_layout.addWidget(close_btn, 2, 0, 1, 2, alignment=Qt.AlignCenter)
+    pop_wd.setLayout(pop_wd_layout)
+    return pop_wd
+  
+  
+  def build_sort_popup(self) -> QWidget:
+    
+    #  identify target dataframe
+    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+    target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
     
     #  setup options
     OPT_LIST = ["--- Please Select ---"] + list(target_dataframe.columns)
-    ORDER_LIST = ["--- Please Select ---", "Ascending", "Descending"]
+    ORDER_LIST = ["--- Please Select ---", 
+                  "Ascending", 
+                  "Descending"]
     
     pop_wd = QDialog()
   
@@ -325,9 +385,9 @@ class PageClean(PageTemplate):
     #  frame
     pop_wd.setWindowTitle("Sorting Options")
     pop_wd_layout = QGridLayout()
-    pop_wd_layout.addWidget(opt_lb, 0, 0)
+    pop_wd_layout.addWidget(opt_lb, 0, 0, alignment=Qt.AlignLeft)
     pop_wd_layout.addWidget(opt_dd, 0, 1)
-    pop_wd_layout.addWidget(order_lb, 1, 0)
+    pop_wd_layout.addWidget(order_lb, 1, 0, alignment=Qt.AlignLeft)
     pop_wd_layout.addWidget(order_dd, 1, 1)
     pop_wd_layout.addWidget(order_dd, 1, 1)
     pop_wd_layout.addWidget(btn_box, 2, 0, 1, 2, alignment=Qt.AlignCenter)

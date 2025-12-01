@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QStackedWidget, QGridLayout,QListWidget, QFrame, QHBoxLayout, QWidget,
     QVBoxLayout, QListWidgetItem, QDialog
 )
+from PyQt5.QtCore import Qt
 
 
 #  LOGGING
@@ -43,15 +44,117 @@ class CleanController:
       return
     
     
+  def handle_clean_dup_cols(self, target_state: int, target_name: str) -> None:
+    if target_state is None:
+      return
+    # successful case
+    curr_ds = self.app.clean_state.get_clean_target()
+    if target_state == Qt.Checked:
+      curr_ds.set_handle_duplicate_cols(target_action="push",
+                                        target_col=target_name)
+    else:
+      curr_ds.set_handle_duplicate_cols(target_action="pull",
+                                        target_col=target_name)
+    
+    
   #  2. manage radio buttons
   
   #  2a. remove duplicates
   
+  def handle_clean_dup_opt(self, target_list: list, text: str, checked: bool):
+    # validate list
+    if not isinstance(target_list, list):
+      err_msg: str = "The option list is not applied in handling duplicates option."
+      logger.error(err_msg, exc_info=True)
+      raise TypeError(err_msg)
+    
+    #  check cases
+    curr_ds = self.app.clean_state.get_clean_target()
+    if text == target_list[1]:
+      curr_ds.set_enable_duplicate(False)
+      print(curr_ds.enable_duplicate)
+      return
+    elif text == target_list[0]:
+      curr_ds.set_enable_duplicate(True)  
+      print(curr_ds.enable_duplicate)    
+      if checked:
+        popup = self.app.pages_fact.page_clean.build_dup_popup()
+        popup.exec_()
+      return
+    
+    else: 
+      return
+    
+    
+  def select_clean_dup_dropdown(self, selected_opt: str, opt_list: list, cb_list: list):
+    
+    if not isinstance(cb_list, list):
+      err_msg: str = "The input checkbox list is not valid for cleaning dupliacate options."
+      logger.error(err_msg, exc_info=True)
+      raise TypeError(err_msg)
+    if not isinstance(opt_list, list):
+      err_msg: str = "The input option list is not valid for cleaning dupliacate options."
+      logger.error(err_msg, exc_info=True)
+      raise TypeError(err_msg)
+    
+    #  not selected, keep empty and require to make decision
+    curr_ds_state = self.app.clean_state.get_clean_target()
+    if selected_opt == opt_list[0]:
+      for checkbox in cb_list:
+        checkbox.setChecked(False)
+        checkbox.setEnabled(False)
+      curr_ds_state.set_handle_duplicate_cols(target_action="empty", 
+                                              target_col=None)
+
+    
+    #  select all cols, all checked and disabled options
+    elif selected_opt == opt_list[1]:
+      for checkbox in cb_list:
+        checkbox.setChecked(True)
+        checkbox.setEnabled(False)
+      full_cols = [checkbox.text() for checkbox in cb_list]
+      curr_ds_state.set_handle_duplicate_cols(target_action="replace",
+                                              target_col=full_cols)
+    
+    #  select specific cols, enable to reset and select options
+    elif selected_opt == opt_list[2]:
+      for checkbox in cb_list:
+        checkbox.setChecked(False) 
+        checkbox.setEnabled(True)
+      curr_ds_state.set_handle_duplicate_cols(target_action="empty", 
+                                              target_col=None)
+      
+    #  Option must be in the list with dropdown, case ignore
+    else:
+      return
   
+  
+  def select_clean_dup_checkbox(self, target_state: int, target_name: str) -> None:
+    curr_ds_state = self.app.clean_state.get_clean_target()
+    curr_status = (target_state == Qt.Checked)
+    if curr_status and target_name not in curr_ds_state.handle_duplicate_cols:
+      curr_ds_state.set_handle_duplicate_cols(target_action="push", target_col=target_name)
+    elif not curr_status and target_name in curr_ds_state.handle_duplicate_cols:
+      curr_ds_state.set_handle_duplicate_cols(target_action="pull", target_col=target_name)
+    else:
+      return
+      
+      
+  def close_clean_dup_popup(self, target_popup: QDialog):
+    if not isinstance(target_popup, QDialog):
+      err_msg: str = "The close popup method only works for pop-up windows."
+      logger.error(err_msg, exc_info=True)
+      raise TypeError(err_msg)
+    #  failed case: reminder box
+    curr_ds_state = self.app.clean_state.get_clean_target()
+    if not curr_ds_state.handle_duplicate_cols or len(curr_ds_state.handle_duplicate_cols) < 1:
+      self.app.comp_fact.build_reminder_box(title="Warning", 
+                                            txt_msg="Please ensure the target duplicate columns option has been set.")
+      return
+    #  successful case: close popup
+    return target_popup.close()
   
   #  2b. handling blanks
-  
-  
   
   #  2c. sorting options
   

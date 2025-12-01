@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
   QLabel, QPushButton, QMessageBox, QDialog, QVBoxLayout, QFrame, QHBoxLayout, 
   QGridLayout, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView, 
-  QComboBox, QWidget, QButtonGroup, QRadioButton
+  QComboBox, QWidget, QButtonGroup, QRadioButton, QCheckBox
 )
 from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
@@ -124,6 +124,21 @@ class ComponentsFactory:
     if event:
       combo.currentTextChanged.connect(event)
     return combo
+    
+    
+  
+  def build_checkbox(self,
+                     target_name: str="Untitled",
+                     target_event: Callable | None=None) -> QCheckBox:
+    checkbox = QCheckBox(str(target_name))
+    checkbox.setChecked(False)
+    if target_event:
+        checkbox.stateChanged.connect(
+          lambda state, name=target_name: target_event(target_state=state,
+                                           target_name=name))
+    return checkbox
+    
+
     
     
   #  section child items
@@ -400,3 +415,5 @@ class ComponentsFactory:
     container.setLayout(group_layout)
     
     return {"widget": container, "group": group}
+  
+  
