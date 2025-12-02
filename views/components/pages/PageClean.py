@@ -282,18 +282,15 @@ class PageClean(PageTemplate):
   #  POP-UP WINDOWS (for state management)
   
   
-  def identify_target_df(self, curr_ds_key: str) -> DatasetState:
-    if curr_ds_key == self.app.clean_state.opt_list[0]:
-      target_dataframe = self.app.df_users
-    elif curr_ds_key == self.app.clean_state.opt_list[1]:
-      target_dataframe = self.app.df_activities
-    elif curr_ds_key == self.app.clean_state.opt_list[2]:
-      target_dataframe = self.app.df_components
-    else:
-      err_msg: str = "incorrect dataset key has been catched."
-      logger.error(err_msg, exc_info=True)
-      return
-    return target_dataframe
+  def identify_target_df(self, curr_ds_key: str) -> DatasetState | None:
+    valid_keys = [item["data"] for item in DATASET_LIST[1:4]]
+    if curr_ds_key not in valid_keys:
+        err_msg = f"Incorrect dataset key: {curr_ds_key}"
+        logger.error(err_msg, exc_info=True)
+        return None
+    return self.app.clean_state.get_spec_datastate(curr_ds_key)
+  
+    
   
   
   def build_dup_popup(self) -> QWidget:

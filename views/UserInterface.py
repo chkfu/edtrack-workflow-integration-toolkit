@@ -45,7 +45,6 @@ class UserInterface:
     Reminder: set None, prevent access controller or components before
               application initialised
     """
-    
     #  Learnt: from less dependent to most dependent, prevent initialising conflicts
     #          (i.e. create before lower layer exists - nothing to be created)
     self.comp_fact = ComponentsFactory(app_ref=self)
@@ -61,14 +60,6 @@ class UserInterface:
                                       password=os.getenv("DB_PW"),
                                       database = os.getenv("DB_NAME"),
                                       port= os.getenv("DB_PORT"))
-  
-    #  setup datasets
-    self.df_users = None
-    self.df_activities = None
-    self.df_components = None
-    self.df_processed = None
-    self.df_merged = None
-    
     #  setup page stack
     self.page_stack = self.layout_fact.page_stack
 

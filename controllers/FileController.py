@@ -40,9 +40,7 @@ class FileController:
   def browse_files(self, target_key, lb_widget) -> str | None:
     """ USE: indicate the designated file locaiton. """
     try:
-      
       #  task 1: display path at label
-      
       # _ refers to file type, namely .csv, .json, .xml
       file_name, _ = QFileDialog.getOpenFileName(self.app.window, 
                                               "Open File", 
@@ -51,53 +49,29 @@ class FileController:
                                               "CSV Files (*.csv)")
       if not file_name:
         return 
-      
       lb_widget.setText(file_name)
-      
-      
-      #  task 2: store dataframe path - further tracing
-      
-      #  update temp path state, used to trace the correct dataframe to store
-      if target_key == DATASET_LIST[1]["data"]:
-          self.app.pages_fact.temp_path_users = file_name
-      elif target_key == DATASET_LIST[2]["data"]:
-          self.app.pages_fact.temp_path_activities = file_name
-      elif target_key == DATASET_LIST[3]["data"]:
-          self.app.pages_fact.temp_path_components = file_name
-      else:
-        return self.app.comp_fact.build_reminder_box(
-                title="Error",
-                txt_msg="Failed to hit the selected dataset path.")
-      logger.info(f"Browsed the selected file - {file_name}, {target_key}.")
-      
-      
-      #  task 3: store the temp dataframe table
-      
+    
+      #  task 2: store the temp dataframe table
       #  load datasets and check whether it matched the designated schema
-      temp_df = self.data_loader.import_dataset(file_name)
+      temp_dataframe = self.data_loader.import_dataset(file_name)
       if not self.app.valid_cont.validate_preview_df(
             lb_text=target_key,
-            target_state=temp_df,
+            target_state=temp_dataframe,
             target_schema=RAW_COL_SCHEMA
         ):
         err_msg: str = "Failed to match the dataset schema. The selected dataset is not matched."
         logger.warning(err_msg)
         return
       
-      #  store correct dataset into corresponding state
-      if target_key == DATASET_LIST[1]["data"]:
-          self.app.df_users = temp_df
-      elif target_key == DATASET_LIST[2]["data"]:
-          self.app.df_activities= temp_df
-      elif target_key == DATASET_LIST[3]["data"]:
-          self.app.df_components = temp_df
-      
-      #  output file-name for the label display only, temp state prev. stored
+      #  update temp path state, used to trace the correct dataframe to store
+      self.app.clean_state.set_raw_data(target_key, temp_dataframe)
+      logger.info(f"Loaded file {file_name}")
       return file_name
-    
+      
     except Exception as ex:
-      logger.error(f"Failed to browse the selected file - {ex}", exc_info=True)
-
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=f"Failed to hit the selected dataset path.")
+      logger.error(f"Browsed the selected file - {file_name}, {ex}, {target_key}.")
 
 
 #  ATTN: target_dataset would be critical debug point: type conflicts
@@ -105,48 +79,34 @@ class FileController:
                       target_key: str) -> pd.DataFrame:
     """ USE: store the designated dataset path to temp state """
     #  validation
-    path_map = {
-      DATASET_LIST[1]["data"]: self.app.pages_fact.temp_path_users,
-      DATASET_LIST[2]["data"]: self.app.pages_fact.temp_path_activities,
-      DATASET_LIST[3]["data"]: self.app.pages_fact.temp_path_components
-    }  
-    if target_key not in path_map:
-      return self.app.comp_fact.build_reminder_box(title="Error",
-                                                  txt_msg="[Error] Failed to match the path in the dataset list.")
-    target_path = path_map[target_key]
-    if not target_path:
-      return self.app.comp_fact.build_reminder_box(title="Error",
-                                                   txt_msg="[Error] Failed to search the path of selected dataset.")
-
-    #  store target dataset in temp states for preview
-    #  remarks: needs to try-catch for data-loader, considering SQL might crash
     try:
-      temp_dataset = self.data_loader.import_dataset(target_path)
+      
+      target_dataset = self.app.clean_state.get_spec_dataframe(target_key)
+      target_dataframe = target_dataset.data_raw
+      
+      if target_dataframe is None or target_dataframe.empty:
+        return self.app.comp_fact.build_reminder_box(
+                title="Error",
+                txt_msg=f"No data is found. Please upload the valid file again.")
+    
+      #  remarks: needs to try-catch for data-loader, considering SQL might crash
       if not self.app.valid_cont.validate_preview_df(lb_text=target_key, 
-                                                     target_state=temp_dataset,
+                                                     target_state=target_dataframe,
                                                      target_schema=RAW_COL_SCHEMA):
         return
-      if target_key == DATASET_LIST[1]["data"]:
-        self.app.df_users = temp_dataset
-        self.app.comp_fact.build_popup_wd(wd_title="Preview",
-                                          popup_title="Preview: User Dataset",
-                                          target_df=self.app.df_users,
-                                          popup_content=self.app.comp_fact.build_table_view(target_df=self.app.df_users))
-      elif target_key == DATASET_LIST[2]["data"]:
-        self.app.df_activities= temp_dataset
-        self.app.comp_fact.build_popup_wd(wd_title="Preview",
-                                          target_df=self.app.df_activities,
-                                          popup_title="Preview: Activity Dataset",
-                                          popup_content=self.app.comp_fact.build_table_view(target_df=self.app.df_activities))
-      elif target_key == DATASET_LIST[3]["data"]:
-        self.app.df_components = temp_dataset
-        self.app.comp_fact.build_popup_wd(wd_title="Preview",
-                                          target_df=self.app.df_components,
-                                          popup_title="Preview: Component Dataset",
-                                          popup_content=self.app.comp_fact.build_table_view(target_df=self.app.df_components))
-    #  1. success
+      
+      # preview popup
+      self.app.comp_fact.build_popup_wd(
+          wd_title="Preview",
+          popup_title=f"Preview: {target_key}",
+          target_df=target_dataframe,
+          popup_content=self.app.comp_fact.build_table_view(target_dataframe)
+      )
       logger.info(f"Previewed the selected file - {target_key}.")
-      return temp_dataset
+      
+      print(target_dataframe)
+      return target_dataframe
+
     #  2. failure
     except Exception as ex:
       logger.error(f"Failed to browse the selected file - {ex}", exc_info=True)
@@ -212,40 +172,3 @@ class FileController:
       self.app.comp_fact.build_reminder_box("Error", f"{ex}")
     
     
-    
-  # def import_datasets(self):
-  #   """USE: adopted designated datasets for further transformation, once all three datasets available"""
-
-  #   def print_msg(type: str):
-  #     type_r: str = str(type).strip().lower()
-  #     if type_r not in ["users", "activities", "components"]:
-  #       err_msg: str = "Unable to detect error messages for further identification."
-  #       logger.error(err_msg, exc_info=True)
-  #       raise ValueError(err_msg)
-  #     return f"Table {type_r} is not uploaded. Please try again."
-    
-  #   #  reject the failed cases
-  #   if self.app.df_users is None or self.app.df_users.empty:
-  #       self.app.comp_fact.build_reminder_box("Error", print_msg("users"))
-  #       return
-  #   if self.app.df_activities is None or self.app.pages_fact.temp_table_activity.empty:
-  #       self.app.comp_fact.build_reminder_box("Error", print_msg("activities"))
-  #       return
-  #   if self.app.df_components is None or self.app.df_components.empty:
-  #       self.app.comp_fact.build_reminder_box("Error", print_msg("components"))
-  #       return
-      
-  #   #  1. copy dataframe to global state
-  #   self.app.df_users = self.app.df_users
-  #   self.app.df_activities = self.app.pages_fact.temp_table_activity
-  #   self.app.df_components = self.app.df_components
-    
-  #   #  2. store data into SQL
-  #   self.app.sql_connector.import_dataframe(target_table="users",
-  #                                         target_df=self.app.df_users)
-  #   self.app.sql_connector.import_dataframe(target_table="activities",
-  #                                         target_df=self.app.df_activities)
-  #   self.app.sql_connector.import_dataframe(target_table="components",
-  #                                         target_df=self.app.df_components)
-    
-  #   #  3. check dataset and update dataset list UI
