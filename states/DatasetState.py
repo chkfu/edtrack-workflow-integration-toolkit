@@ -1,5 +1,10 @@
 import pandas as pd
-from typing import Optional, Any
+import logging
+
+
+#  LOGGING
+
+logger = logging.getLogger("DATASET_STATE")
 
 
 #  CLASS
@@ -14,14 +19,16 @@ class DatasetState:
     
     #  DataFrame Management
     self.data_raw: pd.DataFrame = None
-    self.data_cleaned_1st: pd.DataFrame = None
-    self.data_cleaned_2nd: pd.DataFrame = None
+    self.data_clean: pd.DataFrame = None
+    self.data_proc: pd.DataFrame = None
     
     #  Basic Cleaning
+    #  1. duplicates
     self.enable_duplicate: bool = False
     self.handle_duplicate_cols = []
-    self.enable_blank: str = "ignore"
-    self.blank_value: Optional[Any] = None
+    #  2. blanks
+    self.handle_blanks = {}
+    #  3. sorts
     self.enable_sort: bool = False
     self.sort_col: str = "index"
     self.sort_ascending: bool = True
@@ -31,23 +38,17 @@ class DatasetState:
     self.rename_cols: dict = {}
     self.remove_rows: dict = {}
     
-    #  Type Specification
-    self.str_spec: dict = {}
-    self.num_spec: dict = {}
-    self.bool_spec: dict = {}
-    self.dat_spec: dict = {}
-    
-    
+
   #  set data state
   
   def set_data_raw(self, target_df: pd.DataFrame) -> None:
     self.data_raw = target_df
     
-  def set_data_cleaned_1st(self, target_df: pd.DataFrame) -> None:
-    self.data_cleaned_1st = target_df
+  def set_data_clean(self, target_df: pd.DataFrame) -> None:
+    self.data_clean = target_df
     
-  def set_data_cleaned_2nd(self, target_df: pd.DataFrame) -> None:
-    self.data_cleaned_2nd = target_df
+  def set_data_proc(self, target_df: pd.DataFrame) -> None:
+    self.data_proc = target_df
     
   
   #  set basic cleaning opt
@@ -72,18 +73,23 @@ class DatasetState:
       return
   
   
-  def set_enable_blank(self, target_opt: bool) -> None:
-    self.enable_blank = target_opt
+  def set_handle_blanks(self, new_map: dict) -> None:
+    for _, value in new_map.items():
+      if "method" not in value or "value" not in value:
+        err_msg: str = f"required standard input dictionary for managing blanks for data cleaning."
+        logger.error(err_msg, exc_info=True)
+        raise ValueError(err_msg)
+    self.handle_blanks = new_map
     
-  def set_enable_sort(self, target_opt: bool) -> None:
+    
+  def set_enable_sort(self, target_opt: bool | None) -> None:
     self.enable_sort = target_opt
-    
-  def set_sort_col(self, target_col: str) -> None:
+
+  def set_sort_col(self, target_col: str | None) -> None:
     self.sort_col = target_col
 
   def set_sort_ascending(self, target_opt: bool | None) -> None:
     self.sort_ascending = target_opt
-    
     
   #  set advanced cleaning opt
   
@@ -118,26 +124,57 @@ class DatasetState:
   
   
   
-  #  reset ds
-  def reset_ds(self) -> None:
-    
-    self.data_raw = None
-    self.data_cleaned_1st = None
-    self.data_cleaned_2nd = None
-    
+  #  reset
+  
+  def reset_dataset_state(self, reset_type: str) -> None:
+    target_type = reset_type.strip().lower()
+    if target_type not in ["raw", "clean", "proc"]:
+      err_msg = "Reset type not in list. The instruction will be ignored"
+      logger.warning(err_msg)
+      return
+    if target_type == "proc":
+      self.data_proc = None
+    elif target_type == "clean": 
+      self.data_clean = None
+      self.data_proc = None
+    else:  
+      self.data_raw = None
+      self.data_clean = None
+      self.data_proc = None
+  
+  
+  def reset_clean(self) -> None:
+    #  reset duplicate
     self.enable_duplicate = False
-    self.enable_empty = False
+    self.handle_duplicate_cols = []
+    #  reset blanks
+    self.handle_blanks = {}
+    #  reset sorts
     self.enable_sort = False
     self.sort_col = "index"
     self.sort_ascending = True
     
+  def reset_preproc(self) -> None:
     self.remove_cols = []
     self.rename_cols = {}
     self.remove_rows = {}
     
-    self.str_spec = {}
-    self.num_spec = {}
-    self.bool_spec = {}
-    self.dat_spec = {}
-    
-    
+  
+  #  for checking
+  def to_string(self) -> None:
+    print("\n==== Raw Data Info ====")
+    print(f"state_name: {self.state_name}")
+    print(f"data_raw: {self.data_raw}")
+    print(f"data_clean: {self.data_clean}")
+    print(f"data_proc: {self.data_proc}")
+    print("\n==== Cleaned Data Info ====")
+    print(f"enable_duplicate: {self.enable_duplicate}")
+    print(f"handle_duplicate_cols: {self.handle_duplicate_cols}")
+    print(f"handle_blanks: {self.handle_blanks}")
+    print(f"enable_sort: {self.enable_sort}")
+    print(f"sort_col: {self.sort_col}")
+    print(f"sort_ascending: {self.sort_ascending}")
+    print("\n==== Proc Data Info ====")
+    print(f"remove_cols: {self.remove_cols}")
+    print(f"rename_cols: {self.rename_cols}")
+    print(f"remove_rows: {self.remove_rows}")

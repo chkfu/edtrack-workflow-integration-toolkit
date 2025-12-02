@@ -164,24 +164,17 @@ class CleanController:
       logger.error(err_msg, exc_info=True)
       raise TypeError(err_msg)
     
-    #  check cases
+    temp_output = {}
     curr_ds = self.app.clean_state.get_clean_target()
-    if text == target_list[1]:
-      curr_ds.set_enable_duplicate(False)
-      print(curr_ds.enable_blank)
-      return
-    elif text == target_list[0]:
-      curr_ds.set_enable_duplicate(True)  
-      print(curr_ds.enable_blank)    
+    if text == target_list[0]:
+      print(text)
+    elif text == target_list[1]:
+      print(text)  
       if checked:
         popup = self.app.pages_fact.page_clean.build_blank_popup()
         popup.exec_()
       return
-    
-    else: 
-      return
-  
-  
+   
   
   
   #  2c. sorting options

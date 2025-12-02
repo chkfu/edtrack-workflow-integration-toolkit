@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
   QWidget, QGridLayout, QVBoxLayout, QRadioButton, QButtonGroup, QFrame,
-  QHBoxLayout, QCheckBox, QScrollArea, QTabWidget, QLabel, QDialog
+  QHBoxLayout, QCheckBox, QScrollArea, QTabWidget, QLabel, QDialog, QLineEdit
 )
 from PyQt5.QtCore import Qt
 from views.components.config.views_config import DATASET_LIST
@@ -349,23 +349,50 @@ class PageClean(PageTemplate):
     return pop_wd
   
   
+  
+  
   def build_blank_popup(self) -> QWidget:
     
+    #  setup frame
     pop_wd = QDialog()
-    MATCHING = {
-      "-- Please Select --"
-    }
-    #  components
-    opt_lb = self.app.comp_fact.build_label(lb_text="Filling Strategy:",
-                                            lb_txtcolor=THEME_COLOR["white"])
-    opt_dd = self.app.comp_fact.build_dropdown(target_options=OPT_LIST,
-                                                target_default=0,
-                                                event=None)
-    #  frame
-    pop_wd.setWindowTitle("Duplicate Options")
+    pop_wd.setWindowTitle("Blank Options")
     pop_wd_layout = QGridLayout()
+    
+    #  declare variables
+    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+    target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
+    OPT_LIST = ["--- Please Select ---", 
+                "Remain Unchanged",
+                "Remove Blanks",
+                "Fill Previous Value",
+                "Fill Next Value",
+                "Fill Default Text",
+                "Fill Numeric Mean",
+                "Fill Numeric Median",
+                "Fill Numeric Zeros"]
+
+    #  loop to build components
+    for index, column in enumerate(target_dataframe.data_raw.columns):
+
+        col_lb = self.app.comp_fact.build_label(
+            lb_text=column,
+            lb_txtcolor=THEME_COLOR["white"]
+        )
+
+        opt_dd = self.app.comp_fact.build_dropdown(
+            target_options=OPT_LIST,
+            target_default=0,
+            event=None)
+
+        pop_wd_layout.addWidget(col_lb, index, 0)
+        pop_wd_layout.addWidget(opt_dd, index, 1)
+    
+    #  complete frame
     pop_wd.setLayout(pop_wd_layout)
     return pop_wd
+  
+  
+  
   
   
   
