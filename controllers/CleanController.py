@@ -74,14 +74,16 @@ class CleanController:
     curr_ds = self.app.clean_state.get_clean_target()
     if text == target_list[1]:
       curr_ds.set_enable_duplicate(False)
-      print(curr_ds.enable_duplicate)
       return
     elif text == target_list[0]:
-      curr_ds.set_enable_duplicate(True)  
-      print(curr_ds.enable_duplicate)    
       if checked:
         popup = self.app.pages_fact.page_clean.build_dup_popup()
         popup.exec_()
+        #  remarks: activate after popup. keep off if not selected
+        if curr_ds.handle_duplicate_cols:
+          curr_ds.set_enable_duplicate(True)
+        else:
+          curr_ds.set_enable_duplicate(False)
       return
     
     else: 
@@ -148,8 +150,8 @@ class CleanController:
       logger.error(err_msg, exc_info=True)
       raise TypeError(err_msg)
     #  failed case: reminder box
-    curr_ds_state = self.app.clean_state.get_clean_target()
-    if not curr_ds_state.handle_duplicate_cols or len(curr_ds_state.handle_duplicate_cols) < 1:
+    curr_ds = self.app.clean_state.get_clean_target()
+    if curr_ds.handle_duplicate_cols == [] or len(curr_ds.handle_duplicate_cols) < 1:
       self.app.comp_fact.build_reminder_box(title="Warning", 
                                             txt_msg="Please ensure the target duplicate columns option has been set.")
       return
@@ -252,7 +254,10 @@ class CleanController:
       curr_ds.set_sort_ascending(None)
       return
     elif text == target_list[0]:
-      curr_ds.set_enable_sort(True)      
+      curr_ds.set_enable_sort(True)
+      #  Learnt: set none valuse before popup, otherwise, crash after reset
+      curr_ds.set_sort_col(None)
+      curr_ds.set_sort_ascending(None)   
       if checked:
         popup = self.app.pages_fact.page_clean.build_sort_popup()
         popup.exec_()
@@ -300,13 +305,25 @@ class CleanController:
       raise TypeError(err_msg)
     #  failed case: reminder box
     curr_ds_state = self.app.clean_state.get_clean_target()
-    if curr_ds_state.sort_ascending is None:
-      self.app.comp_fact.build_reminder_box(title="Warning", 
-                                            txt_msg="Please ensure the sorting order has been set.")
-      return
     if curr_ds_state.sort_col is None:
       self.app.comp_fact.build_reminder_box(title="Warning", 
                                             txt_msg="Please ensure the sorting option has been set.")
       return
+    if curr_ds_state.sort_ascending is None:
+      self.app.comp_fact.build_reminder_box(title="Warning", 
+                                            txt_msg="Please ensure the sorting order has been set.")
+      return
     #  successful case: close popup
     return target_popup.close()
+  
+  
+  #  2d. reset section
+  
+  def reset_clean_tab_state(self) -> None:
+    curr_ds_state = self.app.clean_state.get_clean_target()
+    confirmation = self.app.comp_fact.build_msg_box(title="Warning", 
+                                                    question="Are you sure to reset the cleaning options?")
+    if confirmation:
+      curr_ds_state.reset_clean()
+      self.app.pages_fact.page_clean.reset_display()
+    return

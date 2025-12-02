@@ -69,5 +69,8 @@ class CleanState:
   
   #  methods - reset
   def reset_all_ds(self):
+    #  clean state
+    self.clean_target = self.opt_list[0]
+    #  dataset state
     for ds in self.dataset_states.values():
       ds.reset_ds()

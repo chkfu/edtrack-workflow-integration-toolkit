@@ -400,10 +400,12 @@ class ComponentsFactory:
     else:
       group_layout = QVBoxLayout()
     
+    btn_storage = []
     for index, opt in enumerate(target_list):
       btn = QRadioButton(opt)
       group.addButton(btn, index)
       group_layout.addWidget(btn)
+      btn_storage.append(btn)
     
     #  Learnt: 2 options can be returned
     if target_event:
@@ -414,6 +416,6 @@ class ComponentsFactory:
     group_layout.setContentsMargins(0, 0, 0, 0) 
     container.setLayout(group_layout)
     
-    return {"widget": container, "group": group}
+    return {"widget": container, "group": group, "buttons": btn_storage}
   
   

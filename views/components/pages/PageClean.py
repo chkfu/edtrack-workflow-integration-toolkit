@@ -20,9 +20,7 @@ import pandas as pd
 logger = logging.getLogger("PAGE_CLEAN")
 
 
-
 #  CLASS
-
 
 class PageClean(PageTemplate):
   
@@ -36,8 +34,14 @@ class PageClean(PageTemplate):
       logger.error(err_msg, exc_info=True)   
       raise ValueError(err_msg)
     
+    #  setup tabs
     self.ds_list: list = target_ds_list
     self.tab_group: QTabWidget = QTabWidget()
+    
+    #  setup options reset
+    self.radio_btn_list = []
+    self.radio_groups = []
+
 
     #  build page tabs, store in self.tab_group. it stores:
     #  - tab = the output of build_cleaning_tab()
@@ -50,7 +54,6 @@ class PageClean(PageTemplate):
     self.tab_group.currentChanged.connect(lambda index: self.app.clean_cont.handle_clean_tab_switch(target_index=index))
     logger.info("initialised successfully.")
     
-
  
   #  METHODS
   
@@ -80,7 +83,6 @@ class PageClean(PageTemplate):
     return tab
   
 
-
   def build_cleaning_tab(self, target_title: str) -> QWidget:
     #  components
     tb_select_container = self.build_tb_opt_container(target_title=target_title)
@@ -91,7 +93,7 @@ class PageClean(PageTemplate):
     core_sect_layout.addWidget(tb_select_container)
     core_sect_layout.addWidget(basic_clean_container)
     core_sect_layout.setAlignment(Qt.AlignTop)
-    core_sect_layout.setSpacing(8)
+    core_sect_layout.setSpacing(12)
     core_sect_layout.setContentsMargins(0, 0, 0, 0) 
     core_sect.setLayout(core_sect_layout)
     #  scroll
@@ -100,10 +102,37 @@ class PageClean(PageTemplate):
     scroll.setStyleSheet(style_tab_scroll)
     scroll.setWidget(core_sect)
     return scroll
-  
-  
+
     
   #  METHODS - CONTAINER
+  
+  def build_basic_clean_container(self) -> QFrame:
+    #  components
+    title_lb = self.app.comp_fact.build_label(lb_text="B. Data Cleaning",
+                                              lb_type="h3",
+                                              lb_align=Qt.AlignLeft,
+                                              lb_bold=True)
+    remove_duplicate_box = self.build_rm_duplicate_box()
+    handle_blank_box = self.build_handle_blank_box()
+    handle_sort_box = self.build_handle_sort_box()
+    reset_box = self.build_reset_box()
+    
+    #  frame
+    frame = QFrame()
+    frame_layout = QVBoxLayout()
+    frame_layout.addWidget(title_lb)
+    frame_layout.addWidget(remove_duplicate_box)
+    frame_layout.addWidget(handle_blank_box)
+    frame_layout.addWidget(handle_sort_box)
+    frame_layout.addWidget(reset_box)
+    frame_layout.setSpacing(8)
+    frame_layout.setAlignment(Qt.AlignTop)
+    frame_layout.setContentsMargins(0, 12, 0, 0)
+    frame.setLayout(frame_layout)
+    return frame
+
+  
+  #  METHODS - BOX
   
   def build_tb_opt_container(self, target_title) -> QFrame:
     #  components
@@ -122,75 +151,33 @@ class PageClean(PageTemplate):
     frame_layout.addWidget(preview_box)
     frame_layout.setSpacing(8)
     frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-    frame_layout.setContentsMargins(8, 16, 8, 8) 
+    frame_layout.setContentsMargins(0, 16, 0, 0) 
     frame.setLayout(frame_layout)
     return frame
   
   
-  def build_basic_clean_container(self) -> QFrame:
-    #  components
-    title_lb = self.app.comp_fact.build_label(lb_text="B. Data Cleaning",
+  
+  def build_reset_box(self):
+    title_lb = self.app.comp_fact.build_label(lb_text="C. Reset Option",
                                               lb_type="h3",
                                               lb_align=Qt.AlignLeft,
                                               lb_bold=True)
-    remove_duplicate_box = self.build_rm_duplicate_box()
-    handle_blank_box = self.build_handle_blank_box()
-    handle_sort_box = self.build_handle_sort_box()
+    #  frame
+    reset_box = self.app.comp_fact.preview_comp_box(lb_text=f"Reset Cleaning Options", 
+                                                      btn_text="Reset",
+                                                      btn_event=lambda: self.app.clean_cont.reset_clean_tab_state())
     
     #  frame
     frame = QFrame()
     frame_layout = QVBoxLayout()
     frame_layout.addWidget(title_lb)
-    frame_layout.addWidget(remove_duplicate_box)
-    frame_layout.addWidget(handle_blank_box)
-    frame_layout.addWidget(handle_sort_box)
+    frame_layout.addWidget(reset_box)
     frame_layout.setSpacing(8)
-    frame_layout.setAlignment(Qt.AlignTop)
-    frame_layout.setContentsMargins(8, 8, 8, 8) 
+    frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+    frame_layout.setContentsMargins(0, 16, 0, 0) 
     frame.setLayout(frame_layout)
     return frame
   
-  
-  def build_clean_btn_box(self) -> QWidget:
-    #  components
-    reset_lb = self.app.comp_fact.build_label(lb_text="1a. Empty option and select again.",
-                                              lb_type="h3",
-                                              lb_txtcolor=THEME_COLOR["mid"],
-                                              lb_align=Qt.AlignLeft,
-                                              lb_bold=True)
-    reset_btn = self.app.comp_fact.build_btn(btn_text="Reset",
-                                             btn_event=None,
-                                             btn_bgcolor=THEME_COLOR["white"],
-                                             btn_txtcolor=THEME_COLOR["primary"],
-                                             btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    proceed_lb = self.app.comp_fact.build_label(lb_text="1b. Confirmed, and proceed cleaning.",
-                                              lb_type="h3",
-                                              lb_txtcolor=THEME_COLOR["mid"],
-                                              lb_align=Qt.AlignLeft,
-                                              lb_bold=True)
-    proceed_btn = self.app.comp_fact.build_btn(btn_text="Proceed",
-                                             btn_event=None,
-                                             btn_bgcolor=THEME_COLOR["white"],
-                                             btn_txtcolor=THEME_COLOR["primary"],
-                                             btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    
-    #  frame
-    frame = QWidget()
-    frame_layout = QVBoxLayout()
-    frame_layout.setSpacing(8)
-    frame_layout.setAlignment(Qt.AlignTop)
-    frame_layout.setContentsMargins(0, 0, 0, 0) 
-    frame_layout.addWidget(reset_lb)
-    frame_layout.addWidget(reset_btn)
-    frame_layout.addWidget(proceed_lb)
-    frame_layout.addWidget(proceed_btn)
-    frame.setLayout(frame_layout)
-    return frame
-    
-  
-  
-  
-  #  METHODS - BOX
   
   def build_rm_duplicate_box(self) -> QWidget:
     
@@ -209,6 +196,9 @@ class PageClean(PageTemplate):
                                                                                                                                   text=text,
                                                                                                                                   checked=checked),
                                                        is_horizontal=False)
+    #  store, in case reset options
+    self.radio_groups.append(radio_group["group"])
+    self.radio_btn_list.extend(radio_group["buttons"])
     
     #  frame
     frame = QWidget()
@@ -240,6 +230,10 @@ class PageClean(PageTemplate):
                                                         text=text, 
                                                         checked=checked),
                                                       is_horizontal=False)
+    #  store, in case reset options
+    self.radio_groups.append(radio_group["group"])
+    self.radio_btn_list.extend(radio_group["buttons"])
+    
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
@@ -269,6 +263,10 @@ class PageClean(PageTemplate):
                                                                                                                       text=text,
                                                                                                                       checked=checked),
                                         is_horizontal=False)
+    #  store, in case reset options
+    self.radio_groups.append(radio_group["group"])
+    self.radio_btn_list.extend(radio_group["buttons"])
+    
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
@@ -322,6 +320,7 @@ class PageClean(PageTemplate):
                                              btn_bgcolor=THEME_COLOR["primary"],
                                              btn_txtcolor=THEME_COLOR["white"],
                                              btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+
     #  checkbox components
     
     cb_box = QWidget()
@@ -335,6 +334,9 @@ class PageClean(PageTemplate):
       cb_box_layout.addWidget(checkbox)
       checkbox_list.append(checkbox)
     cb_box.setLayout(cb_box_layout)
+    #  remarks: checkbox only available for "select specific columns"
+    for cb in checkbox_list:
+        cb.setEnabled(False)
     
     #  frame
     pop_wd.setWindowTitle("Duplicate Options")
@@ -452,4 +454,13 @@ class PageClean(PageTemplate):
   
   #  RESET
   
-    
+  def reset_display(self):
+    #  Learnt: need to close exclusive first, and re-activate it for new visual
+    for group in self.radio_groups:
+      group.setExclusive(False)
+    for btn in self.radio_btn_list:
+      btn.blockSignals(True)
+      btn.setChecked(False)
+      btn.blockSignals(False)
+    for group in self.radio_groups:
+      group.setExclusive(True)
