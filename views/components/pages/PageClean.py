@@ -11,8 +11,6 @@ from views.components.config.views_styles import (
 from views.components.pages.PageTemplate import PageTemplate
 from states import DatasetState
 import logging
-from typing import Callable
-import pandas as pd
 
 
 #  LOGGING
@@ -195,8 +193,8 @@ class PageClean(PageTemplate):
   def build_rm_duplicate_box(self) -> QWidget:
     
     #  declaration
-    OPT_LIST = ["Remove Duplicates",
-                "Keep Unchanged."]
+    OPT_LIST = ["Manage Duplicates.",
+                "Remain Unchanged."]
     
     #  components
     title_lb = self.app.comp_fact.build_label(lb_text="1. Remove Duplicates",
@@ -220,14 +218,14 @@ class PageClean(PageTemplate):
     frame_layout.addWidget(radio_group["widget"])
     frame.setLayout(frame_layout)
     return frame
+
   
   
   def build_handle_blank_box(self) -> QWidget:
     
     #  declaration
-    OPT_LIST = ["Drop rows with missing values.",
-                "Fill missing values.",
-                "Keep unchanged."]
+    OPT_LIST = ["Manage Blanks.",
+                "Remain Unchanged."]
     # components
     title_lb = self.app.comp_fact.build_label(lb_text="2. Handling Blanks",
                                             lb_type="h3",
@@ -235,8 +233,11 @@ class PageClean(PageTemplate):
                                             lb_align=Qt.AlignLeft,
                                             lb_bold=True)
     radio_group = self.app.comp_fact.build_radio_group(target_list=OPT_LIST,
-                                         target_event=None,
-                                         is_horizontal=False)
+                                                      target_event=lambda text, checked: self.app.clean_cont.handle_clean_blank_opt(
+                                                        target_list=OPT_LIST,
+                                                        text=text, 
+                                                        checked=checked),
+                                                      is_horizontal=False)
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
@@ -253,13 +254,13 @@ class PageClean(PageTemplate):
     
     #  declaration
     OPT_LIST = ["Reorder Records.",
-                "Keep Unsorted."]
+                "Remain Unsorted."]
     # components
     title_lb = self.app.comp_fact.build_label(lb_text="3. Sorting",
-                                            lb_type="h3",
-                                            lb_txtcolor=THEME_COLOR["mid"],
-                                            lb_align=Qt.AlignLeft,
-                                            lb_bold=True)
+                                              lb_type="h3",
+                                              lb_txtcolor=THEME_COLOR["mid"],
+                                              lb_align=Qt.AlignLeft,
+                                              lb_bold=True)
     radio_group = self.app.comp_fact.build_radio_group(
                                         target_list=OPT_LIST,
                                         target_event=lambda text, checked: self.app.clean_cont.handle_clean_sort_opt(target_list=OPT_LIST,
@@ -346,6 +347,26 @@ class PageClean(PageTemplate):
     pop_wd_layout.addWidget(close_btn, 2, 0, 1, 2, alignment=Qt.AlignCenter)
     pop_wd.setLayout(pop_wd_layout)
     return pop_wd
+  
+  
+  def build_blank_popup(self) -> QWidget:
+    
+    pop_wd = QDialog()
+    MATCHING = {
+      "-- Please Select --"
+    }
+    #  components
+    opt_lb = self.app.comp_fact.build_label(lb_text="Filling Strategy:",
+                                            lb_txtcolor=THEME_COLOR["white"])
+    opt_dd = self.app.comp_fact.build_dropdown(target_options=OPT_LIST,
+                                                target_default=0,
+                                                event=None)
+    #  frame
+    pop_wd.setWindowTitle("Duplicate Options")
+    pop_wd_layout = QGridLayout()
+    pop_wd.setLayout(pop_wd_layout)
+    return pop_wd
+  
   
   
   def build_sort_popup(self) -> QWidget:

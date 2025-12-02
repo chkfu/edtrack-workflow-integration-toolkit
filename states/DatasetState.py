@@ -1,5 +1,7 @@
 import pandas as pd
-\
+from typing import Optional, Any
+
+
 #  CLASS
 
 #  Learnt: managing different datasets, for cleaning options
@@ -18,7 +20,8 @@ class DatasetState:
     #  Basic Cleaning
     self.enable_duplicate: bool = False
     self.handle_duplicate_cols = []
-    self.enable_empty: bool = False
+    self.enable_blank: str = "ignore"
+    self.blank_value: Optional[Any] = None
     self.enable_sort: bool = False
     self.sort_col: str = "index"
     self.sort_ascending: bool = True
@@ -69,8 +72,8 @@ class DatasetState:
       return
   
   
-  def set_enable_empty(self) -> None:
-    self.enable_empty = not self.enable_empty
+  def set_enable_blank(self, target_opt: bool) -> None:
+    self.enable_blank = target_opt
     
   def set_enable_sort(self, target_opt: bool) -> None:
     self.enable_sort = target_opt
