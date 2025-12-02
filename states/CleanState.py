@@ -7,7 +7,7 @@ from views.components.config.views_config import DATASET_LIST
 
 #  LOGGING
 
-logger = logging.getLogger("PAGE_MERGE")
+logger = logging.getLogger("CLEAN_STATE")
 
 
 #  CLASS

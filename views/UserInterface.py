@@ -7,7 +7,7 @@ from controllers import (
   AppController, NavController, FileController, ValidController, CleanController
 )
 from models import SQLConnector
-from states import CleanState, DatasetState
+from states import CleanState
 from dotenv import load_dotenv
 
 

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
-  QWidget, QGridLayout, QVBoxLayout, QRadioButton, QButtonGroup, QFrame,
-  QHBoxLayout, QCheckBox, QScrollArea, QTabWidget, QLabel, QDialog, QLineEdit
+  QWidget, QGridLayout, QVBoxLayout, QFrame, QHBoxLayout, QScrollArea, 
+  QTabWidget, QDialog
 )
 from PyQt5.QtCore import Qt
 from views.components.config.views_config import DATASET_LIST
@@ -12,7 +12,6 @@ from views.components.pages.PageTemplate import PageTemplate
 from states import DatasetState
 import logging
 from pandas.api.types import is_numeric_dtype
-import pandas as pd
 
 
 #  LOGGING

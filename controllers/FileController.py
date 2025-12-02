@@ -7,7 +7,7 @@ temporary dataset loading.
 
 from PyQt5.QtWidgets import QFileDialog
 from models.DataLoader import DataLoader
-from views.components.config.views_config import DATASET_LIST, RAW_COL_SCHEMA
+from views.components.config.views_config import RAW_COL_SCHEMA
 import pandas as pd
 import logging
 

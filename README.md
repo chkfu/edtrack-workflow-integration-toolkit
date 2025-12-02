@@ -18,14 +18,14 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 - Basic data visualisation with Matplotlib heatmaps and pivot tables
 
 <p>
-  <img src="docs/demo/demo_import-export_01.gif" width="60%">
+  <img src="docs/demo/demo_import-export_01.gif" width="65%">
 </p>
 
 <br/>
 
 ## III. Architecture
 
-<i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
+- <i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
 
 ###  A.  Overall Design
@@ -47,6 +47,8 @@ The system applies OOP to break data handling and workflow logic into small, ind
 
 ## IV. Project Structure
 
+- <i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
+
 ```
 controllers/   # logic layer: bridge views and models, manage user
 data/          # Raw input or interim processed data
@@ -61,6 +63,8 @@ views/         # UI layer: all UI components and structure workflow
 <br/>
 
 ## V. Workflow
+
+- <i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
 ### A. High-level Overview
 

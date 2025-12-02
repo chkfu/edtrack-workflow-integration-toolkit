@@ -6,10 +6,7 @@ and prevent directly changes to the data transformation logic.
 
 
 import logging
-from PyQt5.QtWidgets import (
-    QStackedWidget, QGridLayout,QListWidget, QFrame, QHBoxLayout, QWidget,
-    QVBoxLayout, QListWidgetItem, QDialog
-)
+from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import Qt
 import pandas as pd
 from pandas.api.types import is_numeric_dtype

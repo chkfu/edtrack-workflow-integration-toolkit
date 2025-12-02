@@ -1,7 +1,6 @@
 import pandas as pd
 import logging
 from typing import Callable
-from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
   QLabel, QPushButton, QMessageBox, QDialog, QVBoxLayout, QFrame, QHBoxLayout, 
