@@ -6,6 +6,9 @@ preferred logic into user workflow.
 
 from views.components.config.views_config import RAW_COL_SCHEMA
 from views.components.config.views_config import STEP_NAME_LIST
+from pandas.api.types import (
+  is_numeric_dtype, is_string_dtype, is_bool_dtype, is_datetime64_any_dtype
+)
 import logging
 import pandas as pd
 

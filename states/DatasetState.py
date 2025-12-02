@@ -82,6 +82,10 @@ class DatasetState:
     self.handle_blanks = new_map
     
     
+  def update_handle_blanks(self, target_col: str, target_val: dict) -> None:
+    self.handle_blanks[target_col] = target_val
+    
+    
   def set_enable_sort(self, target_opt: bool | None) -> None:
     self.enable_sort = target_opt
 

@@ -11,6 +11,8 @@ from views.components.config.views_styles import (
 from views.components.pages.PageTemplate import PageTemplate
 from states import DatasetState
 import logging
+from pandas.api.types import is_numeric_dtype
+import pandas as pd
 
 
 #  LOGGING
@@ -288,7 +290,7 @@ class PageClean(PageTemplate):
         err_msg = f"Incorrect dataset key: {curr_ds_key}"
         logger.error(err_msg, exc_info=True)
         return None
-    return self.app.clean_state.get_spec_datastate(curr_ds_key)
+    return self.app.clean_state.get_spec_dataframe(curr_ds_key)
   
     
   
@@ -299,7 +301,7 @@ class PageClean(PageTemplate):
     
     curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
     target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
-    col_options = list(target_dataframe.columns)
+    col_options = list(target_dataframe.data_raw.columns)
     checkbox_list: list = []
     OPT_LIST = ["--- Please Select ---", 
                 "Apply to ALL columns", 
@@ -343,9 +345,8 @@ class PageClean(PageTemplate):
     pop_wd_layout.addWidget(cb_box, 1, 1)
     pop_wd_layout.addWidget(close_btn, 2, 0, 1, 2, alignment=Qt.AlignCenter)
     pop_wd.setLayout(pop_wd_layout)
+    pop_wd.setMaximumWidth(200)
     return pop_wd
-  
-  
   
   
   def build_blank_popup(self) -> QWidget:
@@ -358,39 +359,46 @@ class PageClean(PageTemplate):
     #  declare variables
     curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
     target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
-    OPT_LIST = ["--- Please Select ---", 
-                "Remain Unchanged",
-                "Remove Blanks",
-                "Fill Previous Value",
-                "Fill Next Value",
-                "Fill Default Text",
-                "Fill Numeric Mean",
-                "Fill Numeric Median",
-                "Fill Numeric Zeros"]
 
     #  loop to build components
     for index, column in enumerate(target_dataframe.data_raw.columns):
 
-        col_lb = self.app.comp_fact.build_label(
-            lb_text=column,
-            lb_txtcolor=THEME_COLOR["white"]
-        )
-
-        opt_dd = self.app.comp_fact.build_dropdown(
-            target_options=OPT_LIST,
-            target_default=0,
-            event=None)
-
-        pop_wd_layout.addWidget(col_lb, index, 0)
-        pop_wd_layout.addWidget(opt_dd, index, 1)
+      target_col = target_dataframe.data_raw[column]
     
+      col_lb = self.app.comp_fact.build_label(
+          lb_text=column,
+          lb_txtcolor=THEME_COLOR["white"]
+      )  
+      type_lb = self.app.comp_fact.build_label(
+          lb_text=str(target_col.dtype),
+          lb_txtcolor=THEME_COLOR["white"]
+      )
+      opt_dd = self.app.comp_fact.build_dropdown(
+          target_options=self.app.clean_cont.get_blank_dropdown(target_series=target_col),
+          target_default=0,
+          event=lambda text, col=column: self.app.clean_cont.select_blank_opt(target_col=col, 
+                                                                              selected_opt=text))
+
+      pop_wd_layout.addWidget(col_lb, index, 0, alignment=Qt.AlignLeft)
+      pop_wd_layout.addWidget(type_lb, index, 1, alignment=Qt.AlignLeft)
+      pop_wd_layout.addWidget(opt_dd, index, 2, alignment=Qt.AlignLeft)
+    
+    #  back option
+    close_btn = self.app.comp_fact.build_btn(btn_text="Back", 
+                                             btn_event=lambda: self.app.clean_cont.close_clean_blank_popup(target_popup=pop_wd),
+                                             btn_bgcolor=THEME_COLOR["primary"],
+                                             btn_txtcolor=THEME_COLOR["white"],
+                                             btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+    btn_box = QWidget()
+    btn_layout = QHBoxLayout()
+    btn_layout.addWidget(close_btn, alignment=Qt.AlignCenter)
+    btn_box.setLayout(btn_layout)
     #  complete frame
+    final_row = len(target_dataframe.data_raw.columns)
+    pop_wd_layout.addWidget(btn_box, final_row, 0, 1, 3, Qt.AlignCenter)
     pop_wd.setLayout(pop_wd_layout)
+    pop_wd.setMaximumWidth(200)
     return pop_wd
-  
-  
-  
-  
   
   
   def build_sort_popup(self) -> QWidget:
@@ -400,7 +408,7 @@ class PageClean(PageTemplate):
     target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
     
     #  setup options
-    OPT_LIST = ["--- Please Select ---"] + list(target_dataframe.columns)
+    OPT_LIST = ["--- Please Select ---"] + list(target_dataframe.data_raw.columns)
     ORDER_LIST = ["--- Please Select ---", 
                   "Ascending", 
                   "Descending"]
@@ -437,6 +445,7 @@ class PageClean(PageTemplate):
     pop_wd_layout.addWidget(order_dd, 1, 1)
     pop_wd_layout.addWidget(btn_box, 2, 0, 1, 2, alignment=Qt.AlignCenter)
     pop_wd.setLayout(pop_wd_layout)
+    pop_wd.setMaximumWidth(200)
     return pop_wd
   
   

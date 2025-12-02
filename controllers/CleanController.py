@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QListWidgetItem, QDialog
 )
 from PyQt5.QtCore import Qt
+import pandas as pd
+from pandas.api.types import is_numeric_dtype
 
 
 #  LOGGING
@@ -167,15 +169,70 @@ class CleanController:
     temp_output = {}
     curr_ds = self.app.clean_state.get_clean_target()
     if text == target_list[0]:
-      print(text)
-    elif text == target_list[1]:
-      print(text)  
       if checked:
         popup = self.app.pages_fact.page_clean.build_blank_popup()
         popup.exec_()
+    elif text == target_list[1]:
+      for column in curr_ds.data_raw.columns:
+        temp_output[column] = {"method": "ignore", "value": None}
+      curr_ds.set_handle_blanks(temp_output)
+      print(curr_ds.handle_blanks)
       return
-   
+    
+    
+  def get_blank_dropdown(self, target_series: pd.Series) -> list:
+    NUM_OPT_LIST = ["--- Please Select ---", 
+                    "Remain Unchanged",
+                    "Remove Blanks",
+                    "Fill Previous Value",
+                    "Fill Next Value",
+                    "Fill Numeric Mean",
+                    "Fill Numeric Median",
+                    "Fill Numeric Zeros"]
+    NON_NUM_OPT_LIST =  ["--- Please Select ---", 
+                        "Remain Unchanged",
+                        "Remove Blanks",
+                        "Fill Previous Value",
+                        "Fill Next Value",
+                        "Fill Default Text"]
+    
+    if is_numeric_dtype(target_series):
+      return NUM_OPT_LIST
+    return NON_NUM_OPT_LIST
   
+  
+  def select_blank_opt(self, target_col: str, selected_opt: str):
+    #  remarks: options called from columns, false case not needed
+    MATCHING = {
+      "--- Please Select ---": {"method": "ignore", "value": None},
+      "Remove Blanks": {"method": "drop", "value": None},
+      "Fill Previous Value": {"method": "bfill", "value": None},
+      "Fill Next Value": {"method": "ffill", "value": None},
+      "Fill Default Text": {"method": "ffill", "value": "(Not Specified)"},
+      "Fill Numeric Mean": {"method": "mean", "value": None},
+      "Fill Numeric Median": {"method": "median", "value": None},
+      "Fill Numeric Zeros": {"method": "constant", "value": 0}
+    }
+    
+    curr_ds = self.app.clean_state.get_clean_target()
+    target_val = MATCHING.get(selected_opt, {"method": "ignore", "value": None})
+    curr_ds.update_handle_blanks(target_col=target_col, target_val=target_val)
+    print(curr_ds.handle_blanks)
+    
+    
+  def close_clean_blank_popup(self, target_popup: QDialog):
+    if not isinstance(target_popup, QDialog):
+      err_msg: str = "The close popup method only works for pop-up windows."
+      logger.error(err_msg, exc_info=True)
+      raise TypeError(err_msg)
+    #  failed case: reminder box
+    curr_ds_state = self.app.clean_state.get_clean_target()
+    for column in curr_ds_state.data_raw.columns:
+      if column not in curr_ds_state.handle_blanks:
+        curr_ds_state.handle_blanks[column] = {"method": "ignore", "value": None}
+    #  successful case: close popup
+    return target_popup.close()
+        
   
   #  2c. sorting options
   
