@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import Qt
 from views.components.config.views_styles import THEME_COLOR, style_nav_sect_default
 from views.components.pages.PageTemplate import PageTemplate
@@ -47,11 +47,13 @@ class PageMerge(PageTemplate):
     #  components
     table_select_container = self.build_select_table_container()
     method_select_container = self.build_select_method_container()
+    output_merge_container = self.build_output_merge_container()
     #  outer
     core_sect = QWidget()
     core_sect_layout = QVBoxLayout()
     core_sect_layout.addWidget(table_select_container)
     core_sect_layout.addWidget(method_select_container)
+    core_sect_layout.addWidget(output_merge_container)
     core_sect_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft) 
     core_sect_layout.setSpacing(16)
     core_sect_layout.setContentsMargins(0, 0, 0, 0) 
@@ -105,13 +107,31 @@ class PageMerge(PageTemplate):
     frame.setLayout(frame_layout)
     return frame
   
+  
+  def build_output_merge_container(self) -> QWidget:
+    #  components
+    lb_title = self.app.comp_fact.build_label(lb_text="C. Merge Output", 
+                                                lb_type="h3",
+                                                lb_txtcolor=THEME_COLOR["primary"])
+    opt_grid = self.build_ouput_opt_grid()
+    #  frame
+    frame = QWidget()
+    frame_layout = QVBoxLayout()
+    frame_layout.addWidget(lb_title, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(opt_grid)
+    frame_layout.setSpacing(8)
+    frame_layout.setContentsMargins(0, 0, 0, 0)
+    frame.setLayout(frame_layout)
+    return frame
+  
+  
   #  METHODS -  BOXES
   
   def build_table_opt_box(self, target_label=str) -> QWidget:
     
     lb_box = self.app.comp_fact.build_label(lb_text=target_label, 
-                                                lb_type="h3",
-                                                lb_txtcolor=THEME_COLOR["mid"])
+                                            lb_type="h3",
+                                            lb_txtcolor=THEME_COLOR["mid"])
     lb_table = self.app.comp_fact.build_label(lb_text="Selected Table", 
                                                 lb_type="p",
                                                 lb_txtcolor=THEME_COLOR["mid"])
@@ -129,7 +149,6 @@ class PageMerge(PageTemplate):
                                                btn_bgcolor=THEME_COLOR["white"],
                                                btn_txtcolor=THEME_COLOR["primary"],
                                                btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    
     #  box
     grid = QWidget()
     grid_layout = QGridLayout()
@@ -151,6 +170,37 @@ class PageMerge(PageTemplate):
     frame_layout.setContentsMargins(0, 0, 0, 0)
     frame_layout.setSpacing(4)
     frame_layout.addWidget(lb_box, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(grid)
+    frame_layout.addWidget(grid, alignment=Qt.AlignLeft)
     frame.setLayout(frame_layout)
     return frame
+  
+  
+  def build_ouput_opt_grid(self): 
+    # components
+    lb_preview = self.app.comp_fact.build_label(lb_text="1. Preview", 
+                                                lb_type="h3",
+                                                lb_txtcolor=THEME_COLOR["mid"])
+    lb_merge = self.app.comp_fact.build_label(lb_text="2. Merge", 
+                                                lb_type="h3",
+                                                lb_txtcolor=THEME_COLOR["mid"])
+    btn_preview = self.app.comp_fact.build_btn(btn_text="Preview",
+                                               btn_event=None,
+                                               btn_bgcolor=THEME_COLOR["white"],
+                                               btn_txtcolor=THEME_COLOR["primary"],
+                                               btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    btn_merge = self.app.comp_fact.build_btn(btn_text="Merge",
+                                               btn_event=None,
+                                               btn_bgcolor=THEME_COLOR["white"],
+                                               btn_txtcolor=THEME_COLOR["primary"],
+                                               btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    #  frame
+    grid = QWidget()
+    grid_layout = QGridLayout()
+    grid_layout.setSpacing(4)
+    grid_layout.setContentsMargins(0, 0, 0, 0)
+    grid_layout.addWidget(lb_preview, 0, 0)
+    grid_layout.addWidget(lb_merge, 0, 1)
+    grid_layout.addWidget(btn_preview, 1, 0)
+    grid_layout.addWidget(btn_merge, 1, 1)
+    grid.setLayout(grid_layout)
+    return grid
