@@ -1,16 +1,16 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout
-from views.components.config.views_styles import style_nav_sect_default
+from PyQt5.QtWidgets import QWidget, QGridLayout, QVBoxLayout
+from PyQt5.QtCore import Qt
+from views.components.config.views_styles import THEME_COLOR, style_nav_sect_default
 from views.components.pages.PageTemplate import PageTemplate
 import logging
 
 
-#  LOGGING
 
+#  LOGGING
 logger = logging.getLogger("PAGE_MERGE")
 
 
 #  CLASS
-
 
 class PageMerge(PageTemplate):
   
@@ -21,7 +21,7 @@ class PageMerge(PageTemplate):
     logger.info("initialised successfully.")
     
     
-  #  METHODS
+  #  METHODS -  MAIN
   
   def merge_sections(self):
     #  title section
@@ -41,3 +41,116 @@ class PageMerge(PageTemplate):
     page.setStyleSheet(style_nav_sect_default)
     page.setLayout(page_layout)
     return page
+  
+  
+  def core_sect_merge_tables(self) -> QWidget:
+    #  components
+    table_select_container = self.build_select_table_container()
+    method_select_container = self.build_select_method_container()
+    #  outer
+    core_sect = QWidget()
+    core_sect_layout = QVBoxLayout()
+    core_sect_layout.addWidget(table_select_container)
+    core_sect_layout.addWidget(method_select_container)
+    core_sect_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft) 
+    core_sect_layout.setSpacing(16)
+    core_sect_layout.setContentsMargins(0, 0, 0, 0) 
+    core_sect.setLayout(core_sect_layout)
+    return core_sect
+  
+  
+  #  METHODS -  CONTAINERS
+  
+  def build_select_table_container(self) -> QWidget:
+    
+    #  components
+    title_lb = self.app.comp_fact.build_label(lb_text="A. Select Tables", 
+                                              lb_type="h3")
+    table_opt_box_left = self.build_table_opt_box(target_label="1. Left Table")
+    table_opt_box_right = self.build_table_opt_box(target_label="2. Right Table")
+    #  frame
+    frame = QWidget()
+    frame_layout = QVBoxLayout()
+    frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft)
+    frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft) 
+    frame_layout.setSpacing(8)
+    frame_layout.setContentsMargins(0, 0, 0, 0)
+    frame_layout.addWidget(table_opt_box_left) 
+    frame_layout.addWidget(table_opt_box_right) 
+    frame.setLayout(frame_layout)
+    return frame
+  
+  
+  def build_select_method_container(self) -> QWidget:
+    
+    OPT_LIST = ["Keep all records from the left table.",
+                "Keep all records from the right table.",
+                "Keep only records that match in both tables.",
+                "Keep everything from both tables."]
+    
+    #  components
+    title_lb = self.app.comp_fact.build_label(lb_text="B. Select Methods", 
+                                              lb_type="h3")
+    radio_group = self.app.comp_fact.build_radio_group(target_list=OPT_LIST,
+                                                      target_event=None,
+                                                      is_horizontal=False)["widget"]
+    #  frame
+    frame = QWidget()
+    frame_layout = QVBoxLayout()
+    frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(radio_group)
+    frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft) 
+    frame_layout.setSpacing(8)
+    frame_layout.setContentsMargins(0, 0, 0, 0)
+    frame.setLayout(frame_layout)
+    return frame
+  
+  #  METHODS -  BOXES
+  
+  def build_table_opt_box(self, target_label=str) -> QWidget:
+    
+    lb_box = self.app.comp_fact.build_label(lb_text=target_label, 
+                                                lb_type="h3",
+                                                lb_txtcolor=THEME_COLOR["mid"])
+    lb_table = self.app.comp_fact.build_label(lb_text="Selected Table", 
+                                                lb_type="p",
+                                                lb_txtcolor=THEME_COLOR["mid"])
+    lb_column = self.app.comp_fact.build_label(lb_text="Selected Column", 
+                                                lb_type="p",
+                                                lb_txtcolor=THEME_COLOR["mid"])
+    dd_table = self.app.comp_fact.build_dropdown(target_options=[], 
+                                                    target_default=0,
+                                                    event=None)
+    dd_column = self.app.comp_fact.build_dropdown(target_options=[], 
+                                                  target_default=0,
+                                                  event=None)
+    btn_preview = self.app.comp_fact.build_btn(btn_text="Preview",
+                                               btn_event=None,
+                                               btn_bgcolor=THEME_COLOR["white"],
+                                               btn_txtcolor=THEME_COLOR["primary"],
+                                               btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    
+    #  box
+    grid = QWidget()
+    grid_layout = QGridLayout()
+    grid_layout.setHorizontalSpacing(20)
+    grid_layout.setVerticalSpacing(0)
+    grid_layout.setContentsMargins(0, 0, 0, 0) 
+    grid_layout.addWidget(lb_table, 0, 0, alignment=Qt.AlignBottom)
+    grid_layout.addWidget(lb_column, 0, 1, alignment=Qt.AlignBottom) 
+    grid_layout.addWidget(dd_table, 1, 0)
+    grid_layout.addWidget(dd_column, 1, 1)
+    grid_layout.addWidget(btn_preview, 1, 2, alignment=Qt.AlignCenter)
+    grid_layout.setColumnStretch(0, 1)
+    grid_layout.setColumnStretch(1, 1)
+    grid_layout.setColumnStretch(2, 1)
+    grid.setLayout(grid_layout)
+    #  frame
+    frame = QWidget()
+    frame_layout = QVBoxLayout()
+    frame_layout.setContentsMargins(0, 0, 0, 0)
+    frame_layout.setSpacing(4)
+    frame_layout.addWidget(lb_box, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(grid)
+    frame.setLayout(frame_layout)
+    return frame

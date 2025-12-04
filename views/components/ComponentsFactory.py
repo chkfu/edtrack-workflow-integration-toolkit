@@ -119,6 +119,7 @@ class ComponentsFactory:
     combo = QComboBox()
     combo.addItems(target_options)
     combo.setCurrentIndex(target_default)
+    combo.setFixedHeight(28)
     #  udpate
     if event:
       combo.currentTextChanged.connect(event)

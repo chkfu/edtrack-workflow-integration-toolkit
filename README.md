@@ -25,7 +25,7 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 
 ## III. Architecture
 
-- <i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
+<i>* Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
 
 ###  A.  Overall Design
@@ -47,7 +47,7 @@ The system applies OOP to break data handling and workflow logic into small, ind
 
 ## IV. Project Structure
 
-- <i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
+<i>* Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
 ```
 controllers/   # logic layer: bridge views and models, manage user
@@ -64,7 +64,7 @@ views/         # UI layer: all UI components and structure workflow
 
 ## V. Workflow
 
-- <i> Read `architecture.md` for further information of design and module reponsibilities.  </i>
+<i>* Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
 ### A. High-level Overview
 
@@ -77,7 +77,7 @@ views/         # UI layer: all UI components and structure workflow
 
 ```
 [Loader]  ->  [Cleaner]  ->  [Manager]  ->  [Preprocessor]  ->  [Manager]  ->  [Visualiser]  ->  [Loader]
-(import)      (cleaning)      (merge)      (feature engineer)  (transform)      (visualise)      (export)
+(import)      (cleaning)      (merge)     (feature engineer)   (transform)      (visualise)      (export)
 ```
 
 ### C. Views - User Interface

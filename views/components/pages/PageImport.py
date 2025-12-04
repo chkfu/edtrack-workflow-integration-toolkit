@@ -9,12 +9,10 @@ import logging
 
 
 #  LOGGING
-
 logger = logging.getLogger("PAGE_IMPORT")
 
 
 #  CLASS
-
 
 class PageImport(PageTemplate):
   
@@ -24,25 +22,7 @@ class PageImport(PageTemplate):
     logger.info("initialised successfully.")
     
     
-  #  METHODS -  MAIN
-  
-  def core_sect_import_dataset(self) -> QWidget:
-    #  scope: core seciton
-    browser_container = self.create_browser_container()
-    preview_container = self.create_preview_container()
-    # import_container = self.create_import_container()
-    #  outer
-    core_sect = QWidget()
-    core_sect_layout = QVBoxLayout()
-    core_sect_layout.addWidget(browser_container, alignment=Qt.AlignTop)
-    core_sect_layout.addWidget(preview_container, alignment=Qt.AlignTop)
-    # core_sect_layout.addWidget(import_container, alignment=Qt.AlignTop)
-    core_sect_layout.setAlignment(Qt.AlignTop)
-    core_sect_layout.setSpacing(8)
-    core_sect_layout.setContentsMargins(0, 0, 0, 0)
-    core_sect.setLayout(core_sect_layout)
-    return core_sect
-  
+  #  METHODS -  MAIN  
   
   def merge_sections(self):
     #  title section
@@ -61,6 +41,24 @@ class PageImport(PageTemplate):
     page.setLayout(page_layout)
     return page
   
+  
+  def core_sect_import_dataset(self) -> QWidget:
+    #  scope: core seciton
+    browser_container = self.create_browser_container()
+    preview_container = self.create_preview_container()
+    # import_container = self.create_import_container()
+    #  outer
+    core_sect = QWidget()
+    core_sect_layout = QVBoxLayout()
+    core_sect_layout.addWidget(browser_container, alignment=Qt.AlignTop)
+    core_sect_layout.addWidget(preview_container, alignment=Qt.AlignTop)
+    # core_sect_layout.addWidget(import_container, alignment=Qt.AlignTop)
+    core_sect_layout.setAlignment(Qt.AlignTop)
+    core_sect_layout.setSpacing(8)
+    core_sect_layout.setContentsMargins(0, 0, 0, 0)
+    core_sect.setLayout(core_sect_layout)
+    return core_sect
+
 
   #  METHODS -  CONTAINERS
   
