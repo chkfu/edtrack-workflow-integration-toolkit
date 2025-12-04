@@ -10,7 +10,7 @@ THEME_COLOR = {
     "red": "#FA5252",
     "primary_hvr": "#455C75",
     "mid_hvr": "#293D50",
-    "pale_hvr": "#9EA7AD",
+    "pale_hvr": "#B0BCC3",
     "white_hvr":   "#DDDDDD",
     "yellow_hvr": "#F08C00",
     "red_hvr": "#E03131"
@@ -66,6 +66,16 @@ style_sidebar_box_default = """
   """.format(
       white_hvr=THEME_COLOR["white_hvr"],
       primary=THEME_COLOR["primary"])
+  
+  
+style_table_view_border = """
+QTableView {{
+    border: 0.5px solid {dark};
+}}
+""".format(
+  dark=THEME_COLOR["dark"]
+)
+
 
 
 #  LAYER 2 - CONTENT PANEL
@@ -100,27 +110,54 @@ style_tab_border = """
     """
 
 style_tab_scroll = """
-    QScrollArea {
-        border: none;
-        background: transparent;
-    }
-    QScrollBar:vertical {
-        width: 2px;
-        background: transparent;
-        margin: 0px;
-    }
-    QScrollBar::handle:vertical {
-        background: #23405b;
-        min-height: 16px;
-        border-radius: 3px;
-    }
-    QScrollBar::add-line, QScrollBar::sub-line {
-        height: 0px;
-    }
-    QScrollBar::handle:vertical:hover {
-        background: #365b7d;
-    }
-"""
+QScrollArea {{
+    border: none;
+    background: transparent;
+}}
+
+QScrollBar:vertical {{
+    width: 4px;
+    background: transparent;
+    margin: 0px;
+}}
+
+QScrollBar::handle:vertical {{
+    background: {primary};
+    min-height: 16px;
+    border-radius: 2px;
+}}
+
+QScrollBar::handle:vertical:hover {{
+    background: {primary_hvr};
+}}
+
+QScrollBar::add-line,
+QScrollBar::sub-line {{
+    height: 0px;
+}}
+""".format(
+    primary=THEME_COLOR["primary"],
+    primary_hvr=THEME_COLOR["primary_hvr"],
+)
+
+style_browser_box_pframe = """
+QFrame {{
+    background-color: {pale};
+    border-radius: 14px;
+    padding: 0px 4px;
+}}
+""".format(
+    pale=THEME_COLOR["pale_hvr"]
+)
+
+#  LAYER 6 - POPUP WINDOW
+
+style_popup_title_box = """
+    background-color: {primary};
+    padding: 12px;
+""".format(
+    primary=THEME_COLOR["primary"],
+)
 
 
 #  LABELS

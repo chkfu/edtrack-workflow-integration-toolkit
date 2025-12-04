@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout, QHBoxLayout, QVBoxLayout, QLayout
 from PyQt5.QtCore import Qt
 from views.components.config.views_styles import THEME_COLOR, style_nav_sect_default
 from views.components.pages.PageTemplate import PageTemplate
@@ -56,7 +56,7 @@ class PageMerge(PageTemplate):
     core_sect_layout.addWidget(output_merge_container)
     core_sect_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft) 
     core_sect_layout.setSpacing(16)
-    core_sect_layout.setContentsMargins(0, 0, 0, 0) 
+    core_sect_layout.setContentsMargins(0, 8, 0, 0) 
     core_sect.setLayout(core_sect_layout)
     return core_sect
   
@@ -177,30 +177,22 @@ class PageMerge(PageTemplate):
   
   def build_ouput_opt_grid(self): 
     # components
-    lb_preview = self.app.comp_fact.build_label(lb_text="1. Preview", 
-                                                lb_type="h3",
-                                                lb_txtcolor=THEME_COLOR["mid"])
-    lb_merge = self.app.comp_fact.build_label(lb_text="2. Merge", 
-                                                lb_type="h3",
-                                                lb_txtcolor=THEME_COLOR["mid"])
-    btn_preview = self.app.comp_fact.build_btn(btn_text="Preview",
-                                               btn_event=None,
-                                               btn_bgcolor=THEME_COLOR["white"],
-                                               btn_txtcolor=THEME_COLOR["primary"],
-                                               btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    btn_merge = self.app.comp_fact.build_btn(btn_text="Merge",
-                                               btn_event=None,
-                                               btn_bgcolor=THEME_COLOR["white"],
-                                               btn_txtcolor=THEME_COLOR["primary"],
-                                               btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    box_preview = self.app.comp_fact.preview_comp_box(lb_text="1. Preview",
+                                                     btn_text="Preview",
+                                                     btn_event=None)   
+    box_merge = self.app.comp_fact.preview_comp_box(lb_text="2. Merge",
+                                                     btn_text="Merge",
+                                                     btn_event=None)
     #  frame
     grid = QWidget()
     grid_layout = QGridLayout()
-    grid_layout.setSpacing(4)
+    grid_layout = QGridLayout()
+    grid_layout.setHorizontalSpacing(28)
     grid_layout.setContentsMargins(0, 0, 0, 0)
-    grid_layout.addWidget(lb_preview, 0, 0)
-    grid_layout.addWidget(lb_merge, 0, 1)
-    grid_layout.addWidget(btn_preview, 1, 0)
-    grid_layout.addWidget(btn_merge, 1, 1)
+    grid_layout.setColumnStretch(0, 0)
+    grid_layout.setColumnStretch(1, 0)
+    grid_layout.addWidget(box_preview, 0, 0)
+    grid_layout.addWidget(box_merge, 0, 1)
+    grid_layout.setSizeConstraint(QLayout.SetFixedSize)
     grid.setLayout(grid_layout)
     return grid

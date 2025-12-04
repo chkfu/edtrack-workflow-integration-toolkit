@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 )
 from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
-    style_sidebar_listItem_default
+    style_sidebar_listItem_default, style_table_view_border, style_popup_title_box
 )
 from views.components.config.views_config import DATASET_LIST
 
@@ -201,7 +201,7 @@ class ComponentsFactory:
         #  table management
         #  leanrt: use sub-fn in horizontalHeader to manage
         table.setItem(row, col, QTableWidgetItem(tb_cell))
-    table.setStyleSheet("border: 0.5px solid #333333")
+    table.setStyleSheet(style_table_view_border)
     return table
   
   
@@ -218,7 +218,7 @@ class ComponentsFactory:
                       lb_txtcolor=THEME_COLOR["primary"],
                       lb_align=Qt.AlignLeft | Qt.AlignVCenter,
                       lb_bold=True)
-      content_title.setStyleSheet("background-color: #213D57; padding: 12px")
+      content_title.setStyleSheet(style_popup_title_box)
       box = QFrame()
       box_layout = QHBoxLayout()
       box_layout.setSpacing(0)
@@ -301,63 +301,7 @@ class ComponentsFactory:
     window.exec()
     
     
-  #  component box
-  
-  def browser_comp_box(self, 
-                       lb_text: str="", 
-                       path_txt: str="",
-                       btn_text:str="",
-                       btn_event: Callable | None =None) -> QFrame:
-    #  components
-    title_label = self.app.comp_fact.build_label(lb_text=lb_text,
-                                                     lb_type="h3",
-                                                     lb_txtcolor=THEME_COLOR["mid"],
-                                                     lb_align=Qt.AlignVCenter | Qt.AlignLeft)
-    path_label = self.app.comp_fact.build_label(lb_text=path_txt,
-                                                    lb_type="p",
-                                                    lb_txtcolor=THEME_COLOR["mid"],
-                                                    lb_align=Qt.AlignVCenter | Qt.AlignLeft)
-    search_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
-                                                  btn_event=btn_event,
-                                                  btn_bgcolor=THEME_COLOR["white"],
-                                                  btn_txtcolor=THEME_COLOR["primary"],
-                                                  btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    #  update temp labels list
-    if lb_text == DATASET_LIST[1]["data"]:
-        self.app.pages_fact.temp_label_users = path_label
-    elif lb_text == DATASET_LIST[2]["data"]:
-        self.app.pages_fact.temp_label_activities = path_label
-    elif lb_text == DATASET_LIST[3]["data"]:
-        self.app.pages_fact.temp_label_components = path_label
-    #  learnt: .clicked is the signal itself, further connect to the function
-    search_btn.clicked.connect(lambda: self.app.file_cont.browse_files(target_key=lb_text, 
-                                                                       lb_widget=path_label))
-    #  path layer for spec styling
-    p_frame = QFrame()
-    p_frame_layout = QVBoxLayout()
-    p_frame.setStyleSheet("""
-        QFrame {
-            background-color: "#dddddd";
-            border-radius: 14px;
-            padding: 0px 4px;
-        }
-    """)
-    p_frame_layout.addWidget(path_label)
-    p_frame.setFixedWidth(320)
-    p_frame_layout.setContentsMargins(8, 0, 8, 0)
-    p_frame_layout.setSpacing(8)
-    p_frame.setLayout(p_frame_layout)
-    #  overall layer
-    frame = QFrame()
-    frame_layout = QGridLayout()
-    frame_layout.addWidget(title_label, 0, 0, 1, 2)
-    frame_layout.addWidget(p_frame, 1, 0, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(search_btn, 1, 1, alignment=Qt.AlignCenter)
-    frame_layout.setContentsMargins(0, 0, 0, 0)
-    frame_layout.setSpacing(0)
-    frame.setLayout(frame_layout)
-    return frame
-  
+  #  component box  
   
   def preview_comp_box(self, 
                        lb_text: str="", 
@@ -381,7 +325,7 @@ class ComponentsFactory:
     i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
     i_frame_layout.addWidget(preview_btn, alignment=Qt.AlignCenter)
     i_frame_layout.setContentsMargins(0, 0, 0, 0)
-    i_frame_layout.setSpacing(0)
+    i_frame_layout.setSpacing(4)
     i_frame.setLayout(i_frame_layout)
     return i_frame
   
