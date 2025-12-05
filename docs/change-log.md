@@ -19,6 +19,26 @@ This file records the major version changes of the projects.
 <br/>
 
 
+## [0.1.4] - Dec 5, 2025
+
+### Added
+
+- Added PageFE step into the workflow for handling feature-engineering tasks
+- Added PageClean and PageMerge UI
+- Added instructions of adding new pages in developer-guide
+- Added project structure and architecture in architecture and readme documents
+
+
+## Edited
+
+- Refactored cleaning with tab switching issues for preventing redundent codes
+- Implemented functionalities into PageClean's components
+
+## Fixed
+
+- Fixed UI refresh and event binding bugs
+
+
 
 ## [0.1.3] - Nov 29, 2025
 
@@ -38,7 +58,7 @@ This file records the major version changes of the projects.
 
 ### Removed
 
-- Deleted script folder, considering models logic need to be adjust for UI
+- Deleted script folder, considering models logic need to be adjusted for UI
 
 <br/>
 

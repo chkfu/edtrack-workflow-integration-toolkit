@@ -128,9 +128,9 @@ Run the command:
 $ python3 app.py
 ```
 
-### B. Navigation Bar
+### B. Top Bar
 
-The Navigation Bar handling user behavior which is relevant to application lifecycle:
+The Top Bar handling user behavior which is relevant to application lifecycle:
 
 (1) Reset button: Clears all temporary states and restores global default settings.<br/>
 (2) Exit button: Safely shuts down all running processes.<br/>

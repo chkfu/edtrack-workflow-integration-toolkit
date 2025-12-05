@@ -195,6 +195,83 @@ item = str(target_df.iloc[row, col])  # ✅ convert the value to string first
 table.setItem(row, col, QTableWidgetItem(item))
 ```
 
+
+### D. Create New Pages
+
+To append a new step (e.g., Feature Engineering) into the workflow between Merge and Analysis, you need to:
+
+#### (1) Add a New Page
+
+Create a new class into `views/components/pages`.
+
+```
+|----  pages/
+   |----  __init__.py.          #  entry point
+   |----  PageAnalysis.py
+   |----  PageClean.py
+   |----  PageFE.py             #  new created
+   |----  PageImport.py
+   |----  PageTemplate.py.      #  abstract class
+
+```
+
+Then, update the new module at `views/components/pages/__init__.py`. It enables to import the new PageFE class.
+
+```
+from views.components.pages.PageFE import PageFE
+
+__all__ = ["PageTemplate", 
+           "PageImport",
+           "PageClean",
+           "PageMerge",
+           "PageFE",            #  add new directory
+           "PageAnalyse"]
+```
+
+#### (2) Update the Page Interface
+
+Define a new methods at `PageTemplate.py` for the corresponding content section with pre-built layout format.
+
+```
+  def core_sect_feateng(self) -> QWidget:
+    core_sect = QWidget()
+    core_sect_layout = QVBoxLayout()
+    core_sect.setLayout(core_sect_layout)
+    return core_sect
+```
+
+Then, we need to register the new page in `PagesFactory.py`:
+
+```
+def __init__(self, app_ref):
+    self.page_feateng = PageFE(app_ref)         #  append a new state in here
+```
+
+Next, register the new page into the workflow stack in `LayoutFactory`. Make sure the page has been added into the right place.
+
+```
+def __init__(self, app_ref):
+    self.page_stack = QStackedWidget()                                  #  logical stack structure
+    self.page_4 = self.app.pages_fact.page_feateng.merge_sections()     #  refer to the new temp state
+    self.page_stack.addWidget(self.page_4)                              #  add the temp state into the stack
+```
+
+The new page will be added successfully at this point.
+
+#### (3) Update the Sidebar
+
+As an easy-assessible widget, the progress list at sidebar can be managed in `views/components/config/views_config.py`. Ensure the refinement is consistent to the logical order in the aforementioned workflow stack.
+
+```
+STEP_NAME_LIST: list = [
+    {
+      "step": "4: Feature Engineering", 
+      "visited": False
+    }
+]
+```
+
+
 <br/>
 
 

@@ -1,5 +1,7 @@
 import logging
-from views.components.pages import PageImport, PageClean, PageMerge, PageAnalyse
+from views.components.pages import (
+  PageImport, PageClean, PageMerge, PageFE, PageAnalyse
+)
 from PyQt5.QtWidgets import QLabel
 from views.components.config.views_config import DATASET_LIST
 
@@ -34,6 +36,7 @@ class PagesFactory:
     self.page_clean = PageClean(app_ref,
                                 target_ds_list=[item["data"] for item in DATASET_LIST[1:4]])
     self.page_merge = PageMerge(app_ref)
+    self.page_feateng = PageFE(app_ref)
     self.page_analyse = PageAnalyse(app_ref)
     #  log
     logger.info("initialised successfully.") 

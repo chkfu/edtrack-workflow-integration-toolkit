@@ -36,7 +36,8 @@ class LayoutFactory:
     self.page_1 = self.app.pages_fact.page_import.merge_sections()
     self.page_2 = self.app.pages_fact.page_clean.merge_sections()
     self.page_3 = self.app.pages_fact.page_merge.merge_sections()
-    self.page_4 = self.app.pages_fact.page_analyse.merge_sections()
+    self.page_4 = self.app.pages_fact.page_feateng.merge_sections()
+    self.page_5 = self.app.pages_fact.page_analyse.merge_sections()
 
     #  setup visualise list stack - widget based
     self.task_list_widget = None
@@ -47,6 +48,7 @@ class LayoutFactory:
     self.page_stack.addWidget(self.page_2)
     self.page_stack.addWidget(self.page_3)
     self.page_stack.addWidget(self.page_4)
+    self.page_stack.addWidget(self.page_5)
     
     
     #  learnt: to get total num, use stack.count()

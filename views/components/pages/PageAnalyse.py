@@ -25,10 +25,10 @@ class PageAnalyse(PageTemplate):
   
   def merge_sections(self):
     #  title section
-    inner_title_sect = self.create_title_sect(sect_title="Step 4: Analyse Data", 
+    inner_title_sect = self.create_title_sect(sect_title="Step 5: Analyse Data", 
                                                 sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
     #  statistic section
-    inner_stat_sect = self.create_stat_sect(target_page=4)
+    inner_stat_sect = self.create_stat_sect(target_page=5)
     #  nav section
     inner_nav_sect = self.create_nav_sect(enable_back=True, enable_done=True)
     

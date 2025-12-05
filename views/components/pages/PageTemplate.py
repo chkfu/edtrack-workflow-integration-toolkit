@@ -52,13 +52,15 @@ class PageTemplate:
 
   def create_stat_sect(self, target_page: int) -> QWidget | None:
       if target_page == 1:
-          return self.core_sect_import_dataset()
+        return self.core_sect_import_dataset()
       elif target_page == 2:
-          return self.core_sect_clean_data()
+        return self.core_sect_clean_data()
       elif target_page == 3:
-          return self.core_sect_merge_tables()
+        return self.core_sect_merge_tables()
       elif target_page == 4:
-          return self.core_sect_analyse_data()
+        return self.core_sect_feateng()
+      elif target_page == 5:
+        return self.core_sect_analyse_data()
       return None
     
     
@@ -89,6 +91,16 @@ class PageTemplate:
     
     
   def core_sect_merge_tables(self) -> QWidget:
+    
+    #  outer
+    core_sect = QWidget()
+    core_sect_layout = QVBoxLayout()
+    # .....
+    core_sect.setLayout(core_sect_layout)
+    return core_sect
+  
+
+  def core_sect_feateng(self) -> QWidget:
     
     #  outer
     core_sect = QWidget()

@@ -12,7 +12,11 @@ STEP_NAME_LIST: list = [
       "visited": False
     },
     {
-      "step": "4: Analyse Data", 
+      "step": "4: Feature Engineering", 
+      "visited": False
+    },
+    {
+      "step": "5: Analyse Data", 
       "visited": False
     }
 ]
