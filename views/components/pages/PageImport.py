@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QWidget, QGridLayout, QVBoxLayout, QVBoxLayout, QFrame, QLayout
+    QFrame, QWidget, QGridLayout, QVBoxLayout, QVBoxLayout, QFrame, QLayout
 )
 from views.components.config.views_styles import THEME_COLOR, style_browser_box_pframe
 from views.components.config.views_config import DATASET_LIST
@@ -25,7 +25,7 @@ class PageImport(PageTemplate):
     
   #  METHODS -  MAIN  
   
-  def merge_sections(self):
+  def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 1: Import Datasets", 
                                                 sect_des="This step reads the dataset, checks its structure, and prepares it for cleaning and processing.")
@@ -43,12 +43,12 @@ class PageImport(PageTemplate):
     return page
   
   
-  def core_sect_import_dataset(self) -> QWidget:
+  def core_sect_import_dataset(self) -> QFrame:
     #  scope: core seciton
     browser_container = self.create_browser_container()
     preview_container = self.create_preview_container()
     #  outer
-    core_sect = QWidget()
+    core_sect = QFrame()
     core_sect_layout = QVBoxLayout()
     core_sect_layout.addWidget(browser_container, alignment=Qt.AlignTop)
     core_sect_layout.addWidget(preview_container, alignment=Qt.AlignTop)
@@ -117,7 +117,7 @@ class PageImport(PageTemplate):
     frame_layout.setColumnStretch(2, 1)
     frame_layout.setRowStretch(0, 0)
     frame_layout.setRowStretch(1, 0)
-    frame_layout.setContentsMargins(0, 16, 0, 0)
+    frame_layout.setContentsMargins(0, 24, 0, 0)
     frame_layout.setHorizontalSpacing(28)
     frame_layout.setSizeConstraint(QLayout.SetFixedSize)
     frame.setLayout(frame_layout)

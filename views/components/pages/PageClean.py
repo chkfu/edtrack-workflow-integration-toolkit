@@ -56,7 +56,7 @@ class PageClean(PageTemplate):
  
   #  METHODS
   
-  def merge_sections(self):
+  def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 2: Clean Data and Preprocessing", 
                                               sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
@@ -86,14 +86,19 @@ class PageClean(PageTemplate):
     #  components
     tb_select_container = self.build_tb_opt_container(target_title=target_title)
     basic_clean_container = self.build_basic_clean_container()
+    reset_container = self.app.comp_fact.build_reused_single_btn_box(target_title="C. Reset Options",
+                                                               target_statement=None,
+                                                               target_btn_text="Reset",
+                                                               target_btn_event=lambda: self.reset_display())
     #  frame
     core_sect = QWidget()
     core_sect_layout = QVBoxLayout()
     core_sect_layout.addWidget(tb_select_container)
     core_sect_layout.addWidget(basic_clean_container)
+    core_sect_layout.addWidget(reset_container)
     core_sect_layout.setAlignment(Qt.AlignTop)
-    core_sect_layout.setSpacing(12)
-    core_sect_layout.setContentsMargins(0, 0, 0, 0) 
+    core_sect_layout.setSpacing(24)
+    core_sect_layout.setContentsMargins(0, 16, 0, 0) 
     core_sect.setLayout(core_sect_layout)
     #  scroll
     scroll = QScrollArea()
@@ -114,8 +119,6 @@ class PageClean(PageTemplate):
     remove_duplicate_box = self.build_rm_duplicate_box()
     handle_blank_box = self.build_handle_blank_box()
     handle_sort_box = self.build_handle_sort_box()
-    reset_box = self.build_reset_box()
-    
     #  frame
     frame = QFrame()
     frame_layout = QVBoxLayout()
@@ -123,10 +126,9 @@ class PageClean(PageTemplate):
     frame_layout.addWidget(remove_duplicate_box)
     frame_layout.addWidget(handle_blank_box)
     frame_layout.addWidget(handle_sort_box)
-    frame_layout.addWidget(reset_box)
     frame_layout.setSpacing(8)
     frame_layout.setAlignment(Qt.AlignTop)
-    frame_layout.setContentsMargins(0, 12, 0, 0)
+    frame_layout.setContentsMargins(0, 0, 0, 0)
     frame.setLayout(frame_layout)
     return frame
 
@@ -150,30 +152,7 @@ class PageClean(PageTemplate):
     frame_layout.addWidget(preview_box)
     frame_layout.setSpacing(8)
     frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-    frame_layout.setContentsMargins(0, 16, 0, 0) 
-    frame.setLayout(frame_layout)
-    return frame
-  
-  
-  
-  def build_reset_box(self):
-    title_lb = self.app.comp_fact.build_label(lb_text="C. Reset Option",
-                                              lb_type="h3",
-                                              lb_align=Qt.AlignLeft,
-                                              lb_bold=True)
-    #  frame
-    reset_box = self.app.comp_fact.preview_comp_box(lb_text=f"Reset Cleaning Options", 
-                                                      btn_text="Reset",
-                                                      btn_event=lambda: self.app.clean_cont.reset_clean_tab_state())
-    
-    #  frame
-    frame = QFrame()
-    frame_layout = QVBoxLayout()
-    frame_layout.addWidget(title_lb)
-    frame_layout.addWidget(reset_box)
-    frame_layout.setSpacing(8)
-    frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-    frame_layout.setContentsMargins(0, 16, 0, 0) 
+    frame_layout.setContentsMargins(0, 0, 0, 0) 
     frame.setLayout(frame_layout)
     return frame
   

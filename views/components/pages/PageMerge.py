@@ -1,6 +1,13 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QHBoxLayout, QVBoxLayout, QLayout
+from tkinter import scrolledtext
+from turtle import reset
+from PyQt5.QtWidgets import (
+  QFrame, QWidget, QGridLayout, QVBoxLayout, QLayout, QScrollArea
+)
 from PyQt5.QtCore import Qt
-from views.components.config.views_styles import THEME_COLOR, style_nav_sect_default
+from seaborn import reset_defaults
+from views.components.config.views_styles import (
+  THEME_COLOR, style_nav_sect_default, style_tab_scroll
+)
 from views.components.pages.PageTemplate import PageTemplate
 import logging
 
@@ -23,7 +30,7 @@ class PageMerge(PageTemplate):
     
   #  METHODS -  MAIN
   
-  def merge_sections(self):
+  def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 3: Merge Tables", 
                                               sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
@@ -43,22 +50,31 @@ class PageMerge(PageTemplate):
     return page
   
   
-  def core_sect_merge_tables(self) -> QWidget:
+  def core_sect_merge_tables(self) -> QFrame:
     #  components
     table_select_container = self.build_select_table_container()
     method_select_container = self.build_select_method_container()
     output_merge_container = self.build_output_merge_container()
+    reset_container = self.app.comp_fact.build_reused_single_btn_box(target_title="D. Reset Options",
+                                                                   target_statement=None,
+                                                                   target_btn_text="Reset",
+                                                                   target_btn_event=lambda: print("Reset clicked"))
     #  outer
-    core_sect = QWidget()
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    core_sect = QFrame()
     core_sect_layout = QVBoxLayout()
     core_sect_layout.addWidget(table_select_container)
     core_sect_layout.addWidget(method_select_container)
     core_sect_layout.addWidget(output_merge_container)
+    core_sect_layout.addWidget(reset_container)
     core_sect_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft) 
-    core_sect_layout.setSpacing(16)
+    core_sect_layout.setSpacing(24)
     core_sect_layout.setContentsMargins(0, 8, 0, 0) 
     core_sect.setLayout(core_sect_layout)
-    return core_sect
+    scroll.setStyleSheet(style_tab_scroll)
+    scroll.setWidget(core_sect)
+    return scroll
   
   
   #  METHODS -  CONTAINERS

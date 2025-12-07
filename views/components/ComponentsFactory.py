@@ -304,26 +304,27 @@ class ComponentsFactory:
   #  component box  
   
   def preview_comp_box(self, 
-                       lb_text: str="", 
-                       btn_text:str="",
+                       lb_text: str | None, 
+                       btn_text:str | None,
                        btn_event: Callable | None =None) -> QFrame:
     
-  
+    #  setup frame
+    i_frame = QFrame()
+    i_frame_layout = QVBoxLayout()
     #  components
-    preview_label = self.app.comp_fact.build_label(lb_text=lb_text,
-                                                      lb_type="h3",
-                                                      lb_txtcolor=THEME_COLOR["mid"],
-                                                      lb_align=Qt.AlignVCenter | Qt.AlignCenter)
+    if lb_text is not None and lb_text.strip() != "": 
+      preview_label = self.app.comp_fact.build_label(lb_text=lb_text,
+                                                        lb_type="h3",
+                                                        lb_txtcolor=THEME_COLOR["mid"],
+                                                        lb_align=Qt.AlignVCenter | Qt.AlignCenter)
+      i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
     preview_btn = self.app.comp_fact.build_btn(btn_text=btn_text,
                                                   btn_event=btn_event,
                                                   btn_bgcolor=THEME_COLOR["white"],
                                                   btn_txtcolor=THEME_COLOR["primary"],
                                                   btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    #  individual frame
-    i_frame = QFrame()
-    i_frame_layout = QVBoxLayout()
-    i_frame_layout.addWidget(preview_label, alignment=Qt.AlignCenter)
     i_frame_layout.addWidget(preview_btn, alignment=Qt.AlignCenter)
+    #  complete frame
     i_frame_layout.setContentsMargins(0, 0, 0, 0)
     i_frame_layout.setSpacing(4)
     i_frame.setLayout(i_frame_layout)
@@ -361,5 +362,78 @@ class ComponentsFactory:
     container.setLayout(group_layout)
     
     return {"widget": container, "group": group, "buttons": btn_storage}
+  
+  
+  
+  def build_reused_opt_container(self, 
+                         target_title: str,
+                         target_config: list) -> QWidget:
+    #  setup container
+    content = QWidget()
+    content_layout = QVBoxLayout()
+    #  components
+    container_title = self.build_label(lb_text=target_title,
+                                                      lb_type="h3",
+                                                      lb_align=Qt.AlignLeft)
+    content_layout.addWidget(container_title)
+    for config in target_config:
+      opt_box = self.build_reused_opt_box(target_title=config["title"],
+                                          target_optlist=config["options"],
+                                          target_func=config["function"]) 
+      content_layout.addWidget(opt_box, alignment=Qt.AlignTop | Qt.AlignLeft)
+    #  complete container
+    content_layout.setAlignment(Qt.AlignTop) 
+    content_layout.setSpacing(8)
+    content_layout.setContentsMargins(0, 0, 0, 0) 
+    content.setLayout(content_layout)
+    return content
+  
+  
+  def build_reused_opt_box(self, 
+                           target_title: str,
+                           target_optlist: list,
+                           target_func: Callable | None) -> QWidget:
+    
+    title_lb = self.app.comp_fact.build_label(lb_text=target_title,
+                                              lb_type="h3",
+                                              lb_txtcolor=THEME_COLOR["mid"])  
+    opt_box = self.app.comp_fact.build_radio_group(target_list=target_optlist,
+                                                   target_event=target_func,
+                                                   is_horizontal=False)["widget"]
+    # frame
+    box = QFrame()
+    box_layout = QVBoxLayout()
+    box_layout.addWidget(title_lb, alignment=Qt.AlignTop | Qt.AlignLeft)
+    box_layout.addWidget(opt_box, alignment=Qt.AlignTop | Qt.AlignLeft)
+    box_layout.setContentsMargins(0, 0, 0, 0)
+    box_layout.setSpacing(4)
+    box.setLayout(box_layout)
+    return box
+  
+  
+  def build_reused_single_btn_box(self,
+                                  target_title: str,
+                                  target_statement: str,
+                                  target_btn_text: str,
+                                  target_btn_event: Callable) -> QFrame:
+    title_lb = self.app.comp_fact.build_label(lb_text=target_title,
+                                              lb_type="h3",
+                                              lb_align=Qt.AlignLeft,
+                                              lb_bold=True)
+    #  frame
+    reset_box = self.app.comp_fact.preview_comp_box(lb_text=target_statement, 
+                                                      btn_text=target_btn_text,
+                                                      btn_event=target_btn_event)
+    
+    #  frame
+    frame = QFrame()
+    frame_layout = QVBoxLayout()
+    frame_layout.addWidget(title_lb)
+    frame_layout.addWidget(reset_box)
+    frame_layout.setSpacing(8)
+    frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+    frame_layout.setContentsMargins(0, 0, 0, 0) 
+    frame.setLayout(frame_layout)
+    return frame
   
   

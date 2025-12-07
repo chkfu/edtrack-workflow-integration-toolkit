@@ -64,13 +64,13 @@ class PageTemplate:
       return None
     
     
-  def core_sect_import_dataset(self) -> QWidget:
+  def core_sect_import_dataset(self) -> QFrame:
     #  scope: core seciton
     browser_container = self.create_browser_container()
     preview_container = self.create_preview_container()
     import_container = self.create_import_container()
     #  outer
-    core_sect = QWidget()
+    core_sect = QFrame()
     core_sect_layout = QVBoxLayout()
     core_sect_layout.addWidget(browser_container, alignment=Qt.AlignTop)
     core_sect_layout.addWidget(preview_container, alignment=Qt.AlignTop)
@@ -81,39 +81,39 @@ class PageTemplate:
     return core_sect
   
   
-  def core_sect_clean_data(self) -> QWidget:
+  def core_sect_clean_data(self) -> QFrame:
     #  outer
-    core_sect = QWidget()
+    core_sect = QFrame()
     core_sect_layout = QVBoxLayout()
     # .....
     core_sect.setLayout(core_sect_layout)
     return core_sect
     
     
-  def core_sect_merge_tables(self) -> QWidget:
+  def core_sect_merge_tables(self) -> QFrame:
     
     #  outer
-    core_sect = QWidget()
+    core_sect = QFrame()
     core_sect_layout = QVBoxLayout()
     # .....
     core_sect.setLayout(core_sect_layout)
     return core_sect
   
 
-  def core_sect_feateng(self) -> QWidget:
+  def core_sect_feateng(self) -> QFrame:
     
     #  outer
-    core_sect = QWidget()
+    core_sect = QFrame()
     core_sect_layout = QVBoxLayout()
     # .....
     core_sect.setLayout(core_sect_layout)
     return core_sect
   
   
-  def core_sect_analyse_data(self) -> QWidget:
+  def core_sect_analyse_data(self) -> QFrame:
     
     #  outer
-    core_sect = QWidget()
+    core_sect = QFrame()
     core_sect_layout = QVBoxLayout()
     # .....
     core_sect.setLayout(core_sect_layout)

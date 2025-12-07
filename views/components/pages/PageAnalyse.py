@@ -23,7 +23,7 @@ class PageAnalyse(PageTemplate):
     
   #  METHODS  -  MAIN
   
-  def merge_sections(self):
+  def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 5: Analyse Data", 
                                                 sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
