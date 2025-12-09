@@ -41,6 +41,8 @@ class NavController:
     #  update task list
     self.update_workflow(target_action="back", 
                          curr_page=curr_page)
+    #  refresh sidebar list status
+    self.app.layout_fact.refresh_db_sect()
     
     
   def next_btn(self) -> None:
@@ -60,6 +62,8 @@ class NavController:
     #  update tasks list
     self.update_workflow(target_action="next", 
                          curr_page=curr_page)
+    #  refresh sidebar list status
+    self.app.layout_fact.refresh_db_sect()
       
       
   def validate_qstacks(self) -> None:

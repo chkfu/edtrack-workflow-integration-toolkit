@@ -26,6 +26,8 @@ class AppController:
 
   #  MEHTODS
   
+  # TODO: reset has not re-detect the sideabr dataset status
+  
   def reset_app(self) -> None:
     """ USE: empty the state memories and application workflow """
     
@@ -57,6 +59,8 @@ class AppController:
           #  confirmation
           self.app.comp_fact.build_reminder_box(title="Confirmation",
                                                 txt_msg="The application has been reset.")
+          #  refresh sidebar list status
+          self.app.layout_fact.refresh_db_sect()
         
     except Exception as ex:
       logger.error(f"{ex}", exc_info=True)

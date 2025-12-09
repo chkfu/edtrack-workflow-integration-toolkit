@@ -44,7 +44,14 @@ class CleanState:
       logger.error(err_msg, exc_info=True)
       raise KeyError(err_msg)
     return self.dataset_states[target_name]
-    
+  
+  
+  def get_clean_ds_validity(self) -> dict:
+    output: dict = {}
+    for index, dataset in self.dataset_states.items():
+      output[index] = self.get_spec_dataframe(index).data_raw is not None
+    return output
+  
   
   def set_raw_data(self, dataset_name: str, df: pd.DataFrame):
     if dataset_name not in self.dataset_states:

@@ -92,16 +92,7 @@ class LayoutFactory:
       sect_top = self.comp_fact.build_sidebar_listItem(lb_text="Dataset Status", is_listTop=True)
       self.dataset_list_widget = QListWidget()
       #  list items
-      for data in DATASET_LIST:
-          txt = f"🟢 {data['data']}" if data["status"] else f" 🔴{data['data']}"
-          list_item = QListWidgetItem()
-          new_lb_widget = self.comp_fact.build_sidebar_listItem(is_listTop=False, lb_text=txt)
-          #  learnt: sync the label and listitem widget
-          list_item.setSizeHint(new_lb_widget.sizeHint())
-          #  learnt: self.list_widget is a list to contain the new list items
-          self.dataset_list_widget.addItem(list_item)
-          #  learnt: also need to add the labels back to the list with setitemwidget
-          self.dataset_list_widget.setItemWidget(list_item, new_lb_widget)
+      self.reuse_list_items()
 
       db_sect = QWidget()
       layout = QVBoxLayout()
@@ -111,7 +102,7 @@ class LayoutFactory:
       db_sect.setLayout(layout)
       db_sect.setStyleSheet(style_sidebar_box_default)
       return db_sect  
-
+    
 
   #  LAYER 2  -  MAIN COMPONENTS 
   def create_topbar(self) -> QFrame:
@@ -182,9 +173,6 @@ class LayoutFactory:
 
 
   #  *** Remarks: Content Panel => self.page_stack
-
-
-
   #  LAYER 1  -  WINDOW
     
   def create_window(self) -> QWidget:
@@ -226,3 +214,40 @@ class LayoutFactory:
     return window
     
     
+  #  METHODS -  REFRESH
+  
+  def refresh_db_sect(self) -> QWidget:
+    #  1. clear the list widget
+    while self.dataset_list_widget.count():
+      item = self.dataset_list_widget.takeItem(0)
+      widget = self.dataset_list_widget.itemWidget(item)
+      if widget:
+          widget.setParent(None)
+          widget.deleteLater()
+      del item
+    #  2. check and update the config
+    self.update_dataset_status()
+    #  rebuilt the list widget
+    self.reuse_list_items()
+    
+    
+  def update_dataset_status(self) -> None:
+    unmerged_datasets: dict = self.app.clean_state.get_clean_ds_validity()
+    for item in DATASET_LIST:
+      if item["data"] in unmerged_datasets.keys():
+        item["status"] = unmerged_datasets[item["data"]]
+  
+      
+  #  METHODS -  REUSABLE
+  
+  def reuse_list_items(self) -> None:
+    for data in DATASET_LIST:
+      txt = f"🟢 {data['data']}" if data["status"] else f" 🔴{data['data']}"
+      list_item = QListWidgetItem()
+      new_lb_widget = self.comp_fact.build_sidebar_listItem(is_listTop=False, lb_text=txt)
+      #  learnt: sync the label and listitem widget
+      list_item.setSizeHint(new_lb_widget.sizeHint())
+      #  learnt: self.list_widget is a list to contain the new list items
+      self.dataset_list_widget.addItem(list_item)
+      #  learnt: also need to add the labels back to the list with setitemwidget
+      self.dataset_list_widget.setItemWidget(list_item, new_lb_widget)
