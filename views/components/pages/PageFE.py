@@ -28,7 +28,7 @@ class PageFE(PageTemplate):
   def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 4: Feature Engineering", 
-                                                sect_des="This step reads the dataset, checks its structure, and prepares it for cleaning and processing.")
+                                                sect_des="This step enhances the dataset by creating or transforming features, helping prepare the data for deeper analysis.")
     #  statistic section
     inner_stat_sect = self.create_stat_sect(target_page=4)
     #  nav section

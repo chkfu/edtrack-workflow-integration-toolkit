@@ -30,7 +30,7 @@ class PageMerge(PageTemplate):
   def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 3: Merge Tables", 
-                                              sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
+                                              sect_des="TThis step combines multiple datasets using matching columns or index keys to create a unified table for further processing.")
     #  statistic section
     inner_stat_sect = self.create_stat_sect(target_page=3)
     #  nav section

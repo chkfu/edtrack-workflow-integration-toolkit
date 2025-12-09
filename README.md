@@ -145,9 +145,9 @@ The Content is the work panel for the application, enabling users to adjust the 
 
 (1) Browse button: Opens a file dialog to select an input dataset.<br/>
 (2) Preview button: Displays a pop-up window with tables or diagrams, including export options.<br/>
-(3) Export Button: Opens a file dialog to choose an output destination.<br/>
-(4) Navigation Button: Moves between workflow pages.<br/>
-(5) Reset Button: Restores the current page to default settings.<br/>
+(3) Export button: Opens a file dialog to choose an output destination.<br/>
+(4) Navigation button: Moves between workflow pages.<br/>
+(5) Reset button: Restores the current page to default settings.<br/>
 
 <br/>
 
@@ -155,7 +155,7 @@ The Content is the work panel for the application, enabling users to adjust the 
 
 | Category | Package    | Version |
 |----------|------------|---------|
-| Runtime  | Python     | 3.10    |
+| Runtime  | Python     | 3.13.0  |
 | Library  | pandas     | 2.3.3   |
 | Library  | numpy      | 2.3.4   |
 | UI       | PyQt5      | 5.15.11 |
@@ -167,4 +167,4 @@ See `requirements.txt` for the full package list.
 
 <i> Author: kchan </i>
 </br>
-<i> Last Updated: Nov 27, 2025 </i>
+<i> Last Updated: Dec 9, 2025 </i>

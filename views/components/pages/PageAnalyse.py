@@ -9,14 +9,11 @@ from views.components.config.views_styles import (
 import logging
 
 
-
 #  LOGGING
-
 logger = logging.getLogger("PAGE_ANALYSE")
 
 
 #  CLASS
-
 
 class PageAnalyse(PageTemplate):
   
@@ -24,7 +21,7 @@ class PageAnalyse(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
-    self.ds_list: list = ["Pivots", "Grouping", "Metrics", "Visuals"]
+    self.ds_list: list = ["Pivots", "Grouping", "Metrics", "Graphs"]
     self.tab_group: QTabWidget = QTabWidget()
     logger.info("initialised successfully.")
     
@@ -39,7 +36,7 @@ class PageAnalyse(PageTemplate):
   def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 5: Analyse Data", 
-                                                sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
+                                                sect_des="This step explores the dataset through pivoting, grouping, statistical summaries, and visual analysis to reveal meaningful patterns and insights.")
     #  statistic section
     inner_stat_sect = self.create_stat_sect(target_page=5)
     #  nav section
@@ -64,16 +61,10 @@ class PageAnalyse(PageTemplate):
   
   def build_analyse_tab(self, target_title: str) -> QWidget:
     #  components
-    # tb_select_container = self.build_tb_opt_container(target_title=target_title)
-    # basic_clean_container = self.build_basic_clean_container()
-    # reset_container = self.app.comp_fact.build_reused_single_btn_box(target_title="C. Reset Options",
-    #                                                            target_statement=None,
-    #                                                            target_btn_text="Reset",
-    #                                                            target_btn_event=lambda: self.reset_display())
+
     #  frame
     core_sect = QWidget()
     core_sect_layout = QVBoxLayout()
-
     core_sect_layout.setAlignment(Qt.AlignTop)
     core_sect_layout.setSpacing(24)
     core_sect_layout.setContentsMargins(0, 16, 0, 0) 
@@ -84,6 +75,7 @@ class PageAnalyse(PageTemplate):
     scroll.setStyleSheet(style_tab_scroll)
     scroll.setWidget(core_sect)
     return scroll
+  
   
   #  METHODS  -  SUPPORTING
   

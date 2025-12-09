@@ -11,7 +11,6 @@ from views.components.config.views_styles import (
 from views.components.pages.PageTemplate import PageTemplate
 from states import DatasetState
 import logging
-from pandas.api.types import is_numeric_dtype
 
 
 #  LOGGING
@@ -60,7 +59,7 @@ class PageClean(PageTemplate):
   def merge_sections(self) -> QWidget:
     #  title section
     inner_title_sect = self.create_title_sect(sect_title="Step 2: Clean Data and Preprocessing", 
-                                              sect_des="This step refines the imported dataset by handling missing values, correcting data types, and preparing it for further analysis.")
+                                              sect_des="This step cleans the dataset by handling missing values, correcting data types, and applying basic preprocessing to ensure data quality.")
     #  statistic section
     inner_stat_sect = self.create_stat_sect(target_page=2)
     #  nav section
