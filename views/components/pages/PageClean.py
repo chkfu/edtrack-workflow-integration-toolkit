@@ -48,6 +48,7 @@ class PageClean(PageTemplate):
     for title in target_ds_list:
       tab = self.build_cleaning_tab(target_title=title)
       self.tab_group.addTab(tab, title)
+      self.tab_group.tabBar().setCursor(Qt.PointingHandCursor)
     
     #  Learnt: currentChanged method brings index naturally
     self.tab_group.currentChanged.connect(lambda index: self.app.clean_cont.handle_clean_tab_switch(target_index=index))

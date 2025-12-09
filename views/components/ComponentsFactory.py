@@ -117,6 +117,7 @@ class ComponentsFactory:
     #  setup
     combo = QComboBox()
     combo.addItems(target_options)
+    combo.setCursor(Qt.PointingHandCursor)
     combo.setCurrentIndex(target_default)
     combo.setFixedHeight(28)
     #  udpate
@@ -131,6 +132,7 @@ class ComponentsFactory:
                      target_event: Callable | None=None) -> QCheckBox:
     checkbox = QCheckBox(str(target_name))
     checkbox.setChecked(False)
+    checkbox.setCursor(Qt.PointingHandCursor)
     if target_event:
         checkbox.stateChanged.connect(
           lambda state, name=target_name: target_event(target_state=state,
@@ -347,6 +349,7 @@ class ComponentsFactory:
     btn_storage = []
     for index, opt in enumerate(target_list):
       btn = QRadioButton(opt)
+      btn.setCursor(Qt.PointingHandCursor)
       group.addButton(btn, index)
       group_layout.addWidget(btn)
       btn_storage.append(btn)
