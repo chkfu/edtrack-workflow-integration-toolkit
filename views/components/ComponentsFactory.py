@@ -267,8 +267,8 @@ class ComponentsFactory:
       grid_layout.addWidget(export_ddlist, 0, 1, alignment=Qt.AlignLeft)
       grid_layout.addWidget(export_btn, 0, 2)
       grid_layout.addWidget(box_confirm_btn, 0, 3)
-      export_lb.setMaximumWidth(100)
-      export_ddlist.setMaximumWidth(100)
+      export_lb.setMaximumWidth(240)
+      export_ddlist.setMaximumWidth(240)
       
       grid_layout.setContentsMargins(8, 0, 8, 0)
       grid_layout.setSpacing(8)
@@ -345,7 +345,7 @@ class ComponentsFactory:
       group_layout = QHBoxLayout()
     else:
       group_layout = QVBoxLayout()
-    
+
     btn_storage = []
     for index, opt in enumerate(target_list):
       btn = QRadioButton(opt)
@@ -353,16 +353,14 @@ class ComponentsFactory:
       group.addButton(btn, index)
       group_layout.addWidget(btn)
       btn_storage.append(btn)
-    
+      
     #  Learnt: 2 options can be returned
     if target_event:
       group.buttonClicked.connect(lambda el: target_event(el.text(), el.isChecked()))
-      
     group_layout.setSpacing(8)
     group_layout.setAlignment(Qt.AlignLeft)
     group_layout.setContentsMargins(0, 0, 0, 0) 
     container.setLayout(group_layout)
-    
     return {"widget": container, "group": group, "buttons": btn_storage}
   
   
@@ -424,8 +422,8 @@ class ComponentsFactory:
                                               lb_bold=True)
     #  frame
     reset_box = self.app.comp_fact.preview_comp_box(lb_text=target_statement, 
-                                                      btn_text=target_btn_text,
-                                                      btn_event=target_btn_event)
+                                                    btn_text=target_btn_text,
+                                                    btn_event=target_btn_event)
     
     #  frame
     frame = QFrame()

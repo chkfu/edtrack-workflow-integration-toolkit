@@ -124,8 +124,8 @@ class PageMerge(PageTemplate):
   def build_output_merge_container(self) -> QWidget:
     #  components
     lb_title = self.app.comp_fact.build_label(lb_text="C. Merge Output", 
-                                                lb_type="h3",
-                                                lb_txtcolor=THEME_COLOR["primary"])
+                                              lb_type="h3",
+                                              lb_txtcolor=THEME_COLOR["primary"])
     opt_grid = self.build_ouput_opt_grid()
     #  frame
     frame = QWidget()
@@ -146,14 +146,14 @@ class PageMerge(PageTemplate):
                                             lb_type="h3",
                                             lb_txtcolor=THEME_COLOR["mid"])
     lb_table = self.app.comp_fact.build_label(lb_text="Selected Table", 
-                                                lb_type="p",
-                                                lb_txtcolor=THEME_COLOR["mid"])
+                                              lb_type="p",
+                                              lb_txtcolor=THEME_COLOR["mid"])
     lb_column = self.app.comp_fact.build_label(lb_text="Selected Column", 
                                                 lb_type="p",
                                                 lb_txtcolor=THEME_COLOR["mid"])
     dd_table = self.app.comp_fact.build_dropdown(target_options=[], 
-                                                    target_default=0,
-                                                    event=None)
+                                                target_default=0,
+                                                event=None)
     dd_column = self.app.comp_fact.build_dropdown(target_options=[], 
                                                   target_default=0,
                                                   event=None)
@@ -183,17 +183,17 @@ class PageMerge(PageTemplate):
     frame_layout.setContentsMargins(0, 0, 0, 0)
     frame_layout.setSpacing(4)
     frame_layout.addWidget(lb_box, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(grid, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(grid)
     frame.setLayout(frame_layout)
     return frame
   
   
   def build_ouput_opt_grid(self): 
     # components
-    box_preview = self.app.comp_fact.preview_comp_box(lb_text="1. Preview",
+    box_preview = self.app.comp_fact.preview_comp_box(lb_text="",
                                                      btn_text="Preview",
                                                      btn_event=None)   
-    box_merge = self.app.comp_fact.preview_comp_box(lb_text="2. Merge",
+    box_merge = self.app.comp_fact.preview_comp_box(lb_text="",
                                                      btn_text="Merge",
                                                      btn_event=None)
     #  frame
