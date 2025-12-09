@@ -1,10 +1,7 @@
-from tkinter import scrolledtext
-from turtle import reset
 from PyQt5.QtWidgets import (
   QFrame, QWidget, QGridLayout, QVBoxLayout, QLayout, QScrollArea
 )
 from PyQt5.QtCore import Qt
-from seaborn import reset_defaults
 from views.components.config.views_styles import (
   THEME_COLOR, style_nav_sect_default, style_tab_scroll
 )

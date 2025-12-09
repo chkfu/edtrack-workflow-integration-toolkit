@@ -1,15 +1,10 @@
-from operator import xor
-from turtle import title
 from PyQt5.QtWidgets import (
-  QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea
+  QFrame, QWidget, QVBoxLayout, QScrollArea
 )
-from PyQt5.QtCore import Qt
 from matplotlib import container
 from views.components.pages.PageTemplate import PageTemplate
-from views.components.config.views_styles import THEME_COLOR, style_tab_scroll
+from views.components.config.views_styles import style_tab_scroll
 import logging
-from typing import Callable
-import pandas as pd
 
 
 #  LOGGING

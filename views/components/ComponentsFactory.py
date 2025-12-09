@@ -11,7 +11,6 @@ from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
     style_sidebar_listItem_default, style_table_view_border, style_popup_title_box
 )
-from views.components.config.views_config import DATASET_LIST
 
 
 #  LOGGING
