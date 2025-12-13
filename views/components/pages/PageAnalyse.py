@@ -7,6 +7,7 @@ from views.components.pages.PageTemplate import PageTemplate
 from views.components.config.views_styles import (
   THEME_COLOR, style_nav_sect_default, style_tab_border, style_tab_scroll
 )
+import pandas as pd
 import logging
 from typing import Callable
 
@@ -234,5 +235,35 @@ class PageAnalyse(PageTemplate):
     frame.setLayout(frame_layout)
     return frame
   
+  
+  def build_tab_display_board(self, 
+                              target_title: str, 
+                              target_df: pd.DataFrame = None) -> QWidget:
+    #  error handling
+    if target_df is None or target_df.empty:
+      logger.warning(f"No data available to display for {target_title} in PageAnalyse.")
+      return
+    #  setup frame
+    frame = QFrame()
+    frame_layout = QHBoxLayout()
+    #  components
+    if target_title in [DS_LIST[0], DS_LIST[1], DS_LIST[2]]:
+      title_lb = self.app.comp_fact.build_label(lb_text="B. Table Display",
+                                                lb_type="h3")
+      frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft | Qt.AlignTop)
+      if target_df is not None or not target_df.empty:
+        table_board = self.app.comp_fact.build_table_widget(target_df=target_df)
+        frame_layout.addWidget(table_board)
+    elif target_title == DS_LIST[3]:
+      title_lb = self.app.comp_fact.build_label(lb_text="B. Graph Display",
+                                                lb_type="h3")
+      frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft | Qt.AlignTop)
+      if target_df is not None or not target_df.empty:
+        graph_board = None
+    #  frame
+    frame_layout.setSpacing(12)
+    frame_layout.setContentsMargins(0, 8, 0, 0)
+    frame.setLayout(frame_layout)
+    return frame
   
   #  METHODS -  RESETS

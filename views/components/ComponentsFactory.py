@@ -172,7 +172,7 @@ class ComponentsFactory:
   
   
   def build_table_view(self,
-                     target_df: pd.DataFrame):
+                       target_df: pd.DataFrame) -> QTableWidget:
     
     PRVIEW_ROW_MAX = 100
     
