@@ -1,6 +1,6 @@
 import pandas as pd
 import logging
-from states.DatasetState import DatasetState
+from states.CleanDataState import CleanDataState
 from views.components.config.views_config import DATASET_LIST
 
 
@@ -24,9 +24,9 @@ class CleanState:
     
     #  setup DatasetState to be managed
     self.dataset_states = {
-      self.opt_list[0]: DatasetState(state_name=self.opt_list[0]),  # users
-      self.opt_list[1]: DatasetState(state_name=self.opt_list[1]),  # activities
-      self.opt_list[2]: DatasetState(state_name=self.opt_list[2])  # components
+      self.opt_list[0]: CleanDataState(state_name=self.opt_list[0]),  # users
+      self.opt_list[1]: CleanDataState(state_name=self.opt_list[1]),  # activities
+      self.opt_list[2]: CleanDataState(state_name=self.opt_list[2])  # components
     }
     
     
@@ -75,9 +75,15 @@ class CleanState:
     
   
   #  methods - reset
+  
   def reset_all_ds(self):
     #  clean state
     self.clean_target = self.opt_list[0]
     #  dataset state
     for ds in self.dataset_states.values():
       ds.reset_ds()
+      
+  
+  def to_string(self):
+    for ds in self.dataset_states.values():
+      ds.to_string()

@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import QApplication
 
 
 #  LOGGING
-
 logger = logging.getLogger("APP_CONTROLLER")
 
 

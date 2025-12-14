@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import Qt
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from models.DataCleaner import DataCleaner
+from states.CleanDataState import CleanDataState
 
 
 #  LOGGING
@@ -25,6 +27,7 @@ class CleanController:
   
   def __init__(self, app_ref):
     self.app = app_ref
+    self.clean_model = DataCleaner()
     logger.info("initialised sucessfully.")
     
     
@@ -175,7 +178,6 @@ class CleanController:
       for column in curr_ds.data_raw.columns:
         temp_output[column] = {"method": "ignore", "value": None}
       curr_ds.set_handle_blanks(temp_output)
-      print(curr_ds.handle_blanks)
       return
     
     
@@ -207,7 +209,7 @@ class CleanController:
       "Remove Blanks": {"method": "drop", "value": None},
       "Fill Previous Value": {"method": "bfill", "value": None},
       "Fill Next Value": {"method": "ffill", "value": None},
-      "Fill Default Text": {"method": "ffill", "value": "(Not Specified)"},
+      "Fill Default Text": {"method": "fill", "value": "(Not Specified)"},
       "Fill Numeric Mean": {"method": "mean", "value": None},
       "Fill Numeric Median": {"method": "median", "value": None},
       "Fill Numeric Zeros": {"method": "constant", "value": 0}
@@ -216,7 +218,6 @@ class CleanController:
     curr_ds = self.app.clean_state.get_clean_target()
     target_val = MATCHING.get(selected_opt, {"method": "ignore", "value": None})
     curr_ds.update_handle_blanks(target_col=target_col, target_val=target_val)
-    print(curr_ds.handle_blanks)
     
     
   def close_clean_blank_popup(self, target_popup: QDialog):
@@ -314,7 +315,36 @@ class CleanController:
     return target_popup.close()
   
   
-  #  2d. reset section
+  #  2d. execute cleaning
+  
+  def handle_clean_single(self, target_ds: CleanDataState) -> pd.DataFrame:
+    output_df: pd.DataFrame = target_ds.data_raw.copy()
+    #  1. handle duplicates
+    if target_ds.enable_duplicate:
+      output_df = self.clean_model.handle_duplication(output_df)
+    #  2. handle blanks
+    if target_ds.handle_blanks:
+      output_df = self.clean_model.handle_na(target_df=output_df,
+                                              drop_missing=True,
+                                              na_subset_col=None)
+    #  3. handle sorts
+    if target_ds.enable_sort and target_ds.sort_col is not None and target_ds.sort_ascending is not None:
+      output_df = self.clean_model.handle_sort(target_df=output_df,
+                                                target_col=target_ds.sort_col,
+                                                is_ascending=target_ds.sort_ascending)
+    #  4. update state
+    target_ds.set_data_clean(output_df)
+    logger.info(f"Data cleaning is applied to dataset: {target_ds.state_name}.")
+    return
+  
+  
+  def execute_clean_all(self) -> None:
+    for datastate in self.app.clean_state.dataset_states.values():
+      self.handle_clean_single(target_ds=datastate)
+    return
+  
+  
+  #  2e. reset section
   
   def reset_clean_tab_state(self) -> None:
     curr_ds_state = self.app.clean_state.get_clean_target()

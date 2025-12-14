@@ -51,7 +51,7 @@ class DataCleaner:
     else:
       output = target_df.dropna(subset=[na_subset_col])
     return output
-      
+  
       
   def handle_sort(self, 
                   target_df: pd.DataFrame, 
@@ -61,8 +61,7 @@ class DataCleaner:
     if target_col == "index":
       output = target_df.sort_index(ascending=is_ascending)
     else:
-      valid_col = self.app.valid_cont.validate_col(target_df, target_col)
-      output = target_df.sort_values(by=valid_col, ascending=is_ascending)
+      output = target_df.sort_values(by=target_col, ascending=is_ascending)
     return output
   
   

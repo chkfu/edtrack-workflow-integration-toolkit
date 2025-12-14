@@ -9,7 +9,7 @@ from views.components.config.views_styles import (
   style_nav_sect_default, style_tab_scroll, style_tab_border
 )
 from views.components.pages.PageTemplate import PageTemplate
-from states import DatasetState
+from states import CleanDataState
 import logging
 
 
@@ -207,7 +207,7 @@ class PageClean(PageTemplate):
                                                         target_list=OPT_LIST,
                                                         text=text, 
                                                         checked=checked),
-                                                      is_horizontal=False)
+                                                        is_horizontal=False)
     #  store, in case reset options
     self.radio_groups.append(radio_group["group"])
     self.radio_btn_list.extend(radio_group["buttons"])
@@ -260,7 +260,7 @@ class PageClean(PageTemplate):
   #  POP-UP WINDOWS (for state management)
   
   
-  def identify_target_df(self, curr_ds_key: str) -> DatasetState | None:
+  def identify_target_df(self, curr_ds_key: str) -> CleanDataState | None:
     valid_keys = [item["data"] for item in DATASET_LIST[1:4]]
     if curr_ds_key not in valid_keys:
         err_msg = f"Incorrect dataset key: {curr_ds_key}"
@@ -276,7 +276,7 @@ class PageClean(PageTemplate):
     pop_wd = QDialog()
     
     curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
-    target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
+    target_dataframe: CleanDataState = self.identify_target_df(curr_ds_key=curr_ds_key)
     col_options = list(target_dataframe.data_raw.columns)
     checkbox_list: list = []
     OPT_LIST = ["--- Please Select ---", 
@@ -338,7 +338,7 @@ class PageClean(PageTemplate):
     
     #  declare variables
     curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
-    target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
+    target_dataframe: CleanDataState = self.identify_target_df(curr_ds_key=curr_ds_key)
 
     #  loop to build components
     for index, column in enumerate(target_dataframe.data_raw.columns):
@@ -385,7 +385,7 @@ class PageClean(PageTemplate):
     
     #  identify target dataframe
     curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
-    target_dataframe: DatasetState = self.identify_target_df(curr_ds_key=curr_ds_key)
+    target_dataframe: CleanDataState = self.identify_target_df(curr_ds_key=curr_ds_key)
     
     #  setup options
     OPT_LIST = ["--- Please Select ---"] + list(target_dataframe.data_raw.columns)
@@ -427,7 +427,6 @@ class PageClean(PageTemplate):
     pop_wd.setLayout(pop_wd_layout)
     pop_wd.setMaximumWidth(200)
     return pop_wd
-  
   
   
   #  RESET

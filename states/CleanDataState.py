@@ -4,14 +4,14 @@ import logging
 
 #  LOGGING
 
-logger = logging.getLogger("DATASET_STATE")
+logger = logging.getLogger("CLEAN_DATA_STATE")
 
 
 #  CLASS
 
 #  Learnt: managing different datasets, for cleaning options
 #          centialised control in CleanState
-class DatasetState:
+class CleanDataState:
   
   def __init__(self, state_name: str):
     
@@ -20,23 +20,18 @@ class DatasetState:
     #  DataFrame Management
     self.data_raw: pd.DataFrame = None
     self.data_clean: pd.DataFrame = None
-    self.data_proc: pd.DataFrame = None
     
-    #  Basic Cleaning
     #  1. duplicates
     self.enable_duplicate: bool = False
     self.handle_duplicate_cols = []
+    
     #  2. blanks
     self.handle_blanks = {}
+    
     #  3. sorts
     self.enable_sort: bool = False
     self.sort_col: str = "index"
     self.sort_ascending: bool = True
-    
-    #  Advanced Cleaning
-    self.remove_cols: list = []
-    self.rename_cols: dict = {}
-    self.remove_rows: dict = {}
     
 
   #  set data state
@@ -121,12 +116,7 @@ class DatasetState:
     if target_col in self.remove_rows:
       if value in self.remove_rows[target_col]:
         self.remove_rows[target_col].remove(value)
-      
-
-  #  set type spec
-  
-  
-  
+        
   
   #  reset
   
@@ -158,6 +148,7 @@ class DatasetState:
     self.sort_col = "index"
     self.sort_ascending = True
     
+    
   def reset_preproc(self) -> None:
     self.remove_cols = []
     self.rename_cols = {}
@@ -170,7 +161,6 @@ class DatasetState:
     print(f"state_name: {self.state_name}")
     print(f"data_raw: {self.data_raw}")
     print(f"data_clean: {self.data_clean}")
-    print(f"data_proc: {self.data_proc}")
     print("\n==== Cleaned Data Info ====")
     print(f"enable_duplicate: {self.enable_duplicate}")
     print(f"handle_duplicate_cols: {self.handle_duplicate_cols}")
@@ -179,6 +169,4 @@ class DatasetState:
     print(f"sort_col: {self.sort_col}")
     print(f"sort_ascending: {self.sort_ascending}")
     print("\n==== Proc Data Info ====")
-    print(f"remove_cols: {self.remove_cols}")
-    print(f"rename_cols: {self.rename_cols}")
-    print(f"remove_rows: {self.remove_rows}")
+   
