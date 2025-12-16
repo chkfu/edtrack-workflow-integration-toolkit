@@ -4,10 +4,11 @@ import logging
 from PyQt5.QtWidgets import QApplication, QWidget
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
 from controllers import (
-  AppController, NavController, FileController, ValidController, CleanController
+  AppController, NavController, FileController, ValidController, CleanController,
+  MergeController
 )
 from models import SQLConnector
-from states import CleanState
+from states import CleanState, MergeState
 from dotenv import load_dotenv
 
 
@@ -39,6 +40,7 @@ class UserInterface:
     self.file_cont = FileController(self)
     self.valid_cont = ValidController(self)
     self.clean_cont = CleanController(self)
+    self.merge_cont = MergeController(self)
     
     #  setup factory classes
     """ 
@@ -53,6 +55,7 @@ class UserInterface:
     
     #  centralised global states
     self.clean_state = CleanState()
+    self.merge_state = MergeState()
     
     #  setup pipeline
     self.sql_connector = SQLConnector(host=os.getenv("DB_HOST"),

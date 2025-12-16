@@ -21,6 +21,7 @@ STEP_NAME_LIST: list = [
     }
 ]
 
+
 DATASET_LIST: list = [
   {
     "data": "MySQL Database", 
@@ -44,8 +45,20 @@ DATASET_LIST: list = [
   }
 ]
 
+
 RAW_COL_SCHEMA: dict = {
   "Dataset - Users": ["Date","Time", "User Full Name *Anonymized"],
   "Dataset - Activities": ["User Full Name *Anonymized", "Component", "Action", "Target"],
   "Dataset - Components": ["Component", "Code"]
+}
+
+
+#  PAGE SPEC CONFIGS
+
+
+MERGE_METHOD_OPT: dict = {
+  "left": "Keep all records from the left table.",
+  "right": "Keep all records from the right table.",
+  "inner": "Keep only records that match in both tables.",
+  "outer": "Keep everything from both tables."
 }

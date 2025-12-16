@@ -72,8 +72,6 @@ class CleanState:
     return
   
   
-    
-  
   #  methods - reset
   
   def reset_all_ds(self):

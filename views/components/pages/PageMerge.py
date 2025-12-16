@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (
   QFrame, QWidget, QGridLayout, QVBoxLayout, QLayout, QScrollArea
 )
 from PyQt5.QtCore import Qt
+from views.components.config.views_config import MERGE_METHOD_OPT
 from views.components.config.views_styles import (
   THEME_COLOR, style_nav_sect_default, style_tab_scroll
 )
@@ -34,14 +35,15 @@ class PageMerge(PageTemplate):
     #  statistic section
     inner_stat_sect = self.create_stat_sect(target_page=3)
     #  nav section
-    inner_nav_sect = self.create_nav_sect(enable_back=True, enable_next=True)
+    inner_nav_sect = self.create_nav_sect(enable_back=True, 
+                                          enable_next=True)
     
     #  Work Panel Grid
     page = QWidget()
     page_layout = QGridLayout()
     page_layout = self.reuse_page_setting(inner_title_sect=inner_title_sect,
-                                           inner_stat_sect=inner_stat_sect,
-                                           inner_nav_sect=inner_nav_sect)
+                                          inner_stat_sect=inner_stat_sect,
+                                          inner_nav_sect=inner_nav_sect)
     page.setStyleSheet(style_nav_sect_default)
     page.setLayout(page_layout)
     return page
@@ -53,9 +55,9 @@ class PageMerge(PageTemplate):
     method_select_container = self.build_select_method_container()
     output_merge_container = self.build_output_merge_container()
     reset_container = self.app.comp_fact.build_reused_single_btn_box(target_title="D. Reset Options",
-                                                                   target_statement=None,
-                                                                   target_btn_text="Reset",
-                                                                   target_btn_event=lambda: print("Reset clicked"))
+                                                                     target_statement=None,
+                                                                     target_btn_text="Reset",
+                                                                     target_btn_event=lambda: self.app.merge_cont.reset_merge_page())
     #  outer
     scroll = QScrollArea()
     scroll.setWidgetResizable(True)
@@ -77,12 +79,13 @@ class PageMerge(PageTemplate):
   #  METHODS -  CONTAINERS
   
   def build_select_table_container(self) -> QWidget:
-    
     #  components
     title_lb = self.app.comp_fact.build_label(lb_text="A. Select Tables", 
                                               lb_type="h3")
-    table_opt_box_left = self.build_table_opt_box(target_label="1. Left Table")
-    table_opt_box_right = self.build_table_opt_box(target_label="2. Right Table")
+    table_opt_box_left = self.build_table_opt_box(target_lb="1. Left Table",
+                                                  target_tb="left")
+    table_opt_box_right = self.build_table_opt_box(target_lb="2. Right Table",
+                                                   target_tb="right")
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
@@ -97,18 +100,12 @@ class PageMerge(PageTemplate):
   
   
   def build_select_method_container(self) -> QWidget:
-    
-    OPT_LIST = ["Keep all records from the left table.",
-                "Keep all records from the right table.",
-                "Keep only records that match in both tables.",
-                "Keep everything from both tables."]
-    
     #  components
     title_lb = self.app.comp_fact.build_label(lb_text="B. Select Methods", 
                                               lb_type="h3")
-    radio_group = self.app.comp_fact.build_radio_group(target_list=OPT_LIST,
-                                                      target_event=None,
-                                                      is_horizontal=False)["widget"]
+    radio_group = self.app.comp_fact.build_radio_group(target_list=list(MERGE_METHOD_OPT.values()),
+                                                       target_event=lambda text, checked: self.app.merge_cont.manage_method_radio_event(target_txt=text),
+                                                       is_horizontal=False)["widget"]
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
@@ -140,9 +137,9 @@ class PageMerge(PageTemplate):
   
   #  METHODS -  BOXES
   
-  def build_table_opt_box(self, target_label=str) -> QWidget:
+  def build_table_opt_box(self, target_lb:str, target_tb: str) -> QWidget:
     
-    lb_box = self.app.comp_fact.build_label(lb_text=target_label, 
+    lb_box = self.app.comp_fact.build_label(lb_text=target_lb, 
                                             lb_type="h3",
                                             lb_txtcolor=THEME_COLOR["mid"])
     lb_table = self.app.comp_fact.build_label(lb_text="Selected Table", 
@@ -153,12 +150,12 @@ class PageMerge(PageTemplate):
                                                 lb_txtcolor=THEME_COLOR["mid"])
     dd_table = self.app.comp_fact.build_dropdown(target_options=[], 
                                                 target_default=0,
-                                                event=None)
+                                                event=lambda: self.app.merge_cont.manage_dd_table_event())
     dd_column = self.app.comp_fact.build_dropdown(target_options=[], 
                                                   target_default=0,
-                                                  event=None)
+                                                  event=lambda: self.app.merge_cont.manage_dd_col_event())
     btn_preview = self.app.comp_fact.build_btn(btn_text="Preview",
-                                               btn_event=None,
+                                               btn_event=lambda checked: self.app.merge_cont.preview_selected_table(target_tb=target_tb),
                                                btn_bgcolor=THEME_COLOR["white"],
                                                btn_txtcolor=THEME_COLOR["primary"],
                                                btn_hover_bgcolor=THEME_COLOR["white_hvr"])
@@ -192,10 +189,10 @@ class PageMerge(PageTemplate):
     # components
     box_preview = self.app.comp_fact.preview_comp_box(lb_text="",
                                                      btn_text="Preview",
-                                                     btn_event=None)   
+                                                     btn_event=lambda: self.app.merge_cont.preview_merge_df())   
     box_merge = self.app.comp_fact.preview_comp_box(lb_text="",
                                                      btn_text="Merge",
-                                                     btn_event=None)
+                                                     btn_event=lambda: self.app.merge_cont.execute_merge_df())
     #  frame
     grid = QWidget()
     grid_layout = QGridLayout()
