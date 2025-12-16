@@ -16,7 +16,7 @@ from states.CleanDataState import CleanDataState
 
 #  LOGGING
 
-logger = logging.getLogger("DATA_CONTROLLER")
+logger = logging.getLogger("CLEAN_CONTROLLER")
 
 
 # CLASS

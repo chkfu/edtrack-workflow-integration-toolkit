@@ -3,7 +3,7 @@ from controllers.NavController import NavController
 from controllers.FileController import FileController
 from controllers.ValidController import ValidController
 from controllers.CleanController import CleanController
-
+from controllers.MergeController import MergeController
 
 
 #  MAIN
@@ -13,4 +13,5 @@ __all__ = ["AppController",
            "NavController",
            "FileController",
            "ValidController",
-           "CleanController"]
+           "CleanController",
+           "MergeController"]

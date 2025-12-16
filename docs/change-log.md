@@ -19,6 +19,30 @@ This file records the major version changes of the projects.
 <br/>
 
 
+## [0.1.5] - 
+
+### Added 
+
+- Added PageFE and PageAnalyse UI
+- Added MergeStates and MergeDataState
+
+### Edited
+
+- Renamed cleaning-related state classes
+- Refine buttons and tabs with pointer cursor
+- Refine sidebar dataset list with status updates (dataset only)
+- Refactorised reused component groups in ComponentFactory
+
+### Fixed
+
+- Enabled cleaned dataset to be temporarily stored into CleanDataState
+
+### Removed
+
+- Remove unused dependencies
+
+
+
 ## [0.1.4] - Dec 5, 2025
 
 ### Added
@@ -27,7 +51,6 @@ This file records the major version changes of the projects.
 - Added PageClean and PageMerge UI
 - Added instructions of adding new pages in developer-guide
 - Added project structure and architecture in architecture and readme documents
-
 
 ## Edited
 
@@ -38,6 +61,7 @@ This file records the major version changes of the projects.
 
 - Fixed UI refresh and event binding bugs
 
+<br/>
 
 
 ## [0.1.3] - Nov 29, 2025
