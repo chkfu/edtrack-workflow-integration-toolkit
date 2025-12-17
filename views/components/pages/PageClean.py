@@ -9,7 +9,7 @@ from views.components.config.views_styles import (
   style_nav_sect_default, style_tab_scroll, style_tab_border
 )
 from views.components.pages.PageTemplate import PageTemplate
-from states import CleanDataState
+from states import CleanState, CleanDataState
 import logging
 
 
@@ -32,13 +32,16 @@ class PageClean(PageTemplate):
       logger.error(err_msg, exc_info=True)   
       raise ValueError(err_msg)
     
+    #  state
+    self.clean_state = CleanState()
+    
     #  setup tabs
     self.ds_list: list = target_ds_list
     self.tab_group: QTabWidget = QTabWidget()
     
     #  setup options reset
-    self.radio_btn_list = []
-    self.radio_groups = []
+    self.radio_btn_list: list = []
+    self.radio_groups: list = []
 
 
     #  build page tabs, store in self.tab_group. it stores:
@@ -266,7 +269,7 @@ class PageClean(PageTemplate):
         err_msg = f"Incorrect dataset key: {curr_ds_key}"
         logger.error(err_msg, exc_info=True)
         return None
-    return self.app.clean_state.get_spec_dataframe(curr_ds_key)
+    return self.clean_state.get_spec_dataframe(curr_ds_key)
   
     
   
@@ -275,7 +278,7 @@ class PageClean(PageTemplate):
     
     pop_wd = QDialog()
     
-    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+    curr_ds_key: str = self.clean_state.get_clean_target().state_name
     target_dataframe: CleanDataState = self.identify_target_df(curr_ds_key=curr_ds_key)
     col_options = list(target_dataframe.data_raw.columns)
     checkbox_list: list = []
@@ -337,7 +340,7 @@ class PageClean(PageTemplate):
     pop_wd_layout = QGridLayout()
     
     #  declare variables
-    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+    curr_ds_key: str = self.clean_state.get_clean_target().state_name
     target_dataframe: CleanDataState = self.identify_target_df(curr_ds_key=curr_ds_key)
 
     #  loop to build components
@@ -384,7 +387,7 @@ class PageClean(PageTemplate):
   def build_sort_popup(self) -> QWidget:
     
     #  identify target dataframe
-    curr_ds_key: str = self.app.clean_state.get_clean_target().state_name
+    curr_ds_key: str = self.clean_state.get_clean_target().state_name
     target_dataframe: CleanDataState = self.identify_target_df(curr_ds_key=curr_ds_key)
     
     #  setup options

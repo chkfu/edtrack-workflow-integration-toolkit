@@ -16,11 +16,9 @@ class MergeState:
   
   def __init__(self):
     
-    #  CONSTRUCTOR
-    
     #  temporary datasets
-    self.raw_merge: pd.DataFrame | None = None
-    self.proc_merge: pd.DataFrame | None = None
+    self.merge_raw: pd.DataFrame | None = None
+    self.merge_proc: pd.DataFrame | None = None
     
     #  merger settings
     self.target_ltable: str | None = None
@@ -34,11 +32,11 @@ class MergeState:
   #  METHODS
   
   #  remarks: requires to start from merging cleaned datasets, instead first merge
-  def set_raw_merge(self, target_df: pd.DataFrame) -> None:
+  def set_merge_raw(self, target_df: pd.DataFrame) -> None:
     self.raw_merge = target_df
   
   #  remarks: for data analysis after feature engineering stage
-  def set_proc_merge(self, target_df: pd.DataFrame) -> None:
+  def set_merge_proc(self, target_df: pd.DataFrame) -> None:
     self.raw_merge = target_df
     
     

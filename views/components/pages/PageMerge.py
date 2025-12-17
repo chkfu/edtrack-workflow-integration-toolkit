@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import (
-  QFrame, QWidget, QGridLayout, QVBoxLayout, QLayout, QScrollArea
+  QFrame, QWidget, QGridLayout, QVBoxLayout, QLayout, QScrollArea,
+  QComboBox
 )
 from PyQt5.QtCore import Qt
 from views.components.config.views_config import MERGE_METHOD_OPT
@@ -23,6 +24,10 @@ class PageMerge(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
+    self.dd_table_left: QComboBox = None
+    self.dd_table_rightL: QComboBox = None
+    self.dd_column_left: QComboBox = None
+    self.dd_column_right: QComboBox = None
     logger.info("initialised successfully.")
     
     
@@ -79,13 +84,22 @@ class PageMerge(PageTemplate):
   #  METHODS -  CONTAINERS
   
   def build_select_table_container(self) -> QWidget:
-    #  components
+    #  components - title
     title_lb = self.app.comp_fact.build_label(lb_text="A. Select Tables", 
                                               lb_type="h3")
-    table_opt_box_left = self.build_table_opt_box(target_lb="1. Left Table",
+    #  components - dropdowns
+    dd_sect_left = self.build_table_opt_box(target_lb="1. Left Table",
                                                   target_tb="left")
-    table_opt_box_right = self.build_table_opt_box(target_lb="2. Right Table",
+    dd_sect_right = self.build_table_opt_box(target_lb="2. Right Table",
                                                    target_tb="right")
+    table_opt_box_left = dd_sect_left["box"]
+    table_opt_box_right = dd_sect_right["box"]
+    #  update temporary dropdown state
+    self.dd_table_left = dd_sect_left["dd_table"]
+    self.dd_table_right = dd_sect_right["dd_table"]
+    self.dd_column_left = dd_sect_left["dd_column"]
+    self.dd_column_right = dd_sect_right["dd_column"]
+    
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
@@ -146,19 +160,22 @@ class PageMerge(PageTemplate):
                                               lb_type="p",
                                               lb_txtcolor=THEME_COLOR["mid"])
     lb_column = self.app.comp_fact.build_label(lb_text="Selected Column", 
-                                                lb_type="p",
-                                                lb_txtcolor=THEME_COLOR["mid"])
-    dd_table = self.app.comp_fact.build_dropdown(target_options=[], 
-                                                target_default=0,
-                                                event=lambda: self.app.merge_cont.manage_dd_table_event())
-    dd_column = self.app.comp_fact.build_dropdown(target_options=[], 
+                                               lb_type="p",
+                                               lb_txtcolor=THEME_COLOR["mid"])
+    dd_table = self.app.comp_fact.build_dropdown(target_options=["--- Please Select ---"], 
+                                                 target_default=0,
+                                                 event=lambda: self.app.merge_cont.manage_dd_table_event(target_tb=target_tb))
+    dd_column = self.app.comp_fact.build_dropdown(target_options=["--- Please Select ---"], 
                                                   target_default=0,
-                                                  event=lambda: self.app.merge_cont.manage_dd_col_event())
+                                                  event=lambda: self.app.merge_cont.manage_dd_col_event(target_tb=target_tb))
     btn_preview = self.app.comp_fact.build_btn(btn_text="Preview",
                                                btn_event=lambda checked: self.app.merge_cont.preview_selected_table(target_tb=target_tb),
                                                btn_bgcolor=THEME_COLOR["white"],
                                                btn_txtcolor=THEME_COLOR["primary"],
                                                btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    #  ==== testing ====
+    self.app.comp_fact.refresh_dropdowns(target_dd=dd_table,
+                                         target_event=lambda: self.app.merge_cont.deliver_table_opts(target_tb))
     #  box
     grid = QWidget()
     grid_layout = QGridLayout()
@@ -182,7 +199,7 @@ class PageMerge(PageTemplate):
     frame_layout.addWidget(lb_box, alignment=Qt.AlignLeft)
     frame_layout.addWidget(grid)
     frame.setLayout(frame_layout)
-    return frame
+    return {"box": frame, "dd_table": dd_table, "dd_column": dd_column}
   
   
   def build_ouput_opt_grid(self): 
@@ -206,3 +223,19 @@ class PageMerge(PageTemplate):
     grid_layout.setSizeConstraint(QLayout.SetFixedSize)
     grid.setLayout(grid_layout)
     return grid
+  
+  
+  #  REFRESH
+  
+  def reset_display(self):
+    #  Learnt: need to close exclusive first, and re-activate it for new visual
+    for dropdown in self.dropdown_groups:
+      dropdown.setExclusive(False)
+    for btn in self.radio_btn_list:
+      btn.blockSignals(True)
+      btn.setChecked(False)
+      btn.blockSignals(False)
+    for group in self.radio_groups:
+      group.setExclusive(True)
+      
+      

@@ -124,7 +124,24 @@ class ComponentsFactory:
     if event:
       combo.currentTextChanged.connect(event)
     return combo
-    
+  
+  
+  def refresh_dropdowns(self, target_dd: QComboBox, target_event: Callable | None=None):
+    #  Learnt: store the popup funciton first
+    dd_popup = target_dd.showPopup
+    def updated_popup_callback():
+      #  Learnt: get the up-to-date list
+      opts: list = target_event()
+      #  Learnt: clear original and update new options
+      target_dd.blockSignals(True)
+      target_dd.clear()
+      target_dd.addItems(opts)
+      target_dd.setCurrentIndex(0)
+      target_dd.blockSignals(False)
+      #  Learnt: run the popup function for execution
+      dd_popup()
+    #  Leanrt: replace the prev popup function
+    target_dd.showPopup = updated_popup_callback
     
   
   def build_checkbox(self,

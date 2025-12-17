@@ -34,6 +34,11 @@ class UserInterface:
     self.app = QApplication(sys.argv)
     self.window = None
     
+    
+    #  setup state
+    self.clean_state = CleanState()
+    self.merge_state = MergeState()
+    
     #  setup controllers
     self.app_cont = AppController(self)
     self.nav_cont = NavController(self)
@@ -52,10 +57,6 @@ class UserInterface:
     self.comp_fact = ComponentsFactory(app_ref=self)
     self.pages_fact = PagesFactory(app_ref=self)
     self.layout_fact = LayoutFactory(app_ref=self)
-    
-    #  centralised global states
-    self.clean_state = CleanState()
-    self.merge_state = MergeState()
     
     #  setup pipeline
     self.sql_connector = SQLConnector(host=os.getenv("DB_HOST"),
