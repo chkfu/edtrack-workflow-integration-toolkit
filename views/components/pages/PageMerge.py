@@ -88,10 +88,12 @@ class PageMerge(PageTemplate):
     title_lb = self.app.comp_fact.build_label(lb_text="A. Select Tables", 
                                               lb_type="h3")
     #  components - dropdowns
-    dd_sect_left = self.build_table_opt_box(target_lb="1. Left Table",
-                                                  target_tb="left")
-    dd_sect_right = self.build_table_opt_box(target_lb="2. Right Table",
-                                                   target_tb="right")
+    dd_sect_left = self.build_table_opt_box(target_dropdown="dd_table",
+                                            target_lb="1. Left Table",
+                                            target_tb="left")
+    dd_sect_right = self.build_table_opt_box(target_dropdown="dd_column",
+                                             target_lb="2. Right Table",
+                                             target_tb="right")
     table_opt_box_left = dd_sect_left["box"]
     table_opt_box_right = dd_sect_right["box"]
     #  update temporary dropdown state
@@ -151,7 +153,7 @@ class PageMerge(PageTemplate):
   
   #  METHODS -  BOXES
   
-  def build_table_opt_box(self, target_lb:str, target_tb: str) -> QWidget:
+  def build_table_opt_box(self, target_dropdown: str, target_lb: str, target_tb: str) -> QWidget:
     
     lb_box = self.app.comp_fact.build_label(lb_text=target_lb, 
                                             lb_type="h3",
@@ -164,10 +166,12 @@ class PageMerge(PageTemplate):
                                                lb_txtcolor=THEME_COLOR["mid"])
     dd_table = self.app.comp_fact.build_dropdown(target_options=["--- Please Select ---"], 
                                                  target_default=0,
-                                                 event=lambda: self.app.merge_cont.manage_dd_table_event(target_tb=target_tb))
+                                                 event=lambda text: self.app.merge_cont.manage_dd_table_event(target_tb=target_tb, 
+                                                                                                              selected_text=text))
     dd_column = self.app.comp_fact.build_dropdown(target_options=["--- Please Select ---"], 
                                                   target_default=0,
-                                                  event=lambda: self.app.merge_cont.manage_dd_col_event(target_tb=target_tb))
+                                                  event=lambda text: self.app.merge_cont.manage_dd_col_event(target_tb=target_tb, 
+                                                                                                             selected_text=text))
     btn_preview = self.app.comp_fact.build_btn(btn_text="Preview",
                                                btn_event=lambda checked: self.app.merge_cont.preview_selected_table(target_tb=target_tb),
                                                btn_bgcolor=THEME_COLOR["white"],
@@ -175,7 +179,8 @@ class PageMerge(PageTemplate):
                                                btn_hover_bgcolor=THEME_COLOR["white_hvr"])
     #  ==== testing ====
     self.app.comp_fact.refresh_dropdowns(target_dd=dd_table,
-                                         target_event=lambda: self.app.merge_cont.deliver_table_opts(target_tb))
+                                         target_event=lambda: self.app.merge_cont.deliver_dd_opts(target_tb=target_tb, 
+                                                                                                  target_dropdown=target_dropdown))
     #  box
     grid = QWidget()
     grid_layout = QGridLayout()
@@ -226,6 +231,20 @@ class PageMerge(PageTemplate):
   
   
   #  REFRESH
+  
+  def update_dd_col(self, target_tb: str, options: list):
+    if target_tb == "left":
+      dropdown = self.dd_column_left
+    elif target_tb == "right":
+      dropdown = self.dd_column_right
+    else:
+        return
+    dropdown.blockSignals(True)
+    dropdown.clear()
+    dropdown.addItems(options)
+    dropdown.setCurrentIndex(0)
+    dropdown.blockSignals(False)
+  
   
   def reset_display(self):
     #  Learnt: need to close exclusive first, and re-activate it for new visual
