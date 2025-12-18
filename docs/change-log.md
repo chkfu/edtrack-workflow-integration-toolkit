@@ -19,7 +19,7 @@ This file records the major version changes of the projects.
 <br/>
 
 
-## [0.1.5] - 
+## [0.1.5] - Dec 18, 2025
 
 ### Added 
 
@@ -32,10 +32,15 @@ This file records the major version changes of the projects.
 - Refine buttons and tabs with pointer cursor
 - Refine sidebar dataset list with status updates (dataset only)
 - Refactorised reused component groups in ComponentFactory
+- Refactorised relationship between views and ValidController
+- Implemented controllers events to PageMerge
+- Updated developer guide and changelog
 
 ### Fixed
 
 - Enabled cleaned dataset to be temporarily stored into CleanDataState
+- Resolved refreshing bugs to ensure up-to-date options for dropdown widgets
+- Fixed circular import issue by deferred ValidController loading temporarily
 
 ### Removed
 

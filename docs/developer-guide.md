@@ -12,14 +12,20 @@ specific structure.
 
 # DEVELOPMENT GUIDE
 
-[TOC]
-#### I. Overview
-#### II. Environment Setup
-#### III. Project Structure
-#### IV.  Workflow Logic
-#### V. User Interface Guide
-#### VI Error Handling
-#### VII. Limitation and Future Improvements
+<br/>
+
+## Table of Contents
+
+- [I. Overview](#i-overview)
+- [II. Environment Setup](#ii-environment-setup)
+- [III. Architecture Rationale](#iii-architecture-rationale)
+- [IV. Project Structure](#iv-project-structure)
+- [V. Workflow Logic](#v-workflow-logic)
+- [VI. User Interface Guide](#vi-user-interface-guide)
+- [VII. Error Handling](#vii-error-handling)
+- [VIII. Trouble-shooting](#viii-trouble-shooting)
+- [IX. Limitation and Future Improvements](#ix-limitation-and-future-improvements)
+
 
 <br/>
 
@@ -271,6 +277,42 @@ STEP_NAME_LIST: list = [
 ]
 ```
 
+#### (3) Reset Components
+
+#### (3a) QButtonGroup
+
+`QButtonGroup` manages the behavioral logic of the entire button group, while each radio button widget represents only the visual element. For a full reset, the group must be temporarily unlocked to allow individual buttons to change state, then locked again to re-establish the group’s behavior.
+
+```
+self.merge_method_group.setExclusive(False)    # before change, unlocked widget
+for btn in self.radio_btn_list:
+    btn.setChecked(False)
+self.merge_method_group.setExclusive(True)    # after change, locked it back
+```
+
+#### (3a) QRadioButton
+
+For single `QRadioButton`, the container (a list of buttons) is recalled and iterated to update each button’s state. Each button temporarily blocks signals to prevent triggering additional events, then unblocks signals after the state change is applied.
+
+```
+for btn in self.radio_btn_list:
+    btn.blockSignals(True)    # before change, unlocked widget
+    btn.setChecked(False)
+    btn.blockSignals(False)    # after change, locked it back
+```
+
+#### (3c) `QComboBox`
+
+`QComboBox` (drop-down list) also need to be locked and unlocked using blockSignals.
+However, the default option is reset by setting the index of the selected item, rather than modifying a checked state.
+
+```
+for dropdown in dropdown_list:
+    dropdown.blockSignals(True) 
+    dropdown.setCurrentIndex(0)    # set the index, instead of checked status
+    dropdown.blockSignals(False)
+```
+
 
 <br/>
 
@@ -399,4 +441,4 @@ $ python3 app.py
 
 <i> Author: kchan </i>
 </br>
-<i> Last Updated: Nov 29, 2025 </i>
+<i> Last Updated: Dec 18, 2025 </i>
