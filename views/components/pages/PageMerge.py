@@ -91,7 +91,7 @@ class PageMerge(PageTemplate):
     dd_sect_left = self.build_table_opt_box(target_dropdown="dd_table",
                                             target_lb="1. Left Table",
                                             target_tb="left")
-    dd_sect_right = self.build_table_opt_box(target_dropdown="dd_column",
+    dd_sect_right = self.build_table_opt_box(target_dropdown="dd_table",
                                              target_lb="2. Right Table",
                                              target_tb="right")
     table_opt_box_left = dd_sect_left["box"]
