@@ -56,7 +56,7 @@ class MergeController:
     
   def deliver_col_opts(self, target_tb: str) -> list:
     tb_opt: str = str(target_tb).strip().lower()
-    dd_list: list = []
+    dd_list: list = ["--- Please Select ---"]
     #  check the temporary table
     if tb_opt not in ["left", "right"]:
       logger.error(f"Failed to display column dropdowns for invalid table to be selected - {target_tb}",
@@ -74,8 +74,28 @@ class MergeController:
   #  METHODS - EVENTS
   
   def preview_selected_table(self, target_tb: str) -> None:
-    print("preview_selected_table")
-    
+    #  declaration
+    target_df: pd.DataFrame | None = None
+    target_tb_r: str = target_tb.strip().lower()
+    #  error handling
+    if target_tb_r not in ["left", "right"]:
+      logger.warning(f"The selected table cannot be identified. Preview failed - {target_tb}",
+                     exc_info=True)
+      return self.app.comp_fact.build_reminder_box(title="Error", 
+                                                   txt_msg="Please ensure left and right tables have been selected.")
+    #  identify pop-up dataframe
+    if target_tb_r == "left":
+      target_df = self.app.merge_state.target_ltable
+    if target_tb_r == "right":
+      target_df = self.app.merge_state.target_rtable
+    #  build pop-up window
+    if target_df is not None and not target_df.empty:
+      return self.app.comp_fact.build_popup_wd(wd_title="Preview Table Options",
+                                               target_df=target_df,
+                                               popup_title=f"{target_tb_r} Table".title(),
+                                               popup_content=self.app.comp_fact.build_table_view(target_df=target_df))
+    return self.app.comp_fact.build_reminder_box(title="Error", 
+                                                 txt_msg="Please ensure left and right tables have been selected.")
     
     
   def preview_merge_df(self) -> None:
@@ -87,21 +107,16 @@ class MergeController:
     #  error handling
     if selected_text == "--- Please Select ---":
       return
-    target_df = self.app.clean_state.get_spec_dataframe(target_name=selected_text)
-    
     #  get clean dataframe, if not raw.  otherwise, apss
-    clean_state = self.app.clean_state.get_spec_dataframe(
-        target_name=selected_text
-    )
+    clean_state = self.app.clean_state.get_spec_dataframe(target_name=selected_text)
     if clean_state is None:
         return
     if clean_state.data_clean is not None:
       dataframe = clean_state.data_clean
     elif clean_state.data_raw is not None:
       dataframe = clean_state.data_raw
-    else:
+    else: 
       return
-    
     # update
     if target_tb == "left":
       self.app.merge_state.target_ltable = dataframe
@@ -111,7 +126,6 @@ class MergeController:
       self.app.merge_state.target_rcolumn = None
     else:
       return
-
     #  Learnt: new method to force refresh dropdown UI by clicks
     opts = self.deliver_col_opts(target_tb)
     self.app.pages_fact.page_merge.update_dd_col(target_tb, opts)

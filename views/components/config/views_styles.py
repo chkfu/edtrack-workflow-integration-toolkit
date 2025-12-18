@@ -177,6 +177,16 @@ QLabel {{
 """
 
 
+#  DROPDOWN
+
+style_dd_default = """
+QComboBox QAbstractItemView::item {
+  height: 34px;
+  padding-left: 10px;
+  cursor: pointing-hand;
+}
+"""
+
 
 #  BUTTONS
 

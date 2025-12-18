@@ -120,6 +120,12 @@ class ComponentsFactory:
     combo.setCursor(Qt.PointingHandCursor)
     combo.setCurrentIndex(target_default)
     combo.setFixedHeight(28)
+    #  styling - cursor
+    view = combo.view()
+    view.setCursor(Qt.PointingHandCursor)
+    view.viewport().setCursor(Qt.PointingHandCursor)
+    #  styling - others
+    combo.setStyleSheet(style_sidebar_listItem_default)
     #  udpate
     if event:
       combo.currentTextChanged.connect(event)
@@ -155,8 +161,6 @@ class ComponentsFactory:
           lambda state, name=target_name: target_event(target_state=state,
                                            target_name=name))
     return checkbox
-    
-
     
     
   #  section child items
