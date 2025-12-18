@@ -2,12 +2,11 @@ import sys
 import os
 import logging
 from PyQt5.QtWidgets import QApplication, QWidget
+from models import SQLConnector
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
 from controllers import (
-  AppController, NavController, FileController, ValidController, CleanController,
-  MergeController
+  AppController, NavController, FileController, CleanController, MergeController
 )
-from models import SQLConnector
 from states import CleanState, MergeState
 from dotenv import load_dotenv
 
@@ -43,7 +42,6 @@ class UserInterface:
     self.app_cont = AppController(self)
     self.nav_cont = NavController(self)
     self.file_cont = FileController(self)
-    self.valid_cont = ValidController(self)
     self.clean_cont = CleanController(self)
     self.merge_cont = MergeController(self)
     

@@ -21,8 +21,7 @@ class ValidController:
   
   #  CONSTRUCTOR
   
-  def __init__(self, app_ref):
-    self.app = app_ref
+  def __init__(self):
     logger.info("initialised sucessfully.")
     
   

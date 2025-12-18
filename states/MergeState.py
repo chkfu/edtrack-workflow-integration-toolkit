@@ -1,8 +1,6 @@
 import pandas as pd
 import logging
-from states.CleanDataState import CleanDataState
-from views.components.config.views_config import DATASET_LIST
-
+from controllers.ValidController import ValidController
 
 
 #  LOGGING
@@ -15,6 +13,9 @@ logger = logging.getLogger("MERGE_STATE")
 class MergeState:
   
   def __init__(self):
+    
+    #  validation
+    self.valid_cont = ValidController()
     
     #  temporary datasets
     self.merge_raw: pd.DataFrame | None = None
@@ -33,21 +34,21 @@ class MergeState:
   
   #  remarks: requires to start from merging cleaned datasets, instead first merge
   def set_merge_raw(self, target_df: pd.DataFrame) -> None:
-    self.raw_merge = target_df
+    self.merge_raw = target_df
   
   #  remarks: for data analysis after feature engineering stage
   def set_merge_proc(self, target_df: pd.DataFrame) -> None:
-    self.raw_merge = target_df
+    self.merge_proc = target_df
     
     
   #  table selection related 
   
   def set_target_ltable(self, target_df: pd.DataFrame) -> None:
-    self.raw_merge = target_df
+    self.target_ltable = target_df
     
 
   def set_target_rtable(self, target_df: pd.DataFrame) -> None:
-    self.raw_merge = target_df
+    self.target_rtable = target_df
     
     
   def set_target_lcol(self, target_col: str) -> None:
@@ -57,7 +58,7 @@ class MergeState:
                         for column in self.ltable.columns)
     #  if matched, store the original col name; else pass
     if matching:
-      self.target_lcol = self.app.valid_cont.validate_col(target_df=self.ltable, 
+      self.target_lcol = self.valid_cont.validate_col(target_df=self.ltable, 
                                                           target_col=target_col)
       
       
@@ -68,7 +69,7 @@ class MergeState:
                         for column in self.rtable.columns)
     #  if matched, store the original col name; else pass
     if matching:
-      self.target_rcol = self.app.valid_cont.validate_col(target_df=self.rtable, 
+      self.target_rcol = self.valid_cont.validate_col(target_df=self.rtable, 
                                                           target_col=target_col)
       
       

@@ -7,6 +7,7 @@ temporary dataset loading.
 
 from PyQt5.QtWidgets import QFileDialog
 from models.DataLoader import DataLoader
+from controllers.ValidController import ValidController
 from views.components.config.views_config import RAW_COL_SCHEMA
 import pandas as pd
 import logging
@@ -26,6 +27,7 @@ class FileController:
   def __init__(self, app_ref):
     self.app = app_ref
     self.data_loader = DataLoader()
+    self.valid_cont = ValidController()
     logger.info("[FileController] initialised sucessfully.")
     
   
@@ -54,7 +56,7 @@ class FileController:
       #  task 2: store the temp dataframe table
       #  load datasets and check whether it matched the designated schema
       temp_dataframe = self.data_loader.import_dataset(file_name)
-      if not self.app.valid_cont.validate_preview_df(
+      if not self.valid_cont.validate_preview_df(
             lb_text=target_key,
             target_state=temp_dataframe,
             target_schema=RAW_COL_SCHEMA
@@ -90,7 +92,7 @@ class FileController:
                 txt_msg=f"No data is found. Please upload the valid file again.")
     
       #  remarks: needs to try-catch for data-loader, considering SQL might crash
-      if not self.app.valid_cont.validate_preview_df(lb_text=target_key, 
+      if not self.valid_cont.validate_preview_df(lb_text=target_key, 
                                                      target_state=target_dataframe,
                                                      target_schema=RAW_COL_SCHEMA):
         return

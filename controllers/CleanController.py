@@ -11,7 +11,8 @@ from PyQt5.QtCore import Qt
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from models.DataCleaner import DataCleaner
-from states.CleanDataState import CleanDataState
+from controllers.ValidController import ValidController
+from states import CleanDataState
 
 
 #  LOGGING
@@ -28,6 +29,7 @@ class CleanController:
   def __init__(self, app_ref):
     self.app = app_ref
     self.clean_model = DataCleaner()
+    self.valid_cont = ValidController()
     logger.info("initialised sucessfully.")
     
     
@@ -268,7 +270,7 @@ class CleanController:
   def handle_clean_sort_detail(self, target_col: str, target_isAsc: bool):
     curr_ds = self.app.clean_state.get_clean_target()
     #  validate column
-    if not self.app.valid_cont.validate_col(target_df=curr_ds, target_col=target_col):
+    if not self.valid_cont.validate_col(target_df=curr_ds, target_col=target_col):
       logger.info("target column is not available for cleaning sort details.")
       return
     #  update state

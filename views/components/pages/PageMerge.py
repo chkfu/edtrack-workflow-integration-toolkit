@@ -208,22 +208,16 @@ class PageMerge(PageTemplate):
   
   
   def build_ouput_opt_grid(self): 
-    # components
-    box_preview = self.app.comp_fact.preview_comp_box(lb_text="",
-                                                     btn_text="Preview",
-                                                     btn_event=lambda: self.app.merge_cont.preview_merge_df())   
+    # components 
     box_merge = self.app.comp_fact.preview_comp_box(lb_text="",
-                                                     btn_text="Merge",
-                                                     btn_event=lambda: self.app.merge_cont.execute_merge_df())
+                                                    btn_text="Merge",
+                                                    btn_event=lambda: self.app.merge_cont.execute_merge_df())
     #  frame
     grid = QWidget()
     grid_layout = QGridLayout()
     grid_layout = QGridLayout()
     grid_layout.setHorizontalSpacing(28)
     grid_layout.setContentsMargins(0, 0, 0, 0)
-    grid_layout.setColumnStretch(0, 0)
-    grid_layout.setColumnStretch(1, 0)
-    grid_layout.addWidget(box_preview, 0, 0)
     grid_layout.addWidget(box_merge, 0, 1)
     grid_layout.setSizeConstraint(QLayout.SetFixedSize)
     grid.setLayout(grid_layout)

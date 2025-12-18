@@ -6,7 +6,7 @@ from models.config.monthList import MONNTH_LIST
 
 #  LOGGING
 
-logger = logging.getLogger("APPLICATION")
+logger = logging.getLogger("DATA_MANAGER")
 
 
 #  CLASS
@@ -15,7 +15,12 @@ class DataManager:
   
   def __init__(self):
     self.col_name_list = None
-    logger.info("[DataManager] initialised successfully.")
+    #  Learnt: prevent defer import validation controller into models
+    #  remarks: temporary solution for breaking circular imports
+    #  solution: in the future, validation to be done in controller, while models for simple calculation only
+    from controllers.ValidController import ValidController
+    self.valid_cont = ValidController()
+    logger.info("initialised successfully.")
     
    
     
@@ -24,7 +29,7 @@ class DataManager:
   def update_valid_lists(self, target_df: pd.DataFrame, target_parameter: list, valid_list: list) -> None: 
     for el in target_parameter:
       testing_el = str(el)
-      valid_el = self.app.valid_cont.validate_col(target_df=target_df, target_col=testing_el)
+      valid_el = self.valid_cont.validate_col(target_df=target_df, target_col=testing_el)
       if valid_el:
         valid_list.append(valid_el) 
     
@@ -36,16 +41,16 @@ class DataManager:
    
     #  validate types  
     if not isinstance(target_df, pd.DataFrame):
-      raise TypeError("[DataManager] target dataframe must be a pandas DataFrame.")
+      raise TypeError("Target dataframe must be a pandas DataFrame.")
     if not isinstance(target_col, str):
-      raise TypeError("[DataManager] target column must be a string.")
+      raise TypeError("Target column must be a string.")
     
     #  validate column
-    valid_col: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_col)
+    valid_col: str = self.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  output
     output = target_df.drop(columns=[valid_col])
-    logger.info(f"[DataManager] target column has been removed.")
+    logger.info(f"Target column has been removed.")
     return output
     
     
@@ -53,14 +58,14 @@ class DataManager:
     
     #  validate types
     if not isinstance(target_df, pd.DataFrame):
-      raise TypeError("[DataManager] target dataframe must be a pandas DataFrame.")
+      raise TypeError("Target dataframe must be a pandas DataFrame.")
     if not isinstance(target_col, str):
-      raise TypeError("[DataManager] target column must be a string.")
+      raise TypeError("Target column must be a string.")
     if not isinstance(target_rows, list):
-      raise TypeError("[DataManager] target input must be a list of strings.")
+      raise TypeError("Target input must be a list of strings.")
     
     #  validate column
-    valid_col: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_col)
+    valid_col: str = self.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  validate row
     rows_removal: list = [el.strip().lower() for el in target_rows]
@@ -76,79 +81,96 @@ class DataManager:
     
     #  validate types
     if not isinstance(target_df, pd.DataFrame):
-      raise TypeError("[DataManager] target dataframe must be a pandas DataFrame.")
+      raise TypeError("Target dataframe must be a pandas DataFrame.")
     if not isinstance(target_col, str):
-      raise TypeError(f"[DataManager] target column {target_col} must be a string.")
+      raise TypeError(f"Target column {target_col} must be a string.")
     
     #  validate column
-    valid_col: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_col)
+    valid_col: str = self.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  convert name
     new_name_r: str = str(new_name).strip()
     
     # output
     output:  pd.DataFrame = target_df.rename(columns={valid_col: new_name_r})
-    logger.info(f"[DataManager] the target column {target_col} has been renamed as {new_name_r}")
+    logger.info(f"The target column {target_col} has been renamed as {new_name_r}")
     return output
     
     
   def merge_tables(self, target_df_left: pd.DataFrame, target_df_right: pd.DataFrame, target_col_left: str, target_col_right: str, merge_type: str = "inner") -> pd.DataFrame:
-    # reuse
+    #  validate types
+    if not isinstance(target_df_left, pd.DataFrame) or not isinstance(target_df_right, pd.DataFrame):
+        raise TypeError("Target dataframe must be a pandas DataFrame.")
+    if not isinstance(target_col_left, str) or not isinstance(target_col_right, str):
+        raise TypeError("Target column must be a string.")
+    if not isinstance(merge_type, str):
+        raise TypeError("Merge_type must be a string.")
+
     formatted_col_left: str = target_col_left.strip().lower()
     formatted_col_right: str = target_col_right.strip().lower()
     formatted_merge_type: str = merge_type.strip().lower()
-  
-    #  validate types
-    if not isinstance(target_df_left, pd.DataFrame):
-      raise TypeError("[DataManager] target dataframe must be a pandas DataFrame.")
-    if not isinstance(target_df_right, pd.DataFrame):
-      raise TypeError("[DataManager] target dataframe must be a pandas DataFrame.")
-    if not isinstance(target_col_left, str):
-      raise TypeError("[DataManager] target column must be a string.")
-    if not isinstance(target_col_right, str):
-      raise TypeError("[DataManager] target column must be a string.")
-    if not isinstance(merge_type, str):
-      raise TypeError("[DataManager] merge_type must be a string.")
-    
+
     #  validate columns
-    valid_col_left: str | None = None
-    valid_col_right: str | None = None
-    if formatted_col_left != "index":
-      valid_col_left = self.app.valid_cont.validate_col(target_df=target_df_left, target_col=target_col_left)
-    else:
+    if formatted_col_left == "index":
       valid_col_left = "index"
-    if formatted_col_right != "index":
-      valid_col_right: str = self.app.valid_cont.validate_col(target_df=target_df_right, target_col=target_col_right)
     else:
+      valid_col_left = self.valid_cont.validate_col(
+        target_df=target_df_left,
+        target_col=target_col_left
+      )
+
+    if formatted_col_right == "index":
       valid_col_right = "index"
-    
+    else:
+      valid_col_right = self.valid_cont.validate_col(
+        target_df=target_df_right,
+        target_col=target_col_right
+      )
+
+    if valid_col_left is None or valid_col_right is None:
+      raise ValueError("[DataManager] invalid merge column after validation.")
+
     #  validate merge type
     if formatted_merge_type not in ["left", "right", "inner", "outer", "cross"]:
-      err_msg = f"[DataManager] failed to merge with {merge_type}. only accepted: inner, outer, left, right, and cross."
+      err_msg = f"Failed to merge with {merge_type}. only accepted: inner, outer, left, right, and cross."
       logger.warning(err_msg)
       raise ValueError(err_msg)
+
     if formatted_merge_type == "cross" and formatted_col_left == "index" and formatted_col_right == "index":
-      err_msg = f"[DataManager] cross merge method is not aapplicable for join indice."
+      err_msg = "Cross merge method is not applicable for join indice."
       logger.warning(err_msg)
       raise ValueError(err_msg)
-    
+
     #  merge tables
-    if formatted_col_left == "index" and formatted_col_right== "index":
-      output =target_df_left.join(target_df_right, how=merge_type, lsuffix="", rsuffix="_y")
-    
+    if formatted_col_left == "index" and formatted_col_right == "index":
+      output = target_df_left.join(target_df_right,
+                                   how=formatted_merge_type,
+                                   rsuffix="_y")
+
     elif formatted_col_left == "index" and formatted_col_right != "index":
-      output =target_df_left.merge(target_df_right, left_index=True, right_on=valid_col_right, how=merge_type, suffixes=("", "_y"))
-    
+      output = target_df_left.merge(target_df_right,
+                                    left_index=True,
+                                    right_on=valid_col_right,
+                                    how=formatted_merge_type,
+                                    suffixes=("", "_y"))
+
     elif formatted_col_left != "index" and formatted_col_right == "index":
-      output=target_df_left.merge(target_df_right, right_index=True, left_on=valid_col_left, how=merge_type, suffixes=("", "_y"))
-    
+      output = target_df_left.merge(target_df_right,
+                                    right_index=True,
+                                    left_on=valid_col_left,
+                                    how=formatted_merge_type,
+                                    suffixes=("", "_y"))
+
     else:
-      output=target_df_left.merge(target_df_right, left_on=valid_col_left, right_on=valid_col_right, how=merge_type, suffixes=("", "_y"))
-    
+      output = target_df_left.merge(target_df_right,
+                                    left_on=valid_col_left,
+                                    right_on=valid_col_right,
+                                    how=formatted_merge_type,
+                                    suffixes=("", "_y"))
+
     #  output
-    logger.info("[DataManager] a new merged table has been created.")
+    logger.info("A new merged table has been created.")
     return output
-    
   
   
   #  DATA MANIPULATION
@@ -157,11 +179,11 @@ class DataManager:
       
     #  validate types
     if not isinstance(target_df, pd.DataFrame):
-      raise TypeError("[DataManager] target dataframe must be a pandas DataFrame.")
+      raise TypeError("Target dataframe must be a pandas DataFrame.")
     if not isinstance(target_cols, list):
-      raise TypeError("[DataManager] target column must be a list.")
+      raise TypeError("Target column must be a list.")
     if not isinstance(target_rows, list):
-      raise TypeError("[DataManager] target input must be a list.")
+      raise TypeError("Target input must be a list.")
       
     #  validate column
     valid_col_list: list = []
@@ -169,11 +191,11 @@ class DataManager:
 
     self.update_valid_lists(target_df, target_cols, valid_col_list)
     self.update_valid_lists(target_df,target_rows, valid_row_list)
-    valid_val: str = self.app.valid_cont.validate_col(target_df=target_df, target_col=target_val)
+    valid_val: str = self.valid_cont.validate_col(target_df=target_df, target_col=target_val)
     
     #  output 
     output = pd.pivot_table(data=target_df, columns=valid_col_list, index=valid_row_list, values=valid_val, aggfunc=target_aggfunc, fill_value=target_filling)
-    logger.info("[DataManager] a new pivot table has been created.")
+    logger.info("A new pivot table has been created.")
     return output
   
   
@@ -187,12 +209,12 @@ class DataManager:
     month_col: str = "Month"
     
     #  validate col name
-    target_col_r = self.app.valid_cont.validate_col(target_df, target_col)
-    target_row_r = self.app.valid_cont.validate_col(target_df, target_row)
-    date_col = self.app.valid_cont.validate_col(target_df, date_col)
+    target_col_r = self.valid_cont.validate_col(target_df, target_col)
+    target_row_r = self.valid_cont.validate_col(target_df, target_row)
+    date_col = self.valid_cont.validate_col(target_df, date_col)
     
     #  grouping monthly in new column, remove date column
-    date_col_r = self.app.valid_cont.validate_col(target_df, date_col)
+    date_col_r = self.valid_cont.validate_col(target_df, date_col)
     output[month_col] = output[date_col_r].dt.month
     output = self.remove_col(output, date_col_r)
     
@@ -216,19 +238,17 @@ class DataManager:
                            target_val: str,
                            date_col: str) -> pd.DataFrame:
     output = target_df.copy()
-    stat_names: dict = {
-      "month_col": "Month",
-      "overall_row": "(Overall)",
-      "mean_col": "Mean",
-      "median_col": "Median",
-      "mode_col": "Mode",
-      "sum_col": "Total"
-    }
+    stat_names: dict = {"month_col": "Month",
+                        "overall_row": "(Overall)",
+                        "mean_col": "Mean",
+                        "median_col": "Median",
+                        "mode_col": "Mode",
+                        "sum_col": "Total"}
 
     #  validate column names
-    target_row_r: str = self.app.valid_cont.validate_col(target_df, target_row)
-    target_val_r: str = self.app.valid_cont.validate_col(target_df, target_val)
-    date_col_r: str = self.app.valid_cont.validate_col(target_df, date_col)
+    target_row_r: str = self.valid_cont.validate_col(target_df, target_row)
+    target_val_r: str = self.valid_cont.validate_col(target_df, target_val)
+    date_col_r: str = self.valid_cont.validate_col(target_df, date_col)
     
     output[stat_names["month_col"]] = output[date_col_r].dt.month
     output = self.remove_col(output, date_col_r)

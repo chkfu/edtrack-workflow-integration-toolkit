@@ -1,10 +1,7 @@
 import logging
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtCore import Qt
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
-from models import DataManager
-from states import CleanState, CleanDataState
+from controllers.ValidController import ValidController
+from models.DataManager import DataManager
 from views.components.config.views_config import MERGE_METHOD_OPT
 
 
@@ -23,6 +20,7 @@ class MergeController:
     self.app = app_ref
     self.temp_merge_dataset: pd.DataFrame | None = None
     self.manage_model = DataManager()
+    self.valid_cont = ValidController()
     logger.info("initialised sucessfully.")
     
     
@@ -96,11 +94,6 @@ class MergeController:
                                                popup_content=self.app.comp_fact.build_table_view(target_df=target_df))
     return self.app.comp_fact.build_reminder_box(title="Error", 
                                                  txt_msg="Please ensure left and right tables have been selected.")
-    
-    
-  def preview_merge_df(self) -> None:
-    print("preview_merge_df")
-    pass
   
   
   def manage_dd_table_event(self, target_tb: str, selected_text: str) -> None:
@@ -120,10 +113,10 @@ class MergeController:
     # update
     if target_tb == "left":
       self.app.merge_state.target_ltable = dataframe
-      self.app.merge_state.target_lcolumn = None
+      self.app.merge_state.target_lcol = None
     elif target_tb == "right":
       self.app.merge_state.target_rtable = dataframe
-      self.app.merge_state.target_rcolumn = None
+      self.app.merge_state.target_rcol = None
     else:
       return
     #  Learnt: new method to force refresh dropdown UI by clicks
@@ -135,9 +128,9 @@ class MergeController:
     if selected_text == "--- Please Select ---":
       return
     if target_tb == "left":
-      self.app.merge_state.target_lcolumn = selected_text
+      self.app.merge_state.target_lcol = selected_text
     elif target_tb == "right":
-      self.app.merge_state.target_rcolumn = selected_text
+      self.app.merge_state.target_rcol = selected_text
     else:
       return
   
@@ -155,13 +148,56 @@ class MergeController:
   
   
   def execute_merge_df(self) -> None:
-    #  TODO: a pop-up window for preview is requried
-    print("execute_merge_df")
-    pass
+    #  declaration
+    temp_ltable: pd.DataFrame | None = self.app.merge_state.target_ltable
+    temp_rtable: pd.DataFrame | None = self.app.merge_state.target_rtable
+    temp_lcol: str | None = self.app.merge_state.target_lcol
+    temp_rcol: str | None = self.app.merge_state.target_rcol
+    temp_method: str | None = self.app.merge_state.target_method
+    #  1a. validation - table cannot be empty
+    if temp_ltable is None or temp_rtable is None or temp_ltable.empty or temp_rtable.empty:
+      err_msg: str = "The selected left or right table are missing or empty. Unable to proceed merge."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg, exc_info=True)
+      return
+    #  1b. validation - merger parameter must be all valid
+    if temp_lcol is None or temp_rcol is None or temp_method is None:
+      err_msg: str = "Failed to merge table with potential missing parameters."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg, exc_info=True)
+      return
+    #  1c. validation - left and right table cannnot be the same
+    if temp_ltable.equals(temp_rtable):
+      err_msg: str = "The same table has been mistakenly selected for both tables to be merged."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg, exc_info=True)
+      return
+    
+    #  merge table
+    merged_df = self.manage_model.merge_tables(target_df_left=temp_ltable, 
+                                               target_df_right=temp_rtable, 
+                                               target_col_left=temp_lcol, 
+                                               target_col_right=temp_rcol, 
+                                               merge_type=temp_method)
+    self.app.merge_state.set_merge_raw(merged_df)
+    merge_raw = self.app.merge_state.merge_raw
+    #  build pop-up window
+    if merge_raw is not None and not merge_raw.empty:
+      return self.app.comp_fact.build_popup_wd(wd_title="Preview Table Options",
+                                               target_df=merge_raw,
+                                               popup_title=f"Merged Table".title(),
+                                               popup_content=self.app.comp_fact.build_table_view(target_df=merge_raw))
+    err_msg: str = "Please ensure merged tables have been selected."
+    self.app.comp_fact.build_reminder_box(title="Error", 
+                                          txt_msg=err_msg)
+    logger.warning(err_msg)
     
     
   def reset_merge_page(self) -> None:
     #  TODO: UI is required to be reset
     self.temp_merge_dataset = None
-    self.app.merge_state.reset_merge_ds()
+    self.merge_state.reset_merge_ds()
     print("activated on reset merge page method")
