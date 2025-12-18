@@ -193,7 +193,6 @@ class PageClean(PageTemplate):
     return frame
 
   
-  
   def build_handle_blank_box(self) -> QWidget:
     
     #  declaration
@@ -262,7 +261,6 @@ class PageClean(PageTemplate):
   
   #  POP-UP WINDOWS (for state management)
   
-  
   def identify_target_df(self, curr_ds_key: str) -> CleanDataState | None:
     valid_keys = [item["data"] for item in DATASET_LIST[1:4]]
     if curr_ds_key not in valid_keys:
@@ -270,8 +268,6 @@ class PageClean(PageTemplate):
         logger.error(err_msg, exc_info=True)
         return None
     return self.clean_state.get_spec_dataframe(curr_ds_key)
-  
-    
   
   
   def build_dup_popup(self) -> QWidget:
@@ -302,8 +298,7 @@ class PageClean(PageTemplate):
                                              btn_txtcolor=THEME_COLOR["white"],
                                              btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
 
-    #  checkbox components
-    
+    #  checkbox components 
     cb_box = QWidget()
     cb_box_layout = QVBoxLayout()
     for column in col_options:
@@ -333,7 +328,7 @@ class PageClean(PageTemplate):
   
   
   def build_blank_popup(self) -> QWidget:
-    
+
     #  setup frame
     pop_wd = QDialog()
     pop_wd.setWindowTitle("Blank Options")

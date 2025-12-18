@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
   QFrame, QWidget, QGridLayout, QVBoxLayout, QLayout, QScrollArea,
-  QComboBox
+  QComboBox, QButtonGroup
 )
 from PyQt5.QtCore import Qt
 from views.components.config.views_config import MERGE_METHOD_OPT
@@ -24,10 +24,12 @@ class PageMerge(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
-    self.dd_table_left: QComboBox = None
-    self.dd_table_rightL: QComboBox = None
-    self.dd_column_left: QComboBox = None
-    self.dd_column_right: QComboBox = None
+    self.dd_table_left: QComboBox | None = None
+    self.dd_table_rightL: QComboBox | None = None
+    self.dd_column_left: QComboBox | None = None
+    self.dd_column_right: QComboBox | None = None
+    self.merge_method_group: QButtonGroup | None = None   
+    self.radio_btn_list: list = []
     logger.info("initialised successfully.")
     
     
@@ -121,12 +123,15 @@ class PageMerge(PageTemplate):
                                               lb_type="h3")
     radio_group = self.app.comp_fact.build_radio_group(target_list=list(MERGE_METHOD_OPT.values()),
                                                        target_event=lambda text, checked: self.app.merge_cont.manage_method_radio_event(target_txt=text),
-                                                       is_horizontal=False)["widget"]
+                                                       is_horizontal=False)
+    #  for state
+    self.merge_method_group = radio_group["group"]
+    self.radio_btn_list.extend(radio_group["buttons"])
     #  frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
     frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(radio_group)
+    frame_layout.addWidget(radio_group["widget"])
     frame_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft) 
     frame_layout.setSpacing(8)
     frame_layout.setContentsMargins(0, 0, 0, 0)
@@ -242,13 +247,13 @@ class PageMerge(PageTemplate):
   
   def reset_display(self):
     #  Learnt: need to close exclusive first, and re-activate it for new visual
-    for dropdown in self.dropdown_groups:
-      dropdown.setExclusive(False)
+    for dropdown in [self.dd_table_left, self.dd_table_right, self.dd_column_left, self.dd_column_right]:
+      dropdown.blockSignals(True)
+      dropdown.setCurrentIndex(0)
+      dropdown.blockSignals(False)
+    self.merge_method_group.setExclusive(False)
     for btn in self.radio_btn_list:
-      btn.blockSignals(True)
-      btn.setChecked(False)
-      btn.blockSignals(False)
-    for group in self.radio_groups:
-      group.setExclusive(True)
+        btn.setChecked(False)
+    self.merge_method_group.setExclusive(True)
       
-      
+  

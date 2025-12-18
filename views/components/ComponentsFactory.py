@@ -385,7 +385,6 @@ class ComponentsFactory:
     return {"widget": container, "group": group, "buttons": btn_storage}
   
   
-  
   def build_reused_opt_container(self, 
                          target_title: str,
                          target_config: list) -> QWidget:

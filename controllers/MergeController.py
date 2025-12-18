@@ -44,11 +44,9 @@ class MergeController:
     for data_state in self.app.clean_state.dataset_states.values():
       if data_state.data_clean is not None or data_state.data_raw is not None:
         table_opts.append(data_state.state_name)
-        print(data_state.state_name)
     #  for merged dataframe
     if self.app.merge_state.merge_raw is not None:
       table_opts.append("Dataset - Merged")
-      print("dataset - merged")
     return table_opts
     
     
@@ -197,7 +195,8 @@ class MergeController:
     
     
   def reset_merge_page(self) -> None:
-    #  TODO: UI is required to be reset
+    #  1. reset components
+    self.app.pages_fact.page_merge.reset_display()
+    #  2. reset states
     self.temp_merge_dataset = None
-    self.merge_state.reset_merge_ds()
-    print("activated on reset merge page method")
+    self.app.merge_state.reset_merge_ds()
