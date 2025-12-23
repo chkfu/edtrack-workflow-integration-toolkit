@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import QApplication, QWidget
 from models import SQLConnector
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
 from controllers import (
-  AppController, NavController, FileController, CleanController, MergeController
+  AppController, NavController, FileController, CleanController, MergeController,
+  FEController
 )
 from states import CleanState, MergeState
 from dotenv import load_dotenv
@@ -44,6 +45,7 @@ class UserInterface:
     self.file_cont = FileController(self)
     self.clean_cont = CleanController(self)
     self.merge_cont = MergeController(self)
+    self.fe_cont = FEController(self)
     
     #  setup factory classes
     """ 

@@ -65,11 +65,16 @@ class ComponentsFactory:
                 btn_event: Callable | None,
                 btn_bgcolor: str,
                 btn_txtcolor: str,
-                btn_hover_bgcolor: str) -> QPushButton:
+                btn_hover_bgcolor: str,
+                btn_size: str="short") -> QPushButton:
     
     btn = QPushButton(btn_text.strip().title())
-    btn.setFixedHeight(32)
-    btn.setFixedWidth(92)
+    #  size
+    btn_size_r = btn_size.strip().lower()
+    if btn_size_r == "long":  
+      btn.setFixedWidth(184)
+    else:
+      btn.setFixedWidth(92)
     btn.setCursor(Qt.PointingHandCursor)
     # style sheet option
     if btn_bgcolor == THEME_COLOR["white"]:
@@ -409,26 +414,26 @@ class ComponentsFactory:
     return content
   
   
-  def build_reused_opt_box(self, 
-                           target_title: str,
-                           target_optlist: list,
-                           target_func: Callable | None) -> QWidget:
+  # def build_reused_opt_box(self, 
+  #                          target_title: str,
+  #                          target_optlist: list,
+  #                          target_func: Callable | None) -> QWidget:
     
-    title_lb = self.app.comp_fact.build_label(lb_text=target_title,
-                                              lb_type="h3",
-                                              lb_txtcolor=THEME_COLOR["mid"])  
-    opt_box = self.app.comp_fact.build_radio_group(target_list=target_optlist,
-                                                   target_event=target_func,
-                                                   is_horizontal=False)["widget"]
-    # frame
-    box = QFrame()
-    box_layout = QVBoxLayout()
-    box_layout.addWidget(title_lb, alignment=Qt.AlignTop | Qt.AlignLeft)
-    box_layout.addWidget(opt_box, alignment=Qt.AlignTop | Qt.AlignLeft)
-    box_layout.setContentsMargins(0, 0, 0, 0)
-    box_layout.setSpacing(4)
-    box.setLayout(box_layout)
-    return box
+  #   title_lb = self.app.comp_fact.build_label(lb_text=target_title,
+  #                                             lb_type="h3",
+  #                                             lb_txtcolor=THEME_COLOR["mid"])  
+  #   opt_box = self.app.comp_fact.build_radio_group(target_list=target_optlist,
+  #                                                  target_event=target_func,
+  #                                                  is_horizontal=False)["widget"]
+  #   # frame
+  #   box = QFrame()
+  #   box_layout = QVBoxLayout()
+  #   box_layout.addWidget(title_lb, alignment=Qt.AlignTop | Qt.AlignLeft)
+  #   box_layout.addWidget(opt_box, alignment=Qt.AlignTop | Qt.AlignLeft)
+  #   box_layout.setContentsMargins(0, 0, 0, 0)
+  #   box_layout.setSpacing(4)
+  #   box.setLayout(box_layout)
+  #   return box
   
   
   def build_reused_single_btn_box(self,

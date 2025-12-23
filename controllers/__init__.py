@@ -4,6 +4,7 @@ from controllers.FileController import FileController
 from controllers.ValidController import ValidController
 from controllers.CleanController import CleanController
 from controllers.MergeController import MergeController
+from controllers.FEController import FEController
 
 
 #  MAIN
@@ -14,4 +15,5 @@ __all__ = ["AppController",
            "FileController",
            "ValidController",
            "CleanController",
-           "MergeController"]
+           "MergeController",
+           "FEController"]
