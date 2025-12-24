@@ -33,7 +33,7 @@ class PageClean(PageTemplate):
       raise ValueError(err_msg)
     
     #  state
-    self.clean_state = CleanState()
+    self.clean_state = self.app.clean_state
     
     #  setup tabs
     self.ds_list: list = target_ds_list
