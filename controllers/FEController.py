@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 from PyQt5.QtWidgets import (
   QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea,
-  QDialog
+  QDialog, QMessageBox
 )
 from controllers.ValidController import ValidController
 from models.DataManager import DataManager
@@ -26,26 +26,6 @@ class FEController:
     
   
   #  METHODS - SUPPORTING
-  
-  def search_editable_merged_dataset(self) -> pd.DataFrame | None:
-    #  Remarks: ensure merge_df store a copy in raw and proc versions
-    #  Remarks: always use proc version for editing, takes raw version for reset
-    target_df: pd.DataFrame | None = None
-    merge_raw = self.app.merge_state.merge_raw
-    merge_proc = self.app.merge_state.merge_proc
-    if merge_proc is not None and not merge_proc.empty:
-      target_df = merge_proc
-    elif merge_raw is not None and not merge_raw.empty:
-      self.app.merge_state.merge_proc = merge_raw.copy()
-      target_df = self.app.merge_state.merge_proc
-    else:
-      err_msg: str = f"No merged dataset has been found. Failed to proceed further."
-      self.app.comp_fact.build_reminder_box(title="Warning",
-                                            txt_msg=err_msg)
-      logger.warning(err_msg, exc_info=True)
-      return
-    return target_df
-    
     
   #  METHODS - EVENTS
   
@@ -61,10 +41,13 @@ class FEController:
       logger.error(err_msg, exc_info=True)
       return
     #  execution
+    output_df = target_df.copy()
     for column in target_col_list:
       output_df = self.data_manager.remove_col(target_df=output_df, 
                                                target_col=column)
     self.app.merge_state.merge_proc = output_df
+    self.app.comp_fact.build_reminder_box(title="Success",
+                                          txt_msg="Selected columns have been removed from the transformed dataset.")
   
   
   
@@ -96,22 +79,33 @@ class FEController:
 
 
   def preview_proc_tb(self) -> None:
-    target_df: pd.DataFrame = self.search_editable_merged_dataset()
+    target_df: pd.DataFrame = self.app.merge_state.merge_proc
     if target_df is None or target_df.empty:
       return self.app.comp_fact.build_reminder_box(title="Error", 
                                                    txt_msg="Please ensure the merged table for feature engineering is valid.")
     popup_wd = self.app.comp_fact.build_popup_wd(wd_title="Preview Table Options",
-                                                target_df=target_df,
+                                                target_df=self.app.merge_state.merge_proc,
                                                 popup_title="Preview Transformed Dataset",
-                                                popup_content=self.app.comp_fact.build_table_view(target_df=target_df))
+                                                popup_content=self.app.comp_fact.build_table_view(target_df=self.app.merge_state.merge_proc))
     return popup_wd
+  
   
   #  RESET
   
-  
-  
   def reset_fe_page(self) -> None:
-    print("reset_fe_page")
-    pass
-  
+    auth= self.app.comp_fact.build_msg_box(title="Confirmation", 
+                                           question="Are you sure to revert to the original merged dataset?")
+    if auth == True:
+      merge_raw: pd.DataFrame = self.app.merge_state.merge_raw
+      if merge_raw is not None and not merge_raw.empty:
+        self.app.merge_state.merge_proc = merge_raw.copy()
+        self.app.comp_fact.build_reminder_box(title="Success",
+                                              txt_msg="Transoformed dataset has been reset.")
+      else:
+        err_msg: str = f"No original merged dataset has been found. Failed to reset transformed dataset."
+        self.app.comp_fact.build_reminder_box(title="Warning",
+                                              txt_msg=err_msg)
+        logger.warning(err_msg, exc_info=True)
+        return
+        
 

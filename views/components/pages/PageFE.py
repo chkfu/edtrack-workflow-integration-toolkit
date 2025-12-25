@@ -173,7 +173,7 @@ class PageFE(PageTemplate):
     #  declaration
     remove_list: list = []
     #  select merge datafram
-    target_df = self.app.fe_cont.search_editable_merged_dataset()
+    target_df = self.app.merge_state.merge_proc
     if target_df is None:
       return
     #  setup popup
