@@ -181,6 +181,7 @@ class MergeController:
                                                target_col_right=temp_rcol, 
                                                merge_type=temp_method)
     self.app.merge_state.set_merge_raw(merged_df)
+    self.app.merge_state.set_merge_proc(merged_df)
     merge_raw = self.app.merge_state.merge_raw
     #  build pop-up window
     if merge_raw is not None and not merge_raw.empty:

@@ -1,11 +1,14 @@
 from PyQt5.QtWidgets import (
-  QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea
+  QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea,
+  QDialog
 )
 from PyQt5.QtCore import Qt
 from views.components.pages.PageTemplate import PageTemplate
 from views.components.config.views_styles import style_tab_scroll
 from views.components.config.views_styles import THEME_COLOR
 import logging
+from typing import Callable
+import pandas as pd
 
 
 #  LOGGING
@@ -66,28 +69,28 @@ class PageFE(PageTemplate):
   
   def build_action_container(self) -> QFrame:
     #  declatation
-    FE_CONFIG: list = [
+    FE_CONFIG = [
         {
-          "title": "Remove Columns ",
-          "event": lambda text, checked: self.app.fe_cont.handle_remove_cols()
+            "title": "Remove Columns",
+            "event": lambda: self.app.fe_cont.handle_remove_cols()
         },
         {
-          "title": "Rename Columns",
-          "event": lambda text, checked: self.app.fe_cont.handle_rename_cols()
+            "title": "Rename Columns",
+            "event": lambda: self.app.fe_cont.handle_rename_cols()
         },
         {
-          "title": "Filter Rows",
-          "event": lambda text, checked: self.app.fe_cont.handle_filter_rows()
+            "title": "Filter Rows",
+            "event": lambda: self.app.fe_cont.handle_filter_rows()
         },
         {
-          "title": "Time Features",
-          "event": lambda text, checked: self.app.fe_cont.handle_time_feat()
+            "title": "Time Features",
+            "event": lambda: self.app.fe_cont.handle_time_feat()
         },
         {
-          "title": "Encode / Hash",
-          "event": lambda text, checked: self.app.fe_cont.handle_encoding()
+            "title": "Encode / Hash",
+            "event": lambda: self.app.fe_cont.handle_encoding()
         }
-      ]
+    ]
     # frame setup
     container = QWidget()
     layout = QVBoxLayout()
@@ -114,13 +117,13 @@ class PageFE(PageTemplate):
   
   def build_dataset_container(self) -> QFrame:
     preview_sect =  self.app.comp_fact.build_reused_single_btn_box(target_title="B. Transformed Dataset",
-                                                             target_statement=None,
-                                                             target_btn_text="Preview",
-                                                             target_btn_event=lambda: self.app.fe_cont.preview_proc_tb())
+                                                                  target_statement=None,
+                                                                  target_btn_text="Preview",
+                                                                  target_btn_event=lambda: self.app.fe_cont.preview_proc_tb())
     reset_sect =  self.app.comp_fact.build_reused_single_btn_box(target_title="C. Reset Options",
-                                                             target_statement=None,
-                                                             target_btn_text="Reset",
-                                                             target_btn_event=lambda: self.app.fe_cont.reset_fe_page())
+                                                                  target_statement=None,
+                                                                  target_btn_text="Reset",
+                                                                  target_btn_event=lambda: self.app.fe_cont.reset_fe_page())
     container = QFrame()
     layout = QVBoxLayout()
     layout.addWidget(preview_sect, alignment=Qt.AlignTop | Qt.AlignCenter)
@@ -130,7 +133,98 @@ class PageFE(PageTemplate):
     container.setLayout(layout)
     return container
   
+  
+  #  METHODS - POPUPS
+  
+  def build_reused_popup_btns(self,
+                              target_popup: QWidget,
+                              proc_event: Callable | None = None) -> QWidget: 
+    #  build frame
+    box = QWidget()
+    box_layout = QHBoxLayout()
     
+    #  build back button (essential)
+    #  Remarks: return to main window without memorise curr options (new empty variable each triggering)
+    back_btn = self.app.comp_fact.build_btn(btn_text="Back",
+                                        btn_event=lambda: target_popup.close(),
+                                        btn_bgcolor=THEME_COLOR["white"],
+                                        btn_txtcolor=THEME_COLOR["primary"],
+                                        btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    box_layout.addWidget(back_btn)
+    
+    #  build proceed button, depends on validity of parameters
+    #  components
+    if proc_event is not None:
+      proceed_btn = self.app.comp_fact.build_btn(btn_text="Proceed",
+                                                btn_event=proc_event,
+                                                btn_bgcolor=THEME_COLOR["primary"],
+                                                btn_txtcolor=THEME_COLOR["white"],
+                                                btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+      box_layout.addWidget(proceed_btn)
+    
+    #  complete frame, return blank box if event not found
+    box_layout.setSpacing(8)
+    box_layout.setContentsMargins(0, 12, 0, 0)
+    box.setLayout(box_layout)
+    return box
+  
+    
+  def build_remove_cols_popup(self):
+    #  declaration
+    remove_list: list = []
+    #  select merge datafram
+    target_df = self.app.fe_cont.search_editable_merged_dataset()
+    if target_df is None:
+      return
+    #  setup popup
+    pop_wd = QDialog()
+    pop_wd.setWindowTitle("Remove Columns")
+    pop_wd.setMinimumWidth(400)
+    popup_layout = QVBoxLayout(pop_wd)
+    #  build title sect
+    title_sect = QWidget()
+    title_sect_layout = QHBoxLayout()
+    title_lb = self.app.comp_fact.build_label(lb_text="Option: Remove Columns",
+                                              lb_type="h2",
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)
+    title_sect_layout.addWidget(title_lb)
+    title_sect.setLayout(title_sect_layout)
+    #  build checkbox sect
+    cb_sect = QScrollArea()
+    cb_sect.setWidgetResizable(True)
+    cb_content = QWidget()
+    cb_content_layout = QVBoxLayout()
+    cb_sect.setMinimumHeight(250) 
+    cb_statement = self.app.comp_fact.build_label(lb_text="Please select the dataset columns to be removed:",
+                                                  lb_txtcolor=THEME_COLOR["white"],
+                                                  lb_align=Qt.AlignLeft,
+                                                  lb_wrap=True)
+    cb_content_layout.addWidget(cb_statement)
+    for column in target_df.columns:
+      cb = self.app.comp_fact.build_checkbox(target_name=column,
+                                             target_event=lambda target_state, target_name:
+        remove_list.append(target_name) if target_state == Qt.Checked else None)
+      cb_content_layout.addWidget(cb)
+    cb_content_layout.addStretch()
+    cb_content.setLayout(cb_content_layout)
+    cb_sect.setWidget(cb_content)
+    #  build undo / proceed button
+    btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
+                                            proc_event=lambda: [
+                                              self.app.fe_cont.assign_remove_cols_event(
+                                                  target_df=target_df,
+                                                  target_col_list=list(remove_list)),
+                                              pop_wd.close()])
+
+    #  finalise popup
+    popup_layout.addWidget(title_sect)
+    popup_layout.addWidget(cb_sect)
+    popup_layout.addWidget(btn_sect)
+    popup_layout.setSpacing(4)
+    popup_layout.setContentsMargins(24, 24, 24, 24)
+    pop_wd.setLayout(popup_layout)
+    return pop_wd
       
 
     

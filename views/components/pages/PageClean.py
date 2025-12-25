@@ -277,7 +277,7 @@ class PageClean(PageTemplate):
     curr_ds_key: str = self.clean_state.get_clean_target().state_name
     target_dataframe: CleanDataState = self.identify_target_df(curr_ds_key=curr_ds_key)
     col_options = list(target_dataframe.data_raw.columns)
-    checkbox_list: list = []
+    cb_removre_list: list = []
     OPT_LIST = ["--- Please Select ---", 
                 "Apply to ALL columns", 
                 "Apply to Specific columns"]
@@ -289,7 +289,7 @@ class PageClean(PageTemplate):
                                                 target_default=0,
                                                 event=lambda text: self.app.clean_cont.select_clean_dup_dropdown(selected_opt=text,
                                                                                                                   opt_list=OPT_LIST,
-                                                                                                                  cb_list=checkbox_list))
+                                                                                                                  cb_list=cb_removre_list))
     cb_lb = self.app.comp_fact.build_label(lb_text="Target Columns:",
                                             lb_txtcolor=THEME_COLOR["white"])
     close_btn = self.app.comp_fact.build_btn(btn_text="Back", 
@@ -306,13 +306,9 @@ class PageClean(PageTemplate):
                                                    target_event=lambda target_state, target_name=column:
       #  Learnt: early binding col, prevent all points to last col
       self.app.clean_cont.select_clean_dup_checkbox(target_state=target_state,
-                                                      target_name=target_name))
+                                                    target_name=target_name))
       cb_box_layout.addWidget(checkbox)
-      checkbox_list.append(checkbox)
     cb_box.setLayout(cb_box_layout)
-    #  remarks: checkbox only available for "select specific columns"
-    for cb in checkbox_list:
-        cb.setEnabled(False)
     
     #  frame
     pop_wd.setWindowTitle("Duplicate Options")

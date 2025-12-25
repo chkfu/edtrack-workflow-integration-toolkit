@@ -47,7 +47,8 @@ class DataManager:
     
     #  validate column
     valid_col: str = self.valid_cont.validate_col(target_df=target_df, target_col=target_col)
-    
+    if not valid_col:
+      logger.error(f"'{target_col}' is not valid.", exc_info=True)
     #  output
     output = target_df.drop(columns=[valid_col])
     logger.info(f"Target column has been removed.")
