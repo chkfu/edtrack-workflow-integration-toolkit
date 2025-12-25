@@ -112,7 +112,6 @@ class CleanController:
       curr_ds_state.set_handle_duplicate_cols(target_action="empty", 
                                               target_col=None)
 
-    
     #  select all cols, all checked and disabled options
     elif selected_opt == opt_list[1]:
       for checkbox in cb_list:

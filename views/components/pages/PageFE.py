@@ -227,4 +227,5 @@ class PageFE(PageTemplate):
     return pop_wd
       
 
-    
+  def build_preview_fe_popup(self) -> QWidget:
+    pass

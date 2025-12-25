@@ -27,9 +27,10 @@ class FEController:
   
   #  METHODS - SUPPORTING
   
-  def search_editable_merged_dataset(self):
+  def search_editable_merged_dataset(self) -> pd.DataFrame | None:
     #  Remarks: ensure merge_df store a copy in raw and proc versions
     #  Remarks: always use proc version for editing, takes raw version for reset
+    target_df: pd.DataFrame | None = None
     merge_raw = self.app.merge_state.merge_raw
     merge_proc = self.app.merge_state.merge_proc
     if merge_proc is not None and not merge_proc.empty:
@@ -94,12 +95,21 @@ class FEController:
     print("hash_name_cols")
     pass
 
+
+  def preview_proc_tb(self) -> None:
+    target_df: pd.DataFrame = self.search_editable_merged_dataset()
+    if target_df is None or target_df.empty:
+      return self.app.comp_fact.build_reminder_box(title="Error", 
+                                                   txt_msg="Please ensure the merged table for feature engineering is valid.")
+    popup_wd = self.app.comp_fact.build_popup_wd(wd_title="Preview Table Options",
+                                                target_df=target_df,
+                                                popup_title="Preview Transformed Dataset",
+                                                popup_content=self.app.comp_fact.build_table_view(target_df=target_df))
+    return popup_wd
   
   #  RESET
   
-  def preview_proc_tb(self) -> None:
-    print("preview_proc_tb")
-    pass
+  
   
   def reset_fe_page(self) -> None:
     print("reset_fe_page")
