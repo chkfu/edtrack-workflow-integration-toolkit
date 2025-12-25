@@ -36,8 +36,8 @@ class FEController:
     if merge_proc is not None and not merge_proc.empty:
       target_df = merge_proc
     elif merge_raw is not None and not merge_raw.empty:
-      merge_proc = merge_raw
-      target_df = merge_proc
+      self.app.merge_state.merge_proc = merge_raw.copy()
+      target_df = self.app.merge_state.merge_proc
     else:
       err_msg: str = f"No merged dataset has been found. Failed to proceed further."
       self.app.comp_fact.build_reminder_box(title="Warning",
@@ -65,7 +65,6 @@ class FEController:
       output_df = self.data_manager.remove_col(target_df=output_df, 
                                                target_col=column)
     self.app.merge_state.merge_proc = output_df
-  
   
   
   
