@@ -6,7 +6,7 @@ from models import SQLConnector
 from views.components import ComponentsFactory, LayoutFactory, PagesFactory
 from controllers import (
   AppController, NavController, FileController, CleanController, MergeController,
-  FEController
+  FEController, ValidController
 )
 from states import CleanState, MergeState
 from dotenv import load_dotenv
@@ -42,6 +42,7 @@ class UserInterface:
     #  setup controllers
     self.app_cont = AppController(self)
     self.nav_cont = NavController(self)
+    self.valid_cont = ValidController()
     self.file_cont = FileController(self)
     self.clean_cont = CleanController(self)
     self.merge_cont = MergeController(self)

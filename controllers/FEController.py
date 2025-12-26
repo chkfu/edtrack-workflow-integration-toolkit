@@ -4,8 +4,10 @@ from PyQt5.QtWidgets import (
   QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea,
   QDialog, QMessageBox
 )
+from states.CleanDataState import CleanDataState
 from controllers.ValidController import ValidController
 from models.DataManager import DataManager
+from models.DataPreprocessor import DataPreprocessor
 
 
 #  LOGGING
@@ -22,6 +24,8 @@ class FEController:
   def __init__(self, app_ref):
     self.app = app_ref
     self.data_manager = DataManager()
+    self.data_preproc = DataPreprocessor(data_manager=self.data_manager, 
+                                         valid_cont=self.app.valid_cont)
     logger.info("initialised sucessfully.")
     
   
@@ -29,9 +33,7 @@ class FEController:
     
   #  METHODS - EVENTS
   
-  def assign_remove_cols_event(self, target_df: pd.DataFrame, target_col_list: list) -> None:
-    #  declaration
-    output_df: pd.DataFrame = target_df.copy()
+  def assign_remove_cols_event(self, target_col_list: list) -> None:    
     #  validation
     #  remarks: data manager contains dataset and individual column validation
     if not isinstance(target_col_list, list):
@@ -41,7 +43,7 @@ class FEController:
       logger.error(err_msg, exc_info=True)
       return
     #  execution
-    output_df = target_df.copy()
+    output_df: pd.DataFrame = self.app.merge_state.merge_proc
     for column in target_col_list:
       output_df = self.data_manager.remove_col(target_df=output_df, 
                                                target_col=column)
@@ -49,6 +51,80 @@ class FEController:
     self.app.comp_fact.build_reminder_box(title="Success",
                                           txt_msg="Selected columns have been removed from the transformed dataset.")
   
+  
+  def assign_encode_hash_event(self, encode_list=None, hash_list=None, opt_dict=None) -> None:
+    
+    #  declaration
+    encode_list = encode_list or []
+    hash_list = hash_list or []
+    opt_dict = opt_dict or {}
+    
+    #  encoding with component code
+    def operate_encoding() -> None:
+      if encode_list is None or len(encode_list) < 1:
+        logger.warning("Encoded list is empty. The encoding process will be skipped.")
+        return
+      for column in encode_list:
+        if column not in self.app.merge_state.merge_proc.columns:
+          continue
+        else:
+          comp_df: CleanDataState = self.app.clean_state.get_spec_dataframe(target_name="Dataset - Components").data_raw
+          self.app.merge_state.merge_proc = self.data_preproc.encode_component_col(target_df=self.app.merge_state.merge_proc,
+                                                                                   target_col=column,
+                                                                                   code_df=comp_df,
+                                                                                   dict_idx=list(comp_df.columns)[0],
+                                                                                   dict_val=list(comp_df.columns)[1])
+    
+    #  regualte action
+    def operate_regulate_action() -> None:
+      if "action" not in opt_dict.keys():
+        logger.warning("Failed to find the designated action column, regulating process will be skipped ")
+        return
+      if opt_dict["action"] is None or opt_dict["action"] not in self.app.merge_state.merge_proc.columns:
+        logger.warning("Failed to find the designated action column, regulating process will be skipped ")
+        return
+      self.app.merge_state.merge_proc = self.data_preproc.regulate_actions(target_df=self.app.merge_state.merge_proc,
+                                                                           target_col=opt_dict["action"])
+      
+
+    #  regulate target
+    def operate_regulate_target() -> None:
+      if "target" not in opt_dict.keys():
+        logger.warning("Failed to find the designated target column, regulating process will be skipped ")
+        return
+      if opt_dict["target"] is None or opt_dict["target"] not in self.app.merge_state.merge_proc.columns:
+        logger.warning("Failed to find the designated target column, regulating process will be skipped ")
+        return
+      self.app.merge_state.merge_proc = self.data_preproc.regulate_targets(target_df=self.app.merge_state.merge_proc,
+                                                                           target_col=opt_dict["target"])
+    
+    #  hashing confidential
+    def operate_hashing() -> None:
+      if hash_list is None or len(hash_list) < 1:
+        logger.warning("Hashing list is empty. The hashing process will be skipped.")
+        return
+      for column in hash_list:
+        if column not in self.app.merge_state.merge_proc.columns:
+          continue
+        else:
+          self.app.merge_state.merge_proc = self.data_preproc.hash_secret_col(target_df=self.app.merge_state.merge_proc,
+                                                                              name_col=column)
+      
+    #  execution
+    #  Remarks: regulate the values first, and thereby encoding collectively
+    try:
+      operate_regulate_action() 
+      operate_regulate_target()
+      operate_encoding()
+      operate_hashing()
+      self.app.comp_fact.build_reminder_box(title="Success",
+                                            txt_msg="Encoding / hashing has been processed for transformed dataset.")
+    except Exception as ex:
+      err_msg: str = f"Failed to encode / hash the selected cells for transformed dataset - {ex}"
+      self.app.comp_fact.build_reminder_box(title="Success",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg)
+    return
   
   
   #  METHODS - POPUP TRIGGERS
@@ -74,8 +150,8 @@ class FEController:
   
   
   def handle_encoding(self) -> None:
-    print("hash_name_cols")
-    pass
+    popup = self.app.pages_fact.page_feateng.build_handle_encoding_cols_popup()
+    popup.exec_()
 
 
   def preview_proc_tb(self) -> None:

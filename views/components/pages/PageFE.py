@@ -204,19 +204,18 @@ class PageFE(PageTemplate):
     for column in target_df.columns:
       cb = self.app.comp_fact.build_checkbox(target_name=column,
                                              target_event=lambda target_state, target_name:
-        remove_list.append(target_name) if target_state == Qt.Checked else None)
+                                              remove_list.append(target_name) if target_state == Qt.Checked else None)
       cb_content_layout.addWidget(cb)
     cb_content_layout.addStretch()
     cb_content.setLayout(cb_content_layout)
     cb_sect.setWidget(cb_content)
-    #  build undo / proceed button
+    
+    #  build button sect
     btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
                                             proc_event=lambda: [
-                                              self.app.fe_cont.assign_remove_cols_event(
-                                                  target_df=target_df,
-                                                  target_col_list=list(remove_list)),
+                                              self.app.fe_cont.assign_remove_cols_event(target_col_list=list(remove_list)),
                                               pop_wd.close()])
-
+    
     #  finalise popup
     popup_layout.addWidget(title_sect)
     popup_layout.addWidget(cb_sect)
@@ -227,5 +226,121 @@ class PageFE(PageTemplate):
     return pop_wd
       
 
-  def build_preview_fe_popup(self) -> QWidget:
-    pass
+  def build_handle_encoding_cols_popup(self) -> dict:
+    
+    def update_opt_dict(target_dict: dict, key: str, value: str):
+      if key is None or value is None or key == "" or value == "":
+        return {}
+      opt_dict[str(key)] = str(value)
+      return opt_dict
+    
+    #  declaration
+    encode_list: list = []
+    hash_list: list = []
+    opt_dict: dict = {}
+    
+    #  setup popup
+    pop_wd = QDialog()
+    pop_wd.setWindowTitle("Remove Columns")
+    pop_wd.setMinimumWidth(400)
+    popup_layout = QVBoxLayout(pop_wd)  
+
+    #  build title sect
+    title_sect = QWidget()
+    title_sect_layout = QHBoxLayout()
+    title_lb = self.app.comp_fact.build_label(lb_text="Option: Encoding / Hashing Values",
+                                              lb_type="h2",
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)
+    title_sect_layout.addWidget(title_lb)
+    title_sect.setLayout(title_sect_layout)
+    
+    #  build encode sect
+    encode_sect = QWidget()
+    encode_sect_layout = QVBoxLayout()
+    encode_lb = self.app.comp_fact.build_label(lb_text="1. Select the columns for applying component codes:",
+                                               lb_type="p",
+                                               lb_txtcolor=THEME_COLOR["white"],
+                                               lb_align=Qt.AlignLeft)
+    encode_sect_layout.addWidget(encode_lb)
+    for column in self.app.merge_state.merge_proc.columns:
+      cb = self.app.comp_fact.build_checkbox(target_name=column,
+                                             target_event=lambda target_state, target_name:
+                                              encode_list.append(target_name) if target_state == Qt.Checked else None)
+      encode_sect_layout.addWidget(cb)
+    encode_sect.setLayout(encode_sect_layout)
+    
+    #  build regulate sect
+    regulate_sect = QWidget()
+    regulate_sect_layout = QVBoxLayout()
+    regulate_lb = self.app.comp_fact.build_label(lb_text="2. Select the columns for regulating input values:",
+                                                 lb_type="p",
+                                                 lb_txtcolor=THEME_COLOR["white"],
+                                                 lb_align=Qt.AlignLeft)
+    action_lb = self.app.comp_fact.build_label(lb_text="Action Column:",
+                                               lb_type="p",
+                                               lb_txtcolor=THEME_COLOR["white"],
+                                               lb_align=Qt.AlignLeft)
+    action_dd = self.app.comp_fact.build_dropdown(target_options = ["Remain Unchanged"] + list(self.app.merge_state.merge_proc.columns),
+                                                  target_default=0,
+                                                  event=lambda text: update_opt_dict(target_dict=opt_dict, key="action", value=text))
+    target_lb = self.app.comp_fact.build_label(lb_text="Target Column:",
+                                               lb_type="p",
+                                               lb_txtcolor=THEME_COLOR["white"],
+                                               lb_align=Qt.AlignLeft)
+    target_dd = self.app.comp_fact.build_dropdown(target_options = ["Remain Unchanged"] + list(self.app.merge_state.merge_proc.columns),
+                                                  target_default=0,
+                                                  event=lambda text: update_opt_dict(target_dict=opt_dict, key="target", value=text))
+    regulate_grid = QWidget()
+    regulate_grid_layout = QGridLayout()
+    regulate_grid_layout.addWidget(action_lb, 0, 0, Qt.AlignLeft)
+    regulate_grid_layout.addWidget(action_dd, 0, 1, Qt.AlignLeft)
+    regulate_grid_layout.addWidget(target_lb, 1, 0, Qt.AlignLeft)
+    regulate_grid_layout.addWidget(target_dd, 1, 1, Qt.AlignLeft)
+    regulate_grid.setLayout(regulate_grid_layout)
+    regulate_sect_layout.addWidget(regulate_lb)
+    regulate_sect_layout.addWidget(regulate_grid)
+    regulate_sect.setLayout(regulate_sect_layout)
+    
+    #  build hash sect
+    hash_sect = QWidget()
+    hash_sect_layout = QVBoxLayout()
+    hash_lb = self.app.comp_fact.build_label(lb_text="3. Select the columns for hashing confidential details:",
+                                             lb_type="p",
+                                             lb_txtcolor=THEME_COLOR["white"],
+                                             lb_align=Qt.AlignLeft)
+    hash_sect_layout.addWidget(hash_lb)
+    for column in self.app.merge_state.merge_proc.columns:
+      cb = self.app.comp_fact.build_checkbox(target_name=column,
+                                             target_event=lambda target_state, target_name:
+                                              hash_list.append(target_name) if target_state == Qt.Checked else None)
+      hash_sect_layout.addWidget(cb)
+    hash_sect.setLayout(hash_sect_layout)
+    
+    #  combine optios sect
+    opt_scroll = QScrollArea()
+    opt_scroll.setWidgetResizable(True) 
+    opt_sect = QWidget()
+    opt_sect_layout = QVBoxLayout(opt_sect)
+    opt_sect_layout.addWidget(encode_sect)
+    opt_sect_layout.addWidget(regulate_sect)
+    opt_sect_layout.addWidget(hash_sect)
+    opt_sect_layout.addStretch()
+    opt_scroll.setWidget(opt_sect)
+    
+    #  build button sect
+    btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
+                                            proc_event=lambda: [
+                                              self.app.fe_cont.assign_encode_hash_event(encode_list=encode_list,
+                                                                                        hash_list=hash_list,
+                                                                                        opt_dict=opt_dict), 
+                                              pop_wd.close()])
+    
+    #  complete popup
+    popup_layout.addWidget(title_sect)
+    popup_layout.addWidget(opt_scroll)
+    popup_layout.addWidget(btn_sect)
+    popup_layout.setSpacing(4)
+    popup_layout.setContentsMargins(24, 24, 24, 24)
+    pop_wd.setLayout(popup_layout)
+    return pop_wd
