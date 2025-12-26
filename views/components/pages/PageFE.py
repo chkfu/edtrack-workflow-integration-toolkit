@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
   QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea,
-  QDialog
+  QDialog, QLineEdit
 )
 from PyQt5.QtCore import Qt
 from views.components.pages.PageTemplate import PageTemplate
@@ -175,7 +175,7 @@ class PageFE(PageTemplate):
     return box
   
     
-  def build_remove_cols_popup(self):
+  def build_remove_cols_popup(self)-> QDialog:
     #  declaration
     remove_list: list = []
     #  select merge datafram
@@ -187,6 +187,7 @@ class PageFE(PageTemplate):
     pop_wd.setWindowTitle("Remove Columns")
     pop_wd.setMinimumWidth(400)
     popup_layout = QVBoxLayout(pop_wd)
+    
     #  build title sect
     title_sect = QWidget()
     title_sect_layout = QHBoxLayout()
@@ -230,6 +231,81 @@ class PageFE(PageTemplate):
     pop_wd.setLayout(popup_layout)
     return pop_wd
   
+  
+  def build_rename_cols_popup(self) -> QDialog:
+    
+    # declaration
+    col_name_dict: dict = {}
+    
+    #  setup popup
+    pop_wd = QDialog()
+    pop_wd.setWindowTitle("Time Features")
+    pop_wd.setMinimumWidth(400)
+    popup_layout = QVBoxLayout(pop_wd)
+    
+    
+    def update_col_name(target_column: str, target_input: str) -> None:
+      nonlocal col_name_dict
+      col_name_dict[target_column] = target_input.strip()
+    
+     #  build title sect
+    title_sect = QWidget()
+    title_sect_layout = QHBoxLayout()
+    title_lb = self.app.comp_fact.build_label(lb_text="Option: Rename Columns",
+                                              lb_type="h2",
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)
+    title_sect_layout.addWidget(title_lb)
+    title_sect.setLayout(title_sect_layout)
+    
+    #  build option sect
+    option_sect = QScrollArea()
+    option_sect.setWidgetResizable(True)
+    option_content = QWidget()
+    option_content_layout = QVBoxLayout()
+    
+    #  1. title and statements
+    grid_title = self.app.comp_fact.build_label(lb_text="1. Replace with new column names, if applicable:",
+                                                lb_type="p",
+                                                lb_txtcolor=THEME_COLOR["white"],
+                                                lb_align=Qt.AlignLeft)
+    option_content_layout.addWidget(grid_title)
+    
+    #  2. grid layout
+    grid_frame = QWidget()
+    grid_frame_layout = QGridLayout()
+    for index, column in enumerate(self.app.merge_state.merge_proc.columns):
+      column_lb = self.app.comp_fact.build_label(lb_text=column,
+                                                 lb_type="p",
+                                                 lb_txtcolor=THEME_COLOR["white"],
+                                                 lb_align=Qt.AlignLeft)
+      line_edit = self.app.comp_fact.build_line_edit(
+                        target_event=lambda text, name=column: update_col_name(target_column=name,
+                                                                               target_input=text))
+      
+      grid_frame_layout.addWidget(column_lb, index, 0)
+      grid_frame_layout.addWidget(line_edit, index, 1)
+      
+    grid_frame.setLayout(grid_frame_layout)
+    option_content_layout.addWidget(grid_frame)
+    
+    option_content.setLayout(option_content_layout)
+    option_sect.setWidget(option_content)
+    
+    #  build button sect
+    btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
+                                            proc_event=lambda: [self.app.fe_cont.assign_rename_col_event(target_dict=col_name_dict),
+                                                                pop_wd.close()])
+    
+    #  finalise popup
+    popup_layout.addWidget(title_sect)
+    popup_layout.addWidget(option_sect)
+    popup_layout.addWidget(btn_sect)
+    popup_layout.setSpacing(4)
+    popup_layout.setContentsMargins(24, 24, 24, 24)
+    pop_wd.setLayout(popup_layout)
+    return pop_wd
+    
   
 
   # TODO: Proceeding event to be condfirmed
@@ -350,10 +426,11 @@ class PageFE(PageTemplate):
     
     #  build button sect
     btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
-                                            proc_event=lambda: self.app.fe_cont.assign_time_feat_event(
+                                            proc_event=lambda: [self.app.fe_cont.assign_time_feat_event(
                                               col_select=col_select,
                                               feat_select=feat_select,
-                                              keep_origin=keep_origin))
+                                              keep_origin=keep_origin),
+                                              pop_wd.close()])
     
     #  finalise popup
     popup_layout.addWidget(title_sect)

@@ -52,6 +52,11 @@ class FEController:
                                           txt_msg="Selected columns have been removed from the transformed dataset.")
   
   
+  def assign_rename_col_event(self, target_dict: dict) -> None:
+    print("--------------------------------")
+    print(target_dict)
+    print("--------------------------------")
+  
   
   def assign_time_feat_event(self, col_select: list, feat_select: list, keep_origin: bool | None):
     #  check parameters
@@ -145,8 +150,8 @@ class FEController:
   
   
   def handle_rename_cols(self) -> None:
-    print("remove_spec_cols")
-    pass
+    popup = self.app.pages_fact.page_feateng.build_rename_cols_popup()
+    popup.exec_()
   
   
   def handle_filter_rows(self) -> None:

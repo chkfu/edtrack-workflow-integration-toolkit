@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
   QLabel, QPushButton, QMessageBox, QDialog, QVBoxLayout, QFrame, QHBoxLayout, 
   QGridLayout, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView, 
-  QComboBox, QWidget, QButtonGroup, QRadioButton, QCheckBox
+  QComboBox, QWidget, QButtonGroup, QRadioButton, QCheckBox, QLineEdit
 )
 from views.components.config.views_styles import (
     THEME_COLOR, style_btn_default, style_btn_contrast, style_lb_default, 
@@ -166,6 +166,20 @@ class ComponentsFactory:
           lambda state, name=target_name: target_event(target_state=state,
                                            target_name=name))
     return checkbox
+  
+  
+  def build_line_edit(self, 
+                      target_text: str="", 
+                      placeholder: str="",
+                      word_limit: int=20,
+                      target_event: Callable | None=None) -> QLineEdit:
+    line_edit = QLineEdit()
+    line_edit.setText(target_text)
+    line_edit.setPlaceholderText(placeholder)
+    if word_limit > 0:
+        line_edit.setMaxLength(word_limit)
+    line_edit.textChanged.connect(target_event)
+    return line_edit
     
     
   #  section child items
