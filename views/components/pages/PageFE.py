@@ -232,20 +232,24 @@ class PageFE(PageTemplate):
   
   
 
+  # TODO: Proceeding event to be condfirmed
   def build_time_feat_popup(self) -> QDialog:
-    
-    def decide_keep_origin(flag: bool, input: str) -> None:
-      if input not in OPTS_DICT["sub_03"]["options"]:
-        return
-      if input == OPTS_DICT["sub_03"][0]:
-        flag = True
-      if input == OPTS_DICT["sub_03"][1]:
-        flag = False
     
     #  declarations
     col_select: list = []
     feat_select: list = []
     keep_origin: bool | None = None
+    sub_01_temp_count: int = 0
+    
+    def decide_keep_origin(input: str) -> None:
+      #  Leant: enable the method to update var in external scope
+      nonlocal keep_origin
+      if input == OPTS_DICT["sub_03"]["options"][0]:
+        keep_origin = True
+      elif input == OPTS_DICT["sub_03"]["options"][1]:
+        keep_origin = False
+      else:
+        keep_origin = None
     
     OPTS_DICT: dict = {
       "sub_01": {
@@ -261,7 +265,7 @@ class PageFE(PageTemplate):
       "sub_03": {
         "title": "3. Decide to keep or remove original column:",
         "options": ["Keep Originals", "Drop Originals"],
-        "event": lambda text, checked: decide_keep_origin(flag=keep_origin, input=text)
+        "event": lambda text, checked: decide_keep_origin(input=text)
       }
     }
     
@@ -298,9 +302,15 @@ class PageFE(PageTemplate):
       if not is_datetime(self.app.merge_state.merge_proc[column]):
         continue
       else:
-        opt_cb = self.app.comp_fact.build_checkbox(target_name=option,
+        opt_cb = self.app.comp_fact.build_checkbox(target_name=column,
                                                    target_event=OPTS_DICT["sub_01"]["event"])
         sub_01_layout.addWidget(opt_cb)
+        sub_01_temp_count += 1
+    if sub_01_temp_count < 1:
+      empty_lb = self.app.comp_fact.build_label(lb_text="(Not Found)",
+                                                lb_txtcolor=THEME_COLOR["white"],
+                                                lb_align=Qt.AlignLeft)
+      sub_01_layout.addWidget(empty_lb)
     sub_01_box.setLayout(sub_01_layout)
     
     #  2. build sub 02
@@ -340,7 +350,10 @@ class PageFE(PageTemplate):
     
     #  build button sect
     btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
-                                            proc_event=None)
+                                            proc_event=lambda: self.app.fe_cont.assign_time_feat_event(
+                                              col_select=col_select,
+                                              feat_select=feat_select,
+                                              keep_origin=keep_origin))
     
     #  finalise popup
     popup_layout.addWidget(title_sect)

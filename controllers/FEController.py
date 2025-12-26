@@ -52,6 +52,16 @@ class FEController:
                                           txt_msg="Selected columns have been removed from the transformed dataset.")
   
   
+  
+  def assign_time_feat_event(self, col_select: list, feat_select: list, keep_origin: bool | None):
+    #  check parameters
+    print("--------------------------------")
+    print(col_select)
+    print(feat_select)
+    print(keep_origin)
+    print("--------------------------------")
+  
+  
   def assign_encode_hash_event(self, encode_list=None, hash_list=None, opt_dict=None) -> None:
     
     #  declaration
