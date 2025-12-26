@@ -9,6 +9,7 @@ from views.components.config.views_styles import THEME_COLOR
 import logging
 from typing import Callable
 import pandas as pd
+from pandas.api.types import is_datetime64_any_dtype as is_datetime
 
 
 #  LOGGING
@@ -24,6 +25,11 @@ class PageFE(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
+    
+    #  setup options reset
+    self.radio_btn_list: list = []
+    self.radio_groups: list = []
+    
     logger.info("initialised successfully.")
     
     
@@ -117,13 +123,13 @@ class PageFE(PageTemplate):
   
   def build_dataset_container(self) -> QFrame:
     preview_sect =  self.app.comp_fact.build_reused_single_btn_box(target_title="B. Transformed Dataset",
-                                                                  target_statement=None,
-                                                                  target_btn_text="Preview",
-                                                                  target_btn_event=lambda: self.app.fe_cont.preview_proc_tb())
+                                                                   target_statement=None,
+                                                                   target_btn_text="Preview",
+                                                                   target_btn_event=lambda: self.app.fe_cont.preview_proc_tb())
     reset_sect =  self.app.comp_fact.build_reused_single_btn_box(target_title="C. Reset Options",
-                                                                  target_statement=None,
-                                                                  target_btn_text="Reset",
-                                                                  target_btn_event=lambda: self.app.fe_cont.reset_fe_page())
+                                                                 target_statement=None,
+                                                                 target_btn_text="Reset",
+                                                                 target_btn_event=lambda: self.app.fe_cont.reset_fe_page())
     container = QFrame()
     layout = QVBoxLayout()
     layout.addWidget(preview_sect, alignment=Qt.AlignTop | Qt.AlignCenter)
@@ -138,7 +144,7 @@ class PageFE(PageTemplate):
   
   def build_reused_popup_btns(self,
                               target_popup: QWidget,
-                              proc_event: Callable | None = None) -> QWidget: 
+                              proc_event: Callable | None = None) -> QDialog: 
     #  build frame
     box = QWidget()
     box_layout = QHBoxLayout()
@@ -146,20 +152,20 @@ class PageFE(PageTemplate):
     #  build back button (essential)
     #  Remarks: return to main window without memorise curr options (new empty variable each triggering)
     back_btn = self.app.comp_fact.build_btn(btn_text="Back",
-                                        btn_event=lambda: target_popup.close(),
-                                        btn_bgcolor=THEME_COLOR["white"],
-                                        btn_txtcolor=THEME_COLOR["primary"],
-                                        btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+                                            btn_event=lambda: target_popup.close(),
+                                            btn_bgcolor=THEME_COLOR["white"],
+                                            btn_txtcolor=THEME_COLOR["primary"],
+                                            btn_hover_bgcolor=THEME_COLOR["white_hvr"])
     box_layout.addWidget(back_btn)
     
     #  build proceed button, depends on validity of parameters
     #  components
     if proc_event is not None:
       proceed_btn = self.app.comp_fact.build_btn(btn_text="Proceed",
-                                                btn_event=proc_event,
-                                                btn_bgcolor=THEME_COLOR["primary"],
-                                                btn_txtcolor=THEME_COLOR["white"],
-                                                btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+                                                 btn_event=proc_event,
+                                                 btn_bgcolor=THEME_COLOR["primary"],
+                                                 btn_txtcolor=THEME_COLOR["white"],
+                                                 btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
       box_layout.addWidget(proceed_btn)
     
     #  complete frame, return blank box if event not found
@@ -195,7 +201,6 @@ class PageFE(PageTemplate):
     cb_sect.setWidgetResizable(True)
     cb_content = QWidget()
     cb_content_layout = QVBoxLayout()
-    cb_sect.setMinimumHeight(250) 
     cb_statement = self.app.comp_fact.build_label(lb_text="Please select the dataset columns to be removed:",
                                                   lb_txtcolor=THEME_COLOR["white"],
                                                   lb_align=Qt.AlignLeft,
@@ -224,9 +229,131 @@ class PageFE(PageTemplate):
     popup_layout.setContentsMargins(24, 24, 24, 24)
     pop_wd.setLayout(popup_layout)
     return pop_wd
+  
+  
+
+  def build_time_feat_popup(self) -> QDialog:
+    
+    def decide_keep_origin(flag: bool, input: str) -> None:
+      if input not in OPTS_DICT["sub_03"]["options"]:
+        return
+      if input == OPTS_DICT["sub_03"][0]:
+        flag = True
+      if input == OPTS_DICT["sub_03"][1]:
+        flag = False
+    
+    #  declarations
+    col_select: list = []
+    feat_select: list = []
+    keep_origin: bool | None = None
+    
+    OPTS_DICT: dict = {
+      "sub_01": {
+        "title": "1. Select date / time column(s):",
+        "options": self.app.merge_state.merge_proc.columns,
+        "event": lambda target_state, target_name: col_select.append(target_name) if target_state == Qt.Checked else None
+      },
+      "sub_02": {
+        "title": "2. Choose time features to extract",
+        "options": ["Year", "Month", "Day", "Weekday", "Hour"],
+        "event": lambda target_state, target_name: feat_select.append(target_name) if target_state == Qt.Checked else None
+      },
+      "sub_03": {
+        "title": "3. Decide to keep or remove original column:",
+        "options": ["Keep Originals", "Drop Originals"],
+        "event": lambda text, checked: decide_keep_origin(flag=keep_origin, input=text)
+      }
+    }
+    
+    #  setup popup
+    pop_wd = QDialog()
+    pop_wd.setWindowTitle("Time Features")
+    pop_wd.setMinimumWidth(400)
+    popup_layout = QVBoxLayout(pop_wd)
+    
+    #  build title sect
+    title_sect = QWidget()
+    title_sect_layout = QHBoxLayout()
+    title_lb = self.app.comp_fact.build_label(lb_text="Option: Time Features",
+                                              lb_type="h2",
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)
+    title_sect_layout.addWidget(title_lb)
+    title_sect.setLayout(title_sect_layout)
+    
+    #  build cb sect
+    cb_sect = QScrollArea()
+    cb_sect.setWidgetResizable(True)
+    cb_content = QWidget()
+    cb_content_layout = QVBoxLayout()
+    
+    #  1. build sub 01
+    sub_01_box = QWidget()
+    sub_01_layout = QVBoxLayout()
+    sub_01_title = self.app.comp_fact.build_label(lb_text=OPTS_DICT["sub_01"]["title"],
+                                                  lb_txtcolor=THEME_COLOR["white"],
+                                                  lb_align=Qt.AlignLeft)
+    sub_01_layout.addWidget(sub_01_title)
+    for column in OPTS_DICT["sub_01"]["options"]:
+      if not is_datetime(self.app.merge_state.merge_proc[column]):
+        continue
+      else:
+        opt_cb = self.app.comp_fact.build_checkbox(target_name=option,
+                                                   target_event=OPTS_DICT["sub_01"]["event"])
+        sub_01_layout.addWidget(opt_cb)
+    sub_01_box.setLayout(sub_01_layout)
+    
+    #  2. build sub 02
+    sub_02_box = QWidget()
+    sub_02_layout = QVBoxLayout()
+    sub_02_title = self.app.comp_fact.build_label(lb_text=OPTS_DICT["sub_02"]["title"],
+                                                  lb_txtcolor=THEME_COLOR["white"],
+                                                  lb_align=Qt.AlignLeft)
+    sub_02_layout.addWidget(sub_02_title)
+    for option in OPTS_DICT["sub_02"]["options"]:
+      opt_cb = self.app.comp_fact.build_checkbox(target_name=option,
+                                                 target_event=OPTS_DICT["sub_02"]["event"])
+      sub_02_layout.addWidget(opt_cb)
+    sub_02_box.setLayout(sub_02_layout)
+    
+    #  3.  build sub 03
+    sub_03_box = QWidget()
+    sub_03_layout = QVBoxLayout()
+    sub_03_title = self.app.comp_fact.build_label(lb_text=OPTS_DICT["sub_03"]["title"],
+                                                  lb_txtcolor=THEME_COLOR["white"],
+                                                  lb_align=Qt.AlignLeft)
+    sub_03_radio = self.app.comp_fact.build_radio_group(target_list=OPTS_DICT["sub_03"]["options"],
+                                                        target_event=OPTS_DICT["sub_03"]["event"],
+                                                        is_horizontal=True)
+    sub_03_layout.addWidget(sub_03_title)
+    sub_03_layout.addWidget(sub_03_radio["widget"])
+    sub_03_box.setLayout(sub_03_layout)
+    self.radio_groups.append(sub_03_radio["group"])
+    self.radio_btn_list.extend(sub_03_radio["buttons"])
+    
+    cb_content_layout.addStretch()
+    cb_content_layout.addWidget(sub_01_box)
+    cb_content_layout.addWidget(sub_02_box)
+    cb_content_layout.addWidget(sub_03_box)
+    cb_content.setLayout(cb_content_layout)
+    cb_sect.setWidget(cb_content)
+    
+    #  build button sect
+    btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
+                                            proc_event=None)
+    
+    #  finalise popup
+    popup_layout.addWidget(title_sect)
+    popup_layout.addWidget(cb_sect)
+    popup_layout.addWidget(btn_sect)
+    popup_layout.setSpacing(4)
+    popup_layout.setContentsMargins(24, 24, 24, 24)
+    pop_wd.setLayout(popup_layout)
+    return pop_wd
       
 
-  def build_handle_encoding_cols_popup(self) -> dict:
+
+  def build_encoding_cols_popup(self) -> QDialog:
     
     def update_opt_dict(target_dict: dict, key: str, value: str):
       if key is None or value is None or key == "" or value == "":

@@ -145,12 +145,12 @@ class FEController:
   
   
   def handle_time_feat(self) -> None:
-    print("manage_time_feat")
-    pass
-  
+    popup = self.app.pages_fact.page_feateng.build_time_feat_popup()
+    popup.exec_()
+    
   
   def handle_encoding(self) -> None:
-    popup = self.app.pages_fact.page_feateng.build_handle_encoding_cols_popup()
+    popup = self.app.pages_fact.page_feateng.build_encoding_cols_popup()
     popup.exec_()
 
 

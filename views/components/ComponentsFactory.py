@@ -398,8 +398,8 @@ class ComponentsFactory:
     content_layout = QVBoxLayout()
     #  components
     container_title = self.build_label(lb_text=target_title,
-                                                      lb_type="h3",
-                                                      lb_align=Qt.AlignLeft)
+                                       lb_type="h3",
+                                       lb_align=Qt.AlignLeft)
     content_layout.addWidget(container_title)
     for config in target_config:
       opt_box = self.build_reused_opt_box(target_title=config["title"],
