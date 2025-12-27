@@ -141,39 +141,6 @@ class PageFE(PageTemplate):
   
   
   #  METHODS - POPUPS
-  
-  def build_reused_popup_btns(self,
-                              target_popup: QWidget,
-                              proc_event: Callable | None = None) -> QDialog: 
-    #  build frame
-    box = QWidget()
-    box_layout = QHBoxLayout()
-    
-    #  build back button (essential)
-    #  Remarks: return to main window without memorise curr options (new empty variable each triggering)
-    back_btn = self.app.comp_fact.build_btn(btn_text="Back",
-                                            btn_event=lambda: target_popup.close(),
-                                            btn_bgcolor=THEME_COLOR["white"],
-                                            btn_txtcolor=THEME_COLOR["primary"],
-                                            btn_hover_bgcolor=THEME_COLOR["white_hvr"])
-    box_layout.addWidget(back_btn)
-    
-    #  build proceed button, depends on validity of parameters
-    #  components
-    if proc_event is not None:
-      proceed_btn = self.app.comp_fact.build_btn(btn_text="Proceed",
-                                                 btn_event=proc_event,
-                                                 btn_bgcolor=THEME_COLOR["primary"],
-                                                 btn_txtcolor=THEME_COLOR["white"],
-                                                 btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
-      box_layout.addWidget(proceed_btn)
-    
-    #  complete frame, return blank box if event not found
-    box_layout.setSpacing(8)
-    box_layout.setContentsMargins(0, 12, 0, 0)
-    box.setLayout(box_layout)
-    return box
-  
     
   def build_remove_cols_popup(self)-> QDialog:
     #  declaration
@@ -232,6 +199,7 @@ class PageFE(PageTemplate):
     return pop_wd
   
   
+  # TODO: Proceeding event to be condfirmed
   def build_rename_cols_popup(self) -> QDialog:
     
     # declaration
@@ -239,7 +207,7 @@ class PageFE(PageTemplate):
     
     #  setup popup
     pop_wd = QDialog()
-    pop_wd.setWindowTitle("Time Features")
+    pop_wd.setWindowTitle("Rename Columns")
     pop_wd.setMinimumWidth(400)
     popup_layout = QVBoxLayout(pop_wd)
     
@@ -247,17 +215,11 @@ class PageFE(PageTemplate):
     def update_col_name(target_column: str, target_input: str) -> None:
       nonlocal col_name_dict
       col_name_dict[target_column] = target_input.strip()
+      return
     
-     #  build title sect
-    title_sect = QWidget()
-    title_sect_layout = QHBoxLayout()
-    title_lb = self.app.comp_fact.build_label(lb_text="Option: Rename Columns",
-                                              lb_type="h2",
-                                              lb_txtcolor=THEME_COLOR["white"],
-                                              lb_align=Qt.AlignLeft)
-    title_sect_layout.addWidget(title_lb)
-    title_sect.setLayout(title_sect_layout)
-    
+    #  build title sect
+    title_sect = self.build_reused_popup_title(target_title="Option: Rename Columns")
+
     #  build option sect
     option_sect = QScrollArea()
     option_sect.setWidgetResizable(True)
@@ -306,8 +268,45 @@ class PageFE(PageTemplate):
     pop_wd.setLayout(popup_layout)
     return pop_wd
     
-  
-
+    
+  def build_filter_rows_popup(self) -> QDialog:
+    
+    #  setup popup
+    pop_wd = QDialog()
+    pop_wd.setWindowTitle("Filter Rows")
+    pop_wd.setMinimumWidth(400)
+    popup_layout = QVBoxLayout(pop_wd)
+    
+    #  build title sect
+    title_sect = self.build_reused_popup_title(target_title="Option: Filter Rows")
+    
+    #  build content sect
+    content_sect_scroll = QScrollArea()
+    content_sect_widget = QWidget()
+    content_sect_layout = QVBoxLayout()
+    
+    #  1. select columns to be edited
+    
+    #  2. select cells to be removed
+    
+    content_sect_widget.setLayout(content_sect_layout)
+    content_sect_scroll.setWidget(content_sect_widget)
+    
+    #  build button sect
+    btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
+                                            proc_event=lambda: [print(),
+                                                                pop_wd.close()])
+    
+    #  finalise popup
+    popup_layout.addWidget(title_sect)
+    popup_layout.addWidget(content_sect_scroll)
+    popup_layout.addWidget(btn_sect)
+    popup_layout.setSpacing(4)
+    popup_layout.setContentsMargins(24, 24, 24, 24)
+    pop_wd.setLayout(popup_layout)
+    return pop_wd
+    
+    
   # TODO: Proceeding event to be condfirmed
   def build_time_feat_popup(self) -> QDialog:
     
@@ -352,14 +351,7 @@ class PageFE(PageTemplate):
     popup_layout = QVBoxLayout(pop_wd)
     
     #  build title sect
-    title_sect = QWidget()
-    title_sect_layout = QHBoxLayout()
-    title_lb = self.app.comp_fact.build_label(lb_text="Option: Time Features",
-                                              lb_type="h2",
-                                              lb_txtcolor=THEME_COLOR["white"],
-                                              lb_align=Qt.AlignLeft)
-    title_sect_layout.addWidget(title_lb)
-    title_sect.setLayout(title_sect_layout)
+    title_sect = self.build_reused_popup_title(target_title="Option: Time Features")
     
     #  build cb sect
     cb_sect = QScrollArea()
@@ -458,19 +450,12 @@ class PageFE(PageTemplate):
     
     #  setup popup
     pop_wd = QDialog()
-    pop_wd.setWindowTitle("Remove Columns")
+    pop_wd.setWindowTitle("Encoding / Hashing Values")
     pop_wd.setMinimumWidth(400)
     popup_layout = QVBoxLayout(pop_wd)  
 
     #  build title sect
-    title_sect = QWidget()
-    title_sect_layout = QHBoxLayout()
-    title_lb = self.app.comp_fact.build_label(lb_text="Option: Encoding / Hashing Values",
-                                              lb_type="h2",
-                                              lb_txtcolor=THEME_COLOR["white"],
-                                              lb_align=Qt.AlignLeft)
-    title_sect_layout.addWidget(title_lb)
-    title_sect.setLayout(title_sect_layout)
+    title_sect = self.build_reused_popup_title(target_title="Option: Encoding / Hashing Values")
     
     #  build encode sect
     encode_sect = QWidget()
@@ -561,3 +546,52 @@ class PageFE(PageTemplate):
     popup_layout.setContentsMargins(24, 24, 24, 24)
     pop_wd.setLayout(popup_layout)
     return pop_wd
+  
+  
+  
+  #  METHODS - REUSE
+  
+  def build_reused_popup_title(self, target_title: str) -> QWidget:
+    title_sect = QWidget()
+    title_sect_layout = QHBoxLayout()
+    title_lb = self.app.comp_fact.build_label(lb_text=target_title,
+                                              lb_type="h2",
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)  
+    title_sect_layout.addWidget(title_lb)
+    title_sect.setLayout(title_sect_layout)
+    return title_sect
+  
+  
+  def build_reused_popup_btns(self,
+                              target_popup: QWidget,
+                              proc_event: Callable | None = None) -> QDialog: 
+    #  build frame
+    box = QWidget()
+    box_layout = QHBoxLayout()
+    
+    #  build back button (essential)
+    #  Remarks: return to main window without memorise curr options (new empty variable each triggering)
+    back_btn = self.app.comp_fact.build_btn(btn_text="Back",
+                                            btn_event=lambda: target_popup.close(),
+                                            btn_bgcolor=THEME_COLOR["white"],
+                                            btn_txtcolor=THEME_COLOR["primary"],
+                                            btn_hover_bgcolor=THEME_COLOR["white_hvr"])
+    box_layout.addWidget(back_btn)
+    
+    #  build proceed button, depends on validity of parameters
+    #  components
+    if proc_event is not None:
+      proceed_btn = self.app.comp_fact.build_btn(btn_text="Proceed",
+                                                 btn_event=proc_event,
+                                                 btn_bgcolor=THEME_COLOR["primary"],
+                                                 btn_txtcolor=THEME_COLOR["white"],
+                                                 btn_hover_bgcolor=THEME_COLOR["primary_hvr"])
+      box_layout.addWidget(proceed_btn)
+    
+    #  complete frame, return blank box if event not found
+    box_layout.setSpacing(8)
+    box_layout.setContentsMargins(0, 12, 0, 0)
+    box.setLayout(box_layout)
+    return box
+  
