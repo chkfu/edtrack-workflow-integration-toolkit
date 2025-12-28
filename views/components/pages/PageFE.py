@@ -9,7 +9,10 @@ from views.components.config.views_styles import THEME_COLOR
 import logging
 from typing import Callable
 import pandas as pd
-from pandas.api.types import is_datetime64_any_dtype as is_datetime
+from pandas.api.types import (
+    is_datetime64_any_dtype, is_bool_dtype, is_integer_dtype, is_float_dtype,
+    is_string_dtype
+)
 
 
 #  LOGGING
@@ -78,6 +81,10 @@ class PageFE(PageTemplate):
     #  declatation
     FE_CONFIG = [
         {
+          "title": "Regulate Types",
+          "event": lambda: self.app.fe_cont.handle_regulate_type_cols()
+        },
+        {
             "title": "Remove Columns",
             "event": lambda: self.app.fe_cont.handle_remove_cols()
         },
@@ -142,8 +149,95 @@ class PageFE(PageTemplate):
   
   
   #  METHODS - POPUPS
+  
+  def handle_regulate_type_popup(self) -> QDialog:
     
-  def build_remove_cols_popup(self)-> QDialog:
+    OPTS_LIST: list = ["--- Please Select ---", "string", "integer", "float", "boolean", "datetime"]
+    
+    type_map: dict = {}
+    
+    def check_type(item) -> str:
+      if is_datetime64_any_dtype(item):
+        return "datetime"
+      if is_bool_dtype(item):
+          return "boolean"
+      if is_integer_dtype(item):
+          return "integer"
+      if is_float_dtype(item):
+          return "float"
+      if is_string_dtype(item):
+          return "string"
+      return "string"
+    
+    def update_type_map(target_col: str, target_type: str) -> None:
+      nonlocal type_map, OPTS_LIST
+      if target_col not in self.app.merge_state.merge_proc.columns:
+        return
+      if target_type not in OPTS_LIST[1:]:
+        return
+      type_map[target_col] = target_type
+      return
+      
+        
+     #  setup popup
+    pop_wd = QDialog()
+    pop_wd.setWindowTitle("Remove Columns")
+    pop_wd.setMinimumWidth(400)
+    popup_layout = QVBoxLayout(pop_wd)
+    
+    #  build title sect
+    title_sect = QWidget()
+    title_sect_layout = QHBoxLayout()
+    title_lb = self.app.comp_fact.build_label(lb_text="Option: Normalise Types",
+                                              lb_type="h2",
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)
+    title_sect_layout.addWidget(title_lb)
+    title_sect.setLayout(title_sect_layout)
+    
+    #  build content sect
+    content_scroll = QScrollArea()
+    content_widget = QWidget()
+    content_layout = QGridLayout()
+    
+    merge_proc: pd.DataFrame = self.app.merge_state.merge_proc
+    for index, column in enumerate(merge_proc.columns):
+      curr_type = check_type(merge_proc[column])
+      col_lb = self.app.comp_fact.build_label(lb_text=column,
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)
+      type_lb = self.app.comp_fact.build_label(lb_text=check_type(merge_proc[column]),
+                                              lb_txtcolor=THEME_COLOR["white"],
+                                              lb_align=Qt.AlignLeft)
+      type_dd = self.app.comp_fact.build_dropdown(target_options=OPTS_LIST,
+                                                  target_default=OPTS_LIST.index(curr_type) if curr_type in OPTS_LIST else 0,
+                                                  event=lambda text, col=column: update_type_map(target_col=col,
+                                                                                                 target_type=text))
+      content_layout.addWidget(col_lb, index, 0)
+      content_layout.addWidget(type_lb, index, 1)
+      content_layout.addWidget(type_dd, index, 2)
+    content_layout.setColumnStretch(0, 1)
+    content_layout.setColumnStretch(1, 1)
+    content_layout.setColumnStretch(2, 1)
+    content_widget.setLayout(content_layout)
+    content_scroll.setWidget(content_widget)
+    
+    #  build button sect
+    btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
+                                            proc_event=lambda: [self.app.fe_cont.assign_regulate_type_event(target_dict=type_map),
+                                                                pop_wd.close()])
+    
+    #  finalise popup
+    popup_layout.addWidget(title_sect)
+    popup_layout.addWidget(content_scroll)
+    popup_layout.addWidget(btn_sect)
+    popup_layout.setSpacing(4)
+    popup_layout.setContentsMargins(24, 24, 24, 24)
+    pop_wd.setLayout(popup_layout)
+    return pop_wd
+    
+    
+  def build_remove_cols_popup(self) -> QDialog:
     #  declaration
     remove_list: list = []
     #  select merge datafram
@@ -165,6 +259,7 @@ class PageFE(PageTemplate):
                                               lb_align=Qt.AlignLeft)
     title_sect_layout.addWidget(title_lb)
     title_sect.setLayout(title_sect_layout)
+    
     #  build checkbox sect
     cb_sect = QScrollArea()
     cb_sect.setWidgetResizable(True)

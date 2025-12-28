@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from states.CleanDataState import CleanDataState
 from controllers.ValidController import ValidController
+from models.DataCleaner import DataCleaner
 from models.DataManager import DataManager
 from models.DataPreprocessor import DataPreprocessor
 
@@ -23,15 +24,20 @@ class FEController:
   
   def __init__(self, app_ref):
     self.app = app_ref
+    self.data_cleaner = DataCleaner()
     self.data_manager = DataManager()
     self.data_preproc = DataPreprocessor(data_manager=self.data_manager, 
                                          valid_cont=self.app.valid_cont)
     logger.info("initialised sucessfully.")
     
-  
-  #  METHODS - SUPPORTING
     
   #  METHODS - EVENTS
+  
+  def assign_regulate_type_event(self, target_dict: dict) -> None:
+    print("--------------------------------")
+    print(target_dict)
+    print("--------------------------------")
+    
   
   def assign_remove_cols_event(self, target_col_list: list) -> None:    
     #  validation
@@ -152,6 +158,10 @@ class FEController:
   
   #  METHODS - POPUP TRIGGERS
   
+  def handle_regulate_type_cols(self) -> None:
+    popup = self.app.pages_fact.page_feateng.handle_regulate_type_popup()
+    popup.exec_()
+  
   def handle_remove_cols(self):
     popup = self.app.pages_fact.page_feateng.build_remove_cols_popup()
     popup.exec_()
@@ -163,7 +173,7 @@ class FEController:
   
   
   def handle_filter_rows(self) -> None:
-    popup = self.app.pages_fact.page_feateng.build_filter_rows_popup()
+    popup = self.app.pages_fact.page_feateng.handle_regulate_type_popup()
     popup.exec_()
   
   
