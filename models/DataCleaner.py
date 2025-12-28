@@ -182,9 +182,8 @@ class DataCleaner:
     output[target_col] = pd.to_datetime(
                                 output[target_col],
                                 errors="coerce",
-                                dayfirst=True,
-                                infer_datetime_format=True
-                            )
+                                format="mixed",
+                                dayfirst=True)
     return output
   
   
