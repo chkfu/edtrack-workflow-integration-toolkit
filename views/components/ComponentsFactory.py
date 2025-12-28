@@ -164,7 +164,7 @@ class ComponentsFactory:
     if target_event:
         checkbox.stateChanged.connect(
           lambda state, name=target_name: target_event(target_state=state,
-                                           target_name=name))
+                                                       target_name=name))
     return checkbox
   
   
@@ -474,5 +474,19 @@ class ComponentsFactory:
     frame_layout.setContentsMargins(0, 0, 0, 0) 
     frame.setLayout(frame_layout)
     return frame
+  
+  
+  #  clear layout
+  
+  def clear_layout_items(self, layout: any) -> None:
+    while layout.count():
+      #  Learnt: takeAt - the Qt method for selecting widget item fom the layout list
+      item = layout.takeAt(0)
+      #  Leanrt: specify widget with an variable to be called
+      widget = item.widget()
+      if widget:
+        #  Learnt: deletLater - the QT method for removing widget once it is appropriate
+        widget.deleteLater()
+    return
   
   

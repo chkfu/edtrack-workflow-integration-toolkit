@@ -65,6 +65,13 @@ class FEController:
     print(feat_select)
     print(keep_origin)
     print("--------------------------------")
+    
+    
+  def assign_filter_rows_event(self, target_dict: dict) -> None:
+    #  check parameters
+    print("--------------------------------")
+    print(target_dict)
+    print("--------------------------------")
   
   
   def assign_encode_hash_event(self, encode_list=None, hash_list=None, opt_dict=None) -> None:
@@ -155,8 +162,8 @@ class FEController:
   
   
   def handle_filter_rows(self) -> None:
-    print("remove_spec_value")
-    pass
+    popup = self.app.pages_fact.page_feateng.build_filter_rows_popup()
+    popup.exec_()
   
   
   def handle_time_feat(self) -> None:

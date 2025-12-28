@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
   QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea,
-  QDialog, QLineEdit
+  QDialog, QLineEdit, QSizePolicy
 )
 from PyQt5.QtCore import Qt
 from views.components.pages.PageTemplate import PageTemplate
@@ -27,6 +27,7 @@ class PageFE(PageTemplate):
     super().__init__(app_ref)
     
     #  setup options reset
+    self.sub_02_cb_list: list = []
     self.radio_btn_list: list = []
     self.radio_groups: list = []
     
@@ -271,6 +272,41 @@ class PageFE(PageTemplate):
     
   def build_filter_rows_popup(self) -> QDialog:
     
+    #  declaration
+    col_select_dict: dict = {}
+    sub_02_int_layout = QVBoxLayout() 
+    
+    def update_dict_sub_01(target_state: Qt.CheckState, 
+                           target_col: str) -> None:
+      nonlocal col_select_dict, sub_02_int_layout
+      #  put column as key and cell value into a set
+      if target_state == Qt.Checked:
+        col_select_dict[target_col] = set(self.app.merge_state.merge_proc[target_col])
+      else:
+        col_select_dict.pop(target_col, None)
+      #  rebuild the whole sub_02 checkbxes
+      self.app.comp_fact.clear_layout_items(layout=sub_02_int_layout)
+      build_reuse_sub_02()
+        
+        
+    def update_dict_sub_02(target_col: str, 
+                           target_val: str) -> None:
+      nonlocal col_select_dict
+      print(target_col, target_val)
+      return
+    
+    def build_reuse_sub_02() -> None:
+      for column in col_select_dict.keys():
+        for value in col_select_dict[column]:
+          sub_02_cb = self.app.comp_fact.build_checkbox(target_name=value,
+                                                        target_event=lambda target_state, target_name, column=column, value=value: (
+                                                          update_dict_sub_02(target_col=column,
+                                                                             target_val=value)))
+          sub_02_int_layout.addWidget(sub_02_cb)
+      return
+    
+    
+    
     #  setup popup
     pop_wd = QDialog()
     pop_wd.setWindowTitle("Filter Rows")
@@ -282,19 +318,66 @@ class PageFE(PageTemplate):
     
     #  build content sect
     content_sect_scroll = QScrollArea()
+    content_sect_scroll.setWidgetResizable(True)
     content_sect_widget = QWidget()
     content_sect_layout = QVBoxLayout()
     
-    #  1. select columns to be edited
+    #  pre-build frame, in case refreshing items
+    sub_01_ext = QWidget()
+    sub_01_ext_layout = QVBoxLayout()
+    sub_02_ext = QWidget()
+    sub_02_ext_layout = QVBoxLayout()
+     
+    #  1. build sub 01 layout
+    sub_01_statement = self.app.comp_fact.build_label(lb_text="1. Select the columns to be edited:",
+                                                      lb_txtcolor=THEME_COLOR["white"],
+                                                      lb_align=Qt.AlignLeft)
+    sub_01_ext_layout.addWidget(sub_01_statement)
+    
+    sub_01_int_scroll = QScrollArea()
+    sub_01_int_scroll.setWidgetResizable(True)
+    sub_01_int_scroll.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    sub_01_int_content = QWidget()
+    sub_01_int_layout = QVBoxLayout()
+    for column in self.app.merge_state.merge_proc.columns:
+      sub_01_cb = self.app.comp_fact.build_checkbox(target_name=column,
+                                                    target_event=lambda target_state, target_name: update_dict_sub_01(
+                                                      target_state=target_state,
+                                                      target_col=target_name))
+      sub_01_int_layout.addWidget(sub_01_cb)
+    
+    sub_01_int_content.setLayout(sub_01_int_layout)
+    sub_01_int_scroll.setWidget(sub_01_int_content)
+    sub_01_ext_layout.addWidget(sub_01_int_scroll)
+    sub_01_ext.setLayout(sub_01_ext_layout) 
     
     #  2. select cells to be removed
     
+    sub_02_statement = self.app.comp_fact.build_label(lb_text="2. Select the cell value to be processed:",
+                                                      lb_txtcolor=THEME_COLOR["white"],
+                                                      lb_align=Qt.AlignLeft)
+    sub_02_ext_layout.addWidget(sub_02_statement)
+    
+    sub_02_int_scroll = QScrollArea()
+    sub_02_int_scroll.setWidgetResizable(True)
+    sub_02_int_scroll.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    sub_02_int_content = QWidget()
+    sub_02_int_layout = QVBoxLayout()
+    build_reuse_sub_02()
+  
+    sub_02_int_content.setLayout(sub_02_int_layout)
+    sub_02_int_scroll.setWidget(sub_02_int_content)
+    sub_02_ext_layout.addWidget(sub_02_int_scroll)
+    sub_02_ext.setLayout(sub_02_ext_layout)
+    
+    content_sect_layout.addWidget(sub_01_ext)
+    content_sect_layout.addWidget(sub_02_ext)
     content_sect_widget.setLayout(content_sect_layout)
     content_sect_scroll.setWidget(content_sect_widget)
     
     #  build button sect
     btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
-                                            proc_event=lambda: [print(),
+                                            proc_event=lambda: [self.app.fe_cont.assign_filter_rows_event(target_dict=col_select_dict),
                                                                 pop_wd.close()])
     
     #  finalise popup
