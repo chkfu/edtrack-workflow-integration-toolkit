@@ -34,9 +34,47 @@ class FEController:
   #  METHODS - EVENTS
   
   def assign_regulate_type_event(self, target_dict: dict) -> None:
-    print("--------------------------------")
-    print(target_dict)
-    print("--------------------------------")
+    
+    #  validation
+    if not isinstance(target_dict, dict):
+      err_msg: str = "The inserted item is not a dictionary."
+      self.app.comp_fact.build_reminder_box(title="Type Error",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg)
+      return
+    if not target_dict or len(target_dict) < 1:
+      reminder_msg: str = "No type change has been specified. Data types remain unchanged."
+      self.app.comp_fact.build_reminder_box(title="Type Error",
+                                            txt_msg=reminder_msg)
+      return
+    
+    #  execution
+    try:
+      for column, dtype in target_dict.items():
+        if dtype == "datetime":
+          self.app.merge_state.merge_proc = self.data_cleaner.spec_cleaning_datetime(target_df=self.app.merge_state.merge_proc,
+                                                                                     target_col=column)
+        elif dtype == "integer":
+          self.app.merge_state.merge_proc = self.data_cleaner.spec_cleaning_int(target_df=self.app.merge_state.merge_proc,
+                                                                                target_col=column)
+        elif dtype == "float":
+          self.app.merge_state.merge_proc = self.data_cleaner.spec_cleaning_float(target_df=self.app.merge_state.merge_proc,
+                                                                                  target_col=column)
+        elif dtype == "boolean":
+          self.app.merge_state.merge_proc = self.data_cleaner.spec_cleaning_bool(target_df=self.app.merge_state.merge_proc,
+                                                                                 target_col=column)
+        else:
+          self.app.merge_state.merge_proc = self.data_cleaner.spec_cleaning_str(target_df=self.app.merge_state.merge_proc,
+                                                                                target_col=column)
+      success_msg: str = f"Normalise data type successfully."
+      self.app.comp_fact.build_reminder_box(title="Success",
+                                            txt_msg=success_msg)
+    except Exception as ex:
+      err_msg: str = f"Failed to normalise data type - {ex}"
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.error(err_msg, exc_info=True)
+        
     
   
   def assign_remove_cols_event(self, target_col_list: list) -> None:    
