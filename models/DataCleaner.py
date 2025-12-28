@@ -72,8 +72,9 @@ class DataCleaner:
                   isAlpha: bool=False) -> str:
     if pd.isna(input):
       return "Not Specified"
+    output = str(input).strip()
     if isAlpha:
-      output = re.sub(r'[^A-Za-z]', "", input.strip())
+      output = re.sub(r'[^A-Za-z]', "", output)
     else:
         output = input.strip()
     if output == "":
@@ -120,7 +121,7 @@ class DataCleaner:
                         target_col: str) -> pd.DataFrame:
     output = target_df.copy()
     output[target_col] = output[target_col].astype("string").fillna("Not Specified")
-    for index, value in target_df[target_col].items():
+    for index, value in output[target_col].items():
       temp_val = self.trim_string(input=value, isAlpha=False)
       temp_val = self.manage_string_case(input=value, case="upper")
       output.loc[index, target_col] = temp_val
@@ -131,8 +132,12 @@ class DataCleaner:
                         target_df: pd.DataFrame, 
                         target_col: str) -> pd.DataFrame:
     output = target_df.copy()
+    
+    
     output[target_col] = output[target_col].astype(str).str.strip().map(lambda el: re.sub(r'[^0-9\.,]', "", el))
     output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
+    if output[target_col].notna().sum() == 0:
+      raise ValueError(f"Failed to convert to integer type.")
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
     output[target_col] = output[target_col].round().astype("Int64")
     return output
@@ -145,6 +150,8 @@ class DataCleaner:
     output[target_col] = output[target_col].astype(str).str.strip().map(lambda el: re.sub(r'[^0-9\.,]', "", el))
     output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
+    if output[target_col].notna().sum() == 0:
+      raise ValueError(f"Failed to convert to integer type.")
     output[target_col] = output[target_col].round(2).astype("Float64")
     pd.options.display.float_format = "{:.2f}".format
     return output
@@ -155,7 +162,7 @@ class DataCleaner:
                         target_col: str) -> pd.DataFrame:
     output = target_df.copy()
     output[target_col] = output[target_col].astype(str).str.strip().str.lower()
-    output[target_col] = output[target_col].replace({
+    MAPPING = output[target_col] = output[target_col].replace({
                                                 "true": True,
                                                 "yes": True,
                                                 "y": True,
@@ -170,6 +177,8 @@ class DataCleaner:
                                                 "none": False,
                                                 "nan": False
                                               })
+    if MAPPING.isna().all():
+        raise ValueError("Failed to convert to boolean type.")
     output[target_col] = output[target_col].astype("boolean").fillna(False)
     return output
   
@@ -179,11 +188,13 @@ class DataCleaner:
               target_col: str) -> pd.DataFrame:
     output = target_df.copy()
     output[target_col] = output[target_col].astype(str).str.strip().str.lower()
-    output[target_col] = pd.to_datetime(
+    target = output[target_col] = pd.to_datetime(
                                 output[target_col],
                                 errors="coerce",
                                 format="mixed",
                                 dayfirst=True)
+    if target.notna().sum() == 0:
+        raise ValueError("Failed to convert to datetime.")
     return output
   
   
