@@ -67,10 +67,11 @@ class FEController:
     print("--------------------------------")
     
     
-  def assign_filter_rows_event(self, target_dict: dict) -> None:
+  def assign_filter_rows_event(self, col_set: set, val_set: set) -> None:
     #  check parameters
     print("--------------------------------")
-    print(target_dict)
+    print(col_set)
+    print(val_set)
     print("--------------------------------")
   
   

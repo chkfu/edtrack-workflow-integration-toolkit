@@ -274,6 +274,8 @@ class PageFE(PageTemplate):
     
     #  declaration
     col_select_dict: dict = {}
+    filter_set: set = set()
+    #  Remarks: for refernce on rebuilding sub_02 by triggering
     sub_02_int_layout = QVBoxLayout() 
     
     def update_dict_sub_01(target_state: Qt.CheckState, 
@@ -287,25 +289,25 @@ class PageFE(PageTemplate):
       #  rebuild the whole sub_02 checkbxes
       self.app.comp_fact.clear_layout_items(layout=sub_02_int_layout)
       build_reuse_sub_02()
+      return   
         
-        
-    def update_dict_sub_02(target_col: str, 
-                           target_val: str) -> None:
-      nonlocal col_select_dict
-      print(target_col, target_val)
+    def update_set_sub_02(target_state: Qt.CheckState, target_val: str) -> None:
+      nonlocal filter_set
+      if target_state == Qt.Checked:
+        filter_set.add(target_val)
+      elif target_state == Qt.UnChecked:
+        filter_set.discard(target_val)
       return
     
     def build_reuse_sub_02() -> None:
       for column in col_select_dict.keys():
         for value in col_select_dict[column]:
           sub_02_cb = self.app.comp_fact.build_checkbox(target_name=value,
-                                                        target_event=lambda target_state, target_name, column=column, value=value: (
-                                                          update_dict_sub_02(target_col=column,
-                                                                             target_val=value)))
+                                                        target_event=lambda target_state, target_name: (
+                                                          update_set_sub_02(target_state=target_state,
+                                                                            target_val=target_name)))
           sub_02_int_layout.addWidget(sub_02_cb)
       return
-    
-    
     
     #  setup popup
     pop_wd = QDialog()
@@ -377,7 +379,8 @@ class PageFE(PageTemplate):
     
     #  build button sect
     btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
-                                            proc_event=lambda: [self.app.fe_cont.assign_filter_rows_event(target_dict=col_select_dict),
+                                            proc_event=lambda: [self.app.fe_cont.assign_filter_rows_event(col_set=set(col_select_dict.keys()),
+                                                                                                          val_set=filter_set),
                                                                 pop_wd.close()])
     
     #  finalise popup
