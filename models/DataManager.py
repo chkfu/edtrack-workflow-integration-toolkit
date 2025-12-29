@@ -56,7 +56,7 @@ class DataManager:
     
     
   def remove_rows(self, target_df: pd.DataFrame, target_col: str, target_rows:list) -> pd.DataFrame:
-    
+    print(">>> remove_rows CALLED", target_col, target_rows)
     #  validate types
     if not isinstance(target_df, pd.DataFrame):
       raise TypeError("Target dataframe must be a pandas DataFrame.")
@@ -69,8 +69,9 @@ class DataManager:
     valid_col: str = self.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  validate row
-    rows_removal: list = [str(el).strip().lower() for el in target_rows]
-    matched_list: list = target_df[valid_col].isin(rows_removal)  # isin() extracts rows with matched criteria
+    rows_removal = {str(el).strip().lower() for el in target_rows}
+    col_series = (target_df[valid_col].astype(str).str.strip().str.lower())
+    matched_list: pd.Series = col_series.isin(rows_removal)  # isin() extracts rows with matched criteria
     
     #  output
     output = target_df[~matched_list]   # learnt: ~ sign as NOT operator

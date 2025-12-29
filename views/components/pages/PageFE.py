@@ -389,7 +389,7 @@ class PageFE(PageTemplate):
       nonlocal filter_set
       if target_state == Qt.Checked:
         filter_set.add(target_val)
-      elif target_state == Qt.UnChecked:
+      else:
         filter_set.discard(target_val)
       return
     
@@ -397,7 +397,7 @@ class PageFE(PageTemplate):
       for column in col_select_dict.keys():
         for value in col_select_dict[column]:
           sub_02_cb = self.app.comp_fact.build_checkbox(target_name=value,
-                                                        target_event=lambda target_state, target_name: (
+                                                        target_event=lambda target_state, target_name=value: (
                                                           update_set_sub_02(target_state=target_state,
                                                                             target_val=target_name)))
           sub_02_int_layout.addWidget(sub_02_cb)
@@ -487,7 +487,6 @@ class PageFE(PageTemplate):
     return pop_wd
     
     
-  # TODO: Proceeding event to be condfirmed
   def build_time_feat_popup(self) -> QDialog:
     
     #  declarations

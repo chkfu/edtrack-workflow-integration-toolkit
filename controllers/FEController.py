@@ -181,10 +181,12 @@ class FEController:
     
     #  execution
     try:
+      temp_df = self.app.merge_state.merge_proc
       for column in col_set:
-        self.app.merge_state.merge_proc = self.data_manager.remove_rows(target_df=self.app.merge_state.merge_proc,
-                                                                        target_col=column, 
-                                                                        target_rows=val_set)
+        temp_df = self.data_manager.remove_rows(target_df=temp_df,
+                                                target_col=column,
+                                                target_rows=list(val_set))
+        self.app.merge_state.merge_proc = temp_df
       self.app.comp_fact.build_reminder_box(title="Success",
                                             txt_msg=f"Filtered rows {val_set} successfully.")
     except Exception as ex:
