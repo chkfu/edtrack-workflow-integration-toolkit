@@ -97,6 +97,7 @@ class FEController:
   
   
   def assign_rename_col_event(self, target_dict: dict) -> None:
+    
     #  validation
     if not isinstance(target_dict, dict) or len(target_dict) < 1:
       err_msg: str = "Failed to rename columns with invalid dictionary input."
@@ -104,6 +105,7 @@ class FEController:
                                             txt_msg=err_msg)
       logger.warning(err_msg)
       return
+    
     #  execution
     try:
       temp_list: list = []
@@ -133,11 +135,33 @@ class FEController:
     
     
   def assign_filter_rows_event(self, col_set: set, val_set: set) -> None:
-    #  check parameters
-    print("--------------------------------")
-    print(col_set)
-    print(val_set)
-    print("--------------------------------")
+    
+    #  validation
+    if not isinstance(col_set, set) or not isinstance(val_set, set):
+      err_msg: str = "Invalid types. Failed to filter the designated valies with invalid data input."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg)
+      return
+    if len(col_set) < 1 or len(val_set) < 1:
+      err_msg: str = "Invalid input. The size of selected columns or values cannot be emptied."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg)
+      return
+    
+    #  execution
+    try:
+      for column in col_set:
+        self.app.merge_state.merge_proc = self.app.data_manager.remove_rows(target_df=self.app.merge_state.merge_proc,
+                                                                            target_col=column, 
+                                                                            target_rows=val_set)
+      self.app.comp_fact.build_reminder_box(title="Success",
+                                            txt_msg=f"Filtered rows {val_set} successfully.")
+    except Exception as ex:
+      err_msg = "Failed to filter rows for processed dataset."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=f"{err_msg} - {ex}")
   
   
   def assign_encode_hash_event(self, encode_list=None, hash_list=None, opt_dict=None) -> None:
