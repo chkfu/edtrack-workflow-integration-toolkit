@@ -295,7 +295,6 @@ class PageFE(PageTemplate):
     return pop_wd
   
   
-  # TODO: Proceeding event to be condfirmed
   def build_rename_cols_popup(self) -> QDialog:
     
     # declaration
@@ -548,7 +547,7 @@ class PageFE(PageTemplate):
                                                   lb_align=Qt.AlignLeft)
     sub_01_layout.addWidget(sub_01_title)
     for column in OPTS_DICT["sub_01"]["options"]:
-      if not is_datetime(self.app.merge_state.merge_proc[column]):
+      if not is_datetime64_any_dtype(self.app.merge_state.merge_proc[column]):
         continue
       else:
         opt_cb = self.app.comp_fact.build_checkbox(target_name=column,

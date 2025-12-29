@@ -97,10 +97,31 @@ class FEController:
   
   
   def assign_rename_col_event(self, target_dict: dict) -> None:
-    print("--------------------------------")
-    print(target_dict)
-    print("--------------------------------")
-  
+    #  validation
+    if not isinstance(target_dict, dict) or len(target_dict) < 1:
+      err_msg: str = "Failed to rename columns with invalid dictionary input."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.warning(err_msg)
+      return
+    #  execution
+    try:
+      temp_list: list = []
+      for column in list(target_dict.keys()):
+        new_name: str = target_dict[column].strip()
+        final_name = new_name if new_name else "Untitled"
+        self.app.data_manager.rename_col(target_df=self.app.merge_state.merge_proc, 
+                                        target_col=column, 
+                                        new_name=new_name if new_name != "" else "Untitled")
+        temp_list.append(f"{final_name} (prev: {column})")
+      self.app.comp_fact.build_reminder_box(title="Success",
+                                            txt_msg=f"Renamed {temp_list} for processed dataset successfully.")
+    except Exception as ex:
+      err_msg = "Failed to renamed columns for processed dataset. The action will be skipped."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=f"{err_msg} - {ex}")
+      
+      
   
   def assign_time_feat_event(self, col_select: list, feat_select: list, keep_origin: bool | None):
     #  check parameters
