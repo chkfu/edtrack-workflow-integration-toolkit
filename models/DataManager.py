@@ -69,7 +69,7 @@ class DataManager:
     valid_col: str = self.valid_cont.validate_col(target_df=target_df, target_col=target_col)
     
     #  validate row
-    rows_removal: list = [el.strip().lower() for el in target_rows]
+    rows_removal: list = [str(el).strip().lower() for el in target_rows]
     matched_list: list = target_df[valid_col].isin(rows_removal)  # isin() extracts rows with matched criteria
     
     #  output

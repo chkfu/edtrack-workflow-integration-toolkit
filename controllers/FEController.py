@@ -9,6 +9,7 @@ from controllers.ValidController import ValidController
 from models.DataCleaner import DataCleaner
 from models.DataManager import DataManager
 from models.DataPreprocessor import DataPreprocessor
+import re
 
 
 #  LOGGING
@@ -31,6 +32,30 @@ class FEController:
     logger.info("initialised sucessfully.")
     
     
+    
+  #  METHODS - SUPPORTING
+  
+  def normalise_final_name(self, 
+                           target_df: pd.DataFrame, 
+                           new_name: str) -> str:
+    
+    final_name = str(new_name).strip() if new_name else "Untitled"
+    #  prevent numeric start and spec_char start
+    final_name = re.sub(r"[^A-Za-z0-9_-]", "", final_name)
+    if not final_name:
+      final_name = "Untitled"
+    #  detect no alphabets
+    if not final_name[0].isalpha() and final_name[0] != "_":
+      final_name = f"Column_{final_name}"
+    base_name = final_name
+    #  prevent duplicates
+    count = 1
+    while final_name in target_df.columns:
+        final_name = f"{base_name}_{count}"
+        count += 1
+    return final_name
+        
+        
   #  METHODS - EVENTS
   
   def assign_regulate_type_event(self, target_dict: dict) -> None:
@@ -110,11 +135,15 @@ class FEController:
     try:
       temp_list: list = []
       for column in list(target_dict.keys()):
-        new_name: str = target_dict[column].strip()
-        final_name = new_name if new_name else "Untitled"
-        self.app.data_manager.rename_col(target_df=self.app.merge_state.merge_proc, 
-                                        target_col=column, 
-                                        new_name=new_name if new_name != "" else "Untitled")
+        #  1. in-loop declaration
+        
+        
+        final_name: str = self.normalise_final_name(target_df=self.app.merge_state.merge_proc,
+                                                    new_name=target_dict[column])
+        #  2. in-loop execution
+        self.app.merge_state.merge_proc = self.data_manager.rename_col(target_df=self.app.merge_state.merge_proc, 
+                                                                       target_col=column, 
+                                                                       new_name=final_name)
         temp_list.append(f"{final_name} (prev: {column})")
       self.app.comp_fact.build_reminder_box(title="Success",
                                             txt_msg=f"Renamed {temp_list} for processed dataset successfully.")
@@ -153,9 +182,9 @@ class FEController:
     #  execution
     try:
       for column in col_set:
-        self.app.merge_state.merge_proc = self.app.data_manager.remove_rows(target_df=self.app.merge_state.merge_proc,
-                                                                            target_col=column, 
-                                                                            target_rows=val_set)
+        self.app.merge_state.merge_proc = self.data_manager.remove_rows(target_df=self.app.merge_state.merge_proc,
+                                                                        target_col=column, 
+                                                                        target_rows=val_set)
       self.app.comp_fact.build_reminder_box(title="Success",
                                             txt_msg=f"Filtered rows {val_set} successfully.")
     except Exception as ex:
@@ -256,7 +285,7 @@ class FEController:
   
   
   def handle_filter_rows(self) -> None:
-    popup = self.app.pages_fact.page_feateng.handle_regulate_type_popup()
+    popup = self.app.pages_fact.page_feateng.build_filter_rows_popup()
     popup.exec_()
   
   
