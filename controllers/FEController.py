@@ -167,9 +167,9 @@ class FEController:
           output_df = self.data_preproc.create_dt_feat(target_df=output_df, 
                                                       target_col=column,
                                                       target_opt=feature)
-        if not keep_origin:
+        if keep_origin is False:
           output_df = self.data_manager.remove_col(target_df=output_df, 
-                                                  target_col=column)
+                                                   target_col=column)
       self.app.merge_state.merge_proc = output_df
       self.app.comp_fact.build_reminder_box(title="Success",
                                             txt_msg="Time features have been created for transformed dataset successfully.")
