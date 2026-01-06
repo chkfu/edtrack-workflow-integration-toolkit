@@ -154,16 +154,37 @@ class FEController:
       
       
   
-  def assign_time_feat_event(self, col_select: list, feat_select: list, keep_origin: bool | None):
-    #  check parameters
-    print("--------------------------------")
-    print(col_select)
-    print(feat_select)
-    print(keep_origin)
-    print("--------------------------------")
+  def assign_time_feat_event(self, 
+                             col_select: list, 
+                             feat_select: list, 
+                             keep_origin: bool=True) -> pd.DataFrame:
+    
+    try:
+      output_df: pd.DataFrame = self.app.merge_state.merge_proc.copy()
+      
+      for column in col_select:   
+        for feature in feat_select:
+          output_df = self.data_preproc.create_dt_feat(target_df=output_df, 
+                                                      target_col=column,
+                                                      target_opt=feature)
+        if not keep_origin:
+          output_df = self.data_manager.remove_col(target_df=output_df, 
+                                                  target_col=column)
+      self.app.merge_state.merge_proc = output_df
+      self.app.comp_fact.build_reminder_box(title="Success",
+                                            txt_msg="Time features have been created for transformed dataset successfully.")
+    except Exception as ex:
+      err_msg = "Failed to create time features for processed dataset."
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=f"{err_msg} - {ex}")
+      logger.error(err_msg, exc_info=True)
+      return
     
     
-  def assign_filter_rows_event(self, col_set: set, val_set: set) -> None:
+    
+  def assign_filter_rows_event(self, 
+                               col_set: set, 
+                               val_set: set) -> None:
     
     #  validation
     if not isinstance(col_set, set) or not isinstance(val_set, set):
@@ -195,7 +216,9 @@ class FEController:
                                             txt_msg=f"{err_msg} - {ex}")
   
   
-  def assign_encode_hash_event(self, encode_list=None, hash_list=None, opt_dict=None) -> None:
+  def assign_encode_hash_event(self, encode_list=None, 
+                               hash_list=None, 
+                               opt_dict=None) -> None:
     
     #  declaration
     encode_list = encode_list or []

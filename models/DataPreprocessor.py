@@ -1,6 +1,7 @@
 import pandas as pd
 import logging
 import hashlib
+from pandas.api.types import is_datetime64_any_dtype
 
 
 
@@ -49,6 +50,83 @@ class DataPreprocessor:
     return output
   
   
+  def create_dt_feat(self,
+                     target_df: pd.DataFrame,
+                     target_col: str,
+                     target_opt: str) -> pd.DataFrame:
+
+    #  declaration
+    temp_dt_name: str | None = None
+    output_df: pd.DataFrame = target_df.copy()
+    target_series: pd.Series= target_df[target_col].copy()  
+    temp_dt_series: pd.Series | None = None
+    
+    #  validate column, logical error does not need ui reminders
+    if not is_datetime64_any_dtype(target_series):
+      raise ValueError("Failed to format datetime features with mon-datetime columns.")
+      
+    #  declaration
+    MONTH_DICT: dict = {
+      1: "January",
+      2: "February",
+      3: "March",
+      4: "April",
+      5: "May",
+      6: "June",
+      7: "July",
+      8: "August",
+      9: "September",
+      10: "October",
+      11: "November",
+      12: "December",
+    }
+    WEEKDAY_DICT: dict = {
+      0: "Monday",
+      1: "Tuesday", 
+      2: "Wednesday",
+      3: "Thursday", 
+      4: "Friday", 
+      5: "Saturday", 
+      6: "Sunday",
+    }
+
+    #  stage - handle datetime, matching options   
+    #  remarks: temp store new column name (temp_dt_name), and store new column values (temp_dt_series)
+    target_opt = target_opt.strip().lower()
+    if target_opt == "year":
+      temp_dt_name = target_col + "_year"
+      temp_dt_series = target_series.dt.year
+    elif target_opt == "month":
+      temp_dt_name = target_col + "_month"
+      temp_dt_series = target_series.dt.month
+    elif target_opt == "day":
+      temp_dt_name = target_col + "_day"
+      temp_dt_series = target_series.dt.day
+    elif target_opt == "weekday":
+      temp_dt_name = target_col + "_weekday"
+      temp_dt_series = target_series.dt.weekday
+    elif target_opt == "hour":
+      temp_dt_name = target_col + "_hour"
+      temp_dt_series = target_series.dt.hour
+    elif target_opt in ["minute", "minutes"] :
+      temp_dt_name = target_col + "_minute"
+      temp_dt_series = target_series.dt.minute
+    else:
+      raise ValueError(f"Failed to create selected time feature with datetime options.")
+    
+    #  translate the datetime with spec meaning
+    if target_opt == "month":
+      temp_dt_series = temp_dt_series.map(MONTH_DICT)
+    elif target_opt == "weekday":
+      temp_dt_series = temp_dt_series.map(WEEKDAY_DICT)
+    
+    #  check and produce new columns
+    if temp_dt_series is None:
+      raise ValueError("Failed to create selected time feature without specific information.")
+    output_df[temp_dt_name] = temp_dt_series
+    return output_df
+
+    
   def encode_component_col(self, 
                            target_df: pd.DataFrame, 
                            target_col: str, 

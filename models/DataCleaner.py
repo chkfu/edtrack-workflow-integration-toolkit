@@ -123,7 +123,7 @@ class DataCleaner:
     output[target_col] = output[target_col].astype("string").fillna("Not Specified")
     for index, value in output[target_col].items():
       temp_val = self.trim_string(input=value, isAlpha=False)
-      temp_val = self.manage_string_case(input=value, case="upper")
+      temp_val = self.manage_string_case(input=temp_val, case="upper")
       output.loc[index, target_col] = temp_val
     return output
   

@@ -596,12 +596,16 @@ class PageFE(PageTemplate):
     cb_sect.setWidget(cb_content)
     
     #  build button sect
+    def on_change():
+      self.app.fe_cont.assign_time_feat_event(
+          col_select=col_select,
+          feat_select=feat_select,
+          keep_origin=keep_origin
+      )
+      pop_wd.close()
+    
     btn_sect = self.build_reused_popup_btns(target_popup=pop_wd,
-                                            proc_event=lambda: [self.app.fe_cont.assign_time_feat_event(
-                                              col_select=col_select,
-                                              feat_select=feat_select,
-                                              keep_origin=keep_origin),
-                                              pop_wd.close()])
+                                            proc_event=on_change)
     
     #  finalise popup
     popup_layout.addWidget(title_sect)

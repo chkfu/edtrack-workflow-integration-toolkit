@@ -56,7 +56,6 @@ class DataManager:
     
     
   def remove_rows(self, target_df: pd.DataFrame, target_col: str, target_rows:list) -> pd.DataFrame:
-    print(">>> remove_rows CALLED", target_col, target_rows)
     #  validate types
     if not isinstance(target_df, pd.DataFrame):
       raise TypeError("Target dataframe must be a pandas DataFrame.")
