@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import ( 
   QWidget, QGridLayout, QHBoxLayout, QVBoxLayout, QScrollArea, QTabWidget,
-  QSizePolicy, QFrame
+  QSizePolicy, QFrame, QComboBox
 )
 from PyQt5.QtCore import Qt
 from views.components.pages.PageTemplate import PageTemplate
@@ -17,7 +17,7 @@ logger = logging.getLogger("PAGE_ANALYSE")
 
 
 #  DECLARATIONS
-DS_LIST: list = ["Pivots", "Grouping", "Metrics", "Graphs"]
+DS_LIST: list = ["Pivots", "Metrics", "Graphs"]
 
 
 #  CLASS
@@ -28,9 +28,29 @@ class PageAnalyse(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
+    self.app = app_ref
     self.tab_group: QTabWidget = QTabWidget()
     logger.info("initialised successfully.")
     
+    #  1. pivots components
+    self.pivots_col_dd_01: QComboBox | None = None
+    self.pivots_col_dd_02: QComboBox | None = None
+    self.pivots_row_dd_01: QComboBox | None = None
+    self.pivots_row_dd_02: QComboBox | None = None
+    self.pivots_val_dd_01: QComboBox | None = None
+    
+    #  2. metrics components
+    self.metrics_col_dd_01: QComboBox | None = None
+    self.metrics_row_dd_01: QComboBox | None = None
+    self.metrics_val_dd_01: QComboBox | None = None
+    
+    #  3. graphs components
+    self.graphs_col_dd_01: QComboBox | None = None
+    self.graphs_row_dd_01: QComboBox | None = None
+    self.graphs_val_dd_01: QComboBox | None = None
+
+    
+    #  4. setup tabs
     for title in DS_LIST:
       tab = self.build_analyse_tab(target_title=title)
       self.tab_group.addTab(tab, title)
@@ -123,15 +143,14 @@ class PageAnalyse(PageTemplate):
       #  components
       title_lb = self.app.comp_fact.build_label(lb_text="A. Configure Parameters",
                                                 lb_type="h3")
-      basic_opt_box = self.build_tab_opt_baseline_box()
-      advanced_opt_box = self.build_tab_opt_advanced_box(target_title=target_title)
+      opt_box = self.build_tab_opt_baseline_box(target_title=target_title)
       opt_control = self.build_tab_opt_controls()
       #  frame
       frame = QWidget()
       frame_layout = QVBoxLayout() 
       frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft|Qt.AlignTop)
-      frame_layout.addWidget(basic_opt_box)
-      frame_layout.addWidget(advanced_opt_box)
+      # frame_layout.addWidget(basic_opt_box)
+      frame_layout.addWidget(opt_box)
       frame_layout.addWidget(opt_control, alignment=Qt.AlignLeft)
       frame_layout.setSpacing(4)
       frame_layout.setContentsMargins(0, 0, 0, 0) 
@@ -142,53 +161,105 @@ class PageAnalyse(PageTemplate):
     
   #  METHODS -  BOXES
   
-  def build_tab_opt_baseline_box(self) -> QWidget:
-    #  components
-    col_cell = self.build_table_opt_cell(target_label="Select Columns",
-                                        target_options=[],
-                                        target_default=0,
-                                        event=None)
-    row_cell = self.build_table_opt_cell(target_label="Select Rows",
-                                        target_options=[],
-                                        target_default=0,
-                                        event=None)
-    val_cell = self.build_table_opt_cell(target_label="Select Values",
-                                        target_options=[],
-                                        target_default=0,
-                                        event=None)
-    #  frame
-    frame = QWidget()
-    frame_layout = QHBoxLayout()
-    frame_layout.addWidget(col_cell)
-    frame_layout.addWidget(row_cell)
-    frame_layout.addWidget(val_cell)
-    frame_layout.setSpacing(12)
-    frame_layout.setContentsMargins(0, 0, 0, 0)
-    frame.setLayout(frame_layout)
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    return frame
+  def build_tab_opt_baseline_box(self, target_title: str) -> QWidget:
   
-  
-  def build_tab_opt_advanced_box(self, target_title: str) ->QWidget:
-    #  components
+    #  build elective options
     if target_title == DS_LIST[0]:
-      pass
-    elif target_title == DS_LIST[1]:
-      pass
+      return self.build_pivots_opts_layout()
+    elif target_title == DS_LIST[1]: 
+      return self.build_metrics_opts_layout()
     elif target_title == DS_LIST[2]:
-      pass
-    elif target_title == DS_LIST[3]:
-      pass
+      return self.build_graphs_opts_layout()
     else:
-      pass
-    #  frame
+      return QWidget()
+   
+
+  #  METHODS - OPTS LAYOUTS
+  
+  def build_pivots_opts_layout(self) -> QHBoxLayout:
+    
+    OPTS_DICT: dict = {
+      "col_dd_01": {
+        "label": "1. Select First Column",
+        "options": ["-- Please Select --"],
+        "default": 0,
+        "event": lambda: print("First Column selected")
+      },
+      "col_dd_02": {
+        "label": "2. Select Second Column (Optional)",
+        "options": ["-- Please Select --"],
+        "default": 0,
+        "event": lambda: print("Second Column selected")
+      },
+      "row_dd_01": {
+        "label": "3. Select First Row",
+        "options": ["-- Please Select --"],
+        "default": 0,
+        "event": lambda: print("First Row selected")
+      },
+      "row_dd_02": {
+        "label": "4. Select Second Row (Optional)",
+        "options": ["-- Please Select --"],
+        "default": 0,
+        "event": lambda: print("Second Row selected")
+      },
+      "val_dd": {
+        "label": "5. Select Values",
+        "options": ["-- Please Select --"],
+        "default": 0,
+        "event": lambda: print("Values selected")
+      }
+    }
+     
+    #  setup frame
     frame = QWidget()
-    frame_layout = QHBoxLayout()
+    frame_layout = QVBoxLayout()
+    #  build compulsory options
+    col_dd_01 = self.build_table_opt_cell(target_label=OPTS_DICT["col_dd_01"]["label"],
+                                          target_options=OPTS_DICT["col_dd_01"]["options"],
+                                          target_default=OPTS_DICT["col_dd_01"]["default"],
+                                          event=OPTS_DICT["col_dd_01"]["event"])    
+    col_dd_02 = self.build_table_opt_cell(target_label=OPTS_DICT["col_dd_02"]["label"],
+                                          target_options=OPTS_DICT["col_dd_02"]["options"],
+                                          target_default=OPTS_DICT["col_dd_02"]["default"],
+                                          event=OPTS_DICT["col_dd_02"]["event"])
+    row_dd_01 = self.build_table_opt_cell(target_label=OPTS_DICT["row_dd_01"]["label"],
+                                          target_options=OPTS_DICT["row_dd_01"]["options"],
+                                          target_default=OPTS_DICT["row_dd_01"]["default"],
+                                          event=OPTS_DICT["row_dd_01"]["event"])    
+    row_dd_02 = self.build_table_opt_cell(target_label=OPTS_DICT["row_dd_02"]["label"],
+                                          target_options=OPTS_DICT["row_dd_02"]["options"],
+                                          target_default=OPTS_DICT["row_dd_02"]["default"],
+                                          event=OPTS_DICT["row_dd_02"]["event"])    
+    val_dd_01 = self.build_table_opt_cell(target_label=OPTS_DICT["val_dd"]["label"],
+                                       target_options=OPTS_DICT["val_dd"]["options"],
+                                       target_default=OPTS_DICT["val_dd"]["default"],
+                                       event=OPTS_DICT["val_dd"]["event"])  
+    #  add to layout
+    frame_layout.addWidget(col_dd_01, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(col_dd_02, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(row_dd_01, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(row_dd_02, alignment=Qt.AlignLeft)
+    frame_layout.addWidget(val_dd_01, alignment=Qt.AlignLeft)
+    #  complete frame
     frame_layout.setSpacing(12)
     frame_layout.setContentsMargins(0, 0, 0, 0)
     frame.setLayout(frame_layout)
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
     return frame
+    
+  
+  
+  def build_metrics_opts_layout(self) -> QHBoxLayout:
+    pass
+  
+  
+  def build_graphs_opts_layout(self) -> QHBoxLayout:
+    pass
+  
+  
+  
+  
+  
   
   
   #  METHODS -  OTHERS
@@ -207,9 +278,11 @@ class PageAnalyse(PageTemplate):
     cell_layout = QVBoxLayout()
     cell_layout.setSpacing(4)
     cell_layout.setContentsMargins(0, 0, 0, 0)
-    cell_layout.addWidget(label)
-    cell_layout.addWidget(dropdown)
+    cell_layout.addWidget(label, alignment=Qt.AlignLeft)
+    cell_layout.addWidget(dropdown, alignment=Qt.AlignLeft)
     cell.setLayout(cell_layout)
+    cell.setFixedWidth(200)
+    cell.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     return cell
     
     
@@ -266,4 +339,76 @@ class PageAnalyse(PageTemplate):
     frame.setLayout(frame_layout)
     return frame
   
+  
+  
   #  METHODS -  RESETS
+  
+  def update_pivot_dd(self, target_dd: str, options: list):
+    
+    OPTS_DICT: dict = {
+      "col_dd_01": self.pivots_col_dd_01,
+      "col_dd_02": self.pivots_col_dd_02,
+      "row_dd_01": self.pivots_row_dd_01,
+      "row_dd_02": self.pivots_row_dd_02,
+      "val_dd_01": self.pivots_val_dd_01
+    }
+    
+    #  identify dropdown
+    if target_dd not in OPTS_DICT.keys():
+      logger.error(f"Failed to update pivots dropdown for invalid target - {target_dd}",
+                   exc_info=True)
+      return
+    dropdown = OPTS_DICT[target_dd]
+    
+    #  refresh dropdown
+    dropdown.blockSignals(True)
+    dropdown.clear()
+    dropdown.addItems(options)
+    dropdown.setCurrentIndex(0)
+    dropdown.blockSignals(False)
+    
+    
+  def update_metrics_dd(self, target_dd: str, options: list):
+    
+    OPTS_DICT: dict = {
+      "col_dd_01": self.metrics_col_dd_01,
+      "row_dd_01": self.metrics_row_dd_01,
+      "val_dd_01": self.metrics_val_dd_01
+    }
+    
+    #  identify dropdown
+    if target_dd not in OPTS_DICT.keys():
+      logger.error(f"Failed to update metrics dropdown for invalid target - {target_dd}",
+                   exc_info=True)
+      return
+    dropdown = OPTS_DICT[target_dd]
+    
+    #  refresh dropdown
+    dropdown.blockSignals(True)
+    dropdown.clear()
+    dropdown.addItems(options)
+    dropdown.setCurrentIndex(0)
+    dropdown.blockSignals(False)
+    
+    
+  def update_graphs_dd(self, target_dd: str, options: list):
+  
+    OPTS_DICT: dict = {
+      "col_dd_01": self.graphs_col_dd_01,
+      "row_dd_01": self.graph_row_dd_01,
+      "val_dd_01": self.graphs_val_dd_01
+    }
+    
+    #  identify dropdown
+    if target_dd not in OPTS_DICT.keys():
+      logger.error(f"Failed to update graphs dropdown for invalid target - {target_dd}",
+                  exc_info=True)
+      return
+    dropdown = OPTS_DICT[target_dd]
+    
+    #  refresh dropdown
+    dropdown.blockSignals(True)
+    dropdown.clear()
+    dropdown.addItems(options)
+    dropdown.setCurrentIndex(0)
+    dropdown.blockSignals(False)

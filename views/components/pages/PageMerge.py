@@ -24,8 +24,9 @@ class PageMerge(PageTemplate):
   
   def __init__(self, app_ref):
     super().__init__(app_ref)
+    self.app = app_ref
     self.dd_table_left: QComboBox | None = None
-    self.dd_table_rightL: QComboBox | None = None
+    self.dd_table_right: QComboBox | None = None
     self.dd_column_left: QComboBox | None = None
     self.dd_column_right: QComboBox | None = None
     self.merge_method_group: QButtonGroup | None = None   

@@ -207,6 +207,7 @@ class DataManager:
                                date_col: str) -> pd.DataFrame:
     
     output = target_df.copy()
+    
     month_col: str = "Month"
     
     #  validate col name
