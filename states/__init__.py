@@ -1,6 +1,7 @@
 from states.CleanState import CleanState
 from states.MergeState import MergeState
 from states.CleanDataState import CleanDataState
+from states.AnalyseState import AnalyseState
 
 #  MAIN
 
@@ -9,6 +10,7 @@ __all__ = [
           #  layer 1: for dataframe states
            "CleanState", 
            "MergeState",
+           "AnalyseState",
           #  layer 2: for config states
            "CleanDataState",
            ]

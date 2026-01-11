@@ -8,7 +8,7 @@ from controllers import (
   AppController, NavController, FileController, CleanController, MergeController,
   FEController, ValidController
 )
-from states import CleanState, MergeState
+from states import CleanState, MergeState, AnalyseState
 from dotenv import load_dotenv
 
 
@@ -38,6 +38,7 @@ class UserInterface:
     #  setup state
     self.clean_state = CleanState()
     self.merge_state = MergeState()
+    self.analyse_state = AnalyseState()
     
     #  setup controllers
     self.app_cont = AppController(self)
