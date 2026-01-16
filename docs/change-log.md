@@ -19,6 +19,37 @@ This file records the major version changes of the projects.
 <br/>
 
 
+## [0.1.7] - 
+
+### Added 
+
+- Added AnalyseState for managing analysing options
+                    
+### Edited
+
+- Restructured analysing logic at PageAnalyse
+
+### Fixed
+
+- Fixed parameter input missing in AnalyseState
+
+<br/>
+
+
+## [0.1.6] - Dec 28, 2026
+                    
+### Edited
+
+- Implemebted controller events into PageFE's components
+- Restructured feature engineering logic at PageFE
+
+### Fixed
+
+- Resolved bug of duplicate state at root UI and PageClean
+
+<br/>
+
+
 ## [0.1.5] - Dec 18, 2025
 
 ### Added 
@@ -33,7 +64,7 @@ This file records the major version changes of the projects.
 - Refine sidebar dataset list with status updates (dataset only)
 - Refactorised reused component groups in ComponentFactory
 - Refactorised relationship between views and ValidController
-- Implemented controllers events to PageMerge
+- Implemented controllers events to PageMerge's components
 - Updated developer guide and changelog
 
 ### Fixed
@@ -46,6 +77,7 @@ This file records the major version changes of the projects.
 
 - Remove unused dependencies
 
+<br/>
 
 
 ## [0.1.4] - Dec 5, 2025
@@ -60,7 +92,7 @@ This file records the major version changes of the projects.
 ## Edited
 
 - Refactored cleaning with tab switching issues for preventing redundent codes
-- Implemented functionalities into PageClean's components
+- Implemented controller events into PageClean's components
 
 ## Fixed
 
