@@ -181,31 +181,31 @@ class PageAnalyse(PageTemplate):
     OPTS_DICT: dict = {
       "col_dd_01": {
         "label": "1. Select First Column",
-        "options": ["-- Please Select --"],
+        "options": ["-- Please Select --"],  # remarks: updated by triggering
         "default": 0,
         "event": lambda: print("First Column selected")
       },
       "col_dd_02": {
         "label": "2. Select Second Column (Optional)",
-        "options": ["-- Please Select --"],
+        "options": ["-- Please Select --"],  # remarks: updated by triggering
         "default": 0,
         "event": lambda: print("Second Column selected")
       },
       "row_dd_01": {
         "label": "3. Select First Row",
-        "options": ["-- Please Select --"],
+        "options": ["-- Please Select --"],  # remarks: updated by triggering
         "default": 0,
         "event": lambda: print("First Row selected")
       },
       "row_dd_02": {
         "label": "4. Select Second Row (Optional)",
-        "options": ["-- Please Select --"],
+        "options": ["-- Please Select --"],  # remarks: updated by triggering
         "default": 0,
         "event": lambda: print("Second Row selected")
       },
       "val_dd": {
         "label": "5. Select Values",
-        "options": ["-- Please Select --"],
+        "options": ["-- Please Select --"],  # remarks: updated by triggering
         "default": 0,
         "event": lambda: print("Values selected")
       }

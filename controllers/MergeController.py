@@ -175,11 +175,18 @@ class MergeController:
       return
     
     #  merge table
-    merged_df = self.manage_model.merge_tables(target_df_left=temp_ltable, 
-                                               target_df_right=temp_rtable, 
-                                               target_col_left=temp_lcol, 
-                                               target_col_right=temp_rcol, 
-                                               merge_type=temp_method)
+    try:
+      merged_df = self.manage_model.merge_tables(target_df_left=temp_ltable, 
+                                                target_df_right=temp_rtable, 
+                                                target_col_left=temp_lcol, 
+                                                target_col_right=temp_rcol, 
+                                                merge_type=temp_method)
+    except Exception as ex:
+      err_msg: str = f"Failed to merge tables:\n{ex}"
+      self.app.comp_fact.build_reminder_box(title="Error",
+                                            txt_msg=err_msg)
+      logger.error(err_msg, exc_info=True)
+      return
     self.app.merge_state.set_merge_raw(merged_df)
     self.app.merge_state.set_merge_proc(merged_df)
     merge_raw = self.app.merge_state.merge_raw

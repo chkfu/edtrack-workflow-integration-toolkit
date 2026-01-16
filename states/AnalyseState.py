@@ -11,9 +11,7 @@ logger = logging.getLogger("ANALYSE_STATE")
 
 class AnalyseState:
   
-  def __init__(self, state_name: str):
-    
-    self.state_name = state_name 
+  def __init__(self):
     
     #  DataFrame Management
     self.data_pivots: pd.DataFrame = None
