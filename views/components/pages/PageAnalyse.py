@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import ( 
   QWidget, QGridLayout, QHBoxLayout, QVBoxLayout, QScrollArea, QTabWidget,
-  QSizePolicy, QFrame, QComboBox, QLabel, QDialog
+  QSizePolicy, QFrame, QComboBox, QLabel
 )
 from PyQt5.QtCore import Qt
 from views.components.pages.PageTemplate import PageTemplate
@@ -168,8 +168,9 @@ class PageAnalyse(PageTemplate):
     return scroll
   
   
-  #  METHODS  -  CONTAINERS
+  #  METHODS -  TAB-BASED
   
+  #  Remarks: building corresponding tab's main title section
   def build_tab_title_container(self, target_title: str) -> QWidget:
     #  components   
     if target_title == "Pivots":
@@ -195,7 +196,8 @@ class PageAnalyse(PageTemplate):
     frame.setLayout(frame_layout)
     return frame
   
-
+  
+  #  Remarks: building corresponding tab's overall option section
   def build_tab_opt_container(self, target_title: str) -> QWidget:   
       #  components
       title_lb = self.app.comp_fact.build_label(lb_text="A. Configure Parameters",
@@ -214,32 +216,27 @@ class PageAnalyse(PageTemplate):
       frame.setLayout(frame_layout)
       frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
       return frame
-    
-    
-  #  METHODS -  BOXES
   
+  
+  #  Remarks: re-directing corresponding tab content layout
   def build_tab_opt_baseline_box(self, target_title: str) -> QWidget:
-  
-    #  build elective options
     if target_title == "Pivots":
       return self.build_reused_opts_layout(target_opt_dict=self.PIVOTS_OPTS_DICT, 
                                            target_refresh_dict=self.PIVOTS_REFRESH_DICT)
-    # elif target_title == "Metrics": 
-    #   return self.build_metrics_opts_layout()
+    elif target_title == "Metrics": 
+      return self.build_reused_opts_layout(target_opt_dict=self.METRICS_OPTS_DICT, 
+                                           target_refresh_dict=self.METRICS_REFRESH_DICT)
     # elif target_title == "Graphs":
     #   return self.build_graphs_opts_layout()
     else:
       return QWidget()
-   
-
-  #  METHODS - OPTS LAYOUTS
-  
-  def build_reused_opts_layout(self, target_opt_dict: dict, target_refresh_dict: dict) -> QWidget:
     
+  
+  #  Remarks: the reusable generator for building layout of tab content
+  def build_reused_opts_layout(self, target_opt_dict: dict, target_refresh_dict: dict) -> QWidget:
     #  setup frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
-    
     #  1. setup dropdown widgets and update temp state
     for key, opt in target_opt_dict.items():
       #  1a. build compulsory labels
@@ -247,43 +244,33 @@ class PageAnalyse(PageTemplate):
                                               lb_type="p",
                                               lb_txtcolor=THEME_COLOR["mid"])
       #  1b. build compulsory dropdowns
-      opt_dd = self.build_table_opt_cell(target_label=opt["label"],
+      opt_dd = self.build_table_opt_box(target_label=opt["label"],
                                          target_options=opt["options"],
                                          target_default=opt["default"],
                                          event=opt["event"]) 
       #  1c. build opt containers to accomodate label and dropdown
-      opt_container = self.package_opt_containers(target_lb=opt_lb,
+      opt_container = self.package_opt_box(target_lb=opt_lb,
                                                   target_dd=opt_dd["dropdown"])
       #  1d. add container to layout
       frame_layout.addWidget(opt_container, alignment=Qt.AlignLeft)
       #  1e. update wdiget into attributes state
       setattr(self, f"pivots_{key}", opt_dd["dropdown"])
-
     #  2. setup widget refresh
     for key, method in target_refresh_dict.items():
       dropdown = getattr(self, f"pivots_{key}", None)
       if dropdown:
         self.app.comp_fact.refresh_dropdowns(target_dd=dropdown,target_event=method)
-
     #  complete frame
     frame_layout.setSpacing(16)
     frame_layout.setContentsMargins(0, 0, 0, 0)
     frame.setLayout(frame_layout)
     return frame
-    
   
   
-  # def build_metrics_opts_layout(self) -> QHBoxLayout:
-  #   pass
-  
-  
-  # def build_graphs_opts_layout(self) -> QHBoxLayout:
-  #   pass
-  
-  
-  #  METHODS - CONTAINERS
+  #  METHODS - BOXES
 
-  def package_opt_containers(self, target_lb: QLabel, target_dd: QComboBox) -> QWidget:
+  #  Remarks: primary option containers
+  def package_opt_box(self, target_lb: QLabel, target_dd: QComboBox) -> QWidget:
     container = QWidget()
     container_layout = QVBoxLayout()
     container_layout.addWidget(target_lb, alignment=Qt.AlignLeft)
@@ -293,10 +280,9 @@ class PageAnalyse(PageTemplate):
     container.setLayout(container_layout)
     return container
   
-
-  #  METHODS -  OTHERS
   
-  def build_table_opt_cell(self, 
+  #  Remarks: sub-container to pack a label and a dropdown
+  def build_table_opt_box(self, 
                            target_label=str,
                            target_options: list=None,
                            target_default: int=0,
@@ -323,8 +309,9 @@ class PageAnalyse(PageTemplate):
     return {"box": cell, "dropdown": dropdown}
     
     
+  #  Remarks: control panel for trigger analysing option events 
   def build_tab_opt_controls(self) -> QWidget:
-    # components
+    #  components
     reset_btn = self.app.comp_fact.build_btn(btn_text="Reset",
                                              btn_event=lambda: print("Reset button clicked"),
                                              btn_bgcolor=THEME_COLOR["white"],
