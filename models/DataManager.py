@@ -176,7 +176,7 @@ class DataManager:
   
   #  DATA MANIPULATION
      
-  def reshape_pivot(self, target_df: pd.DataFrame, target_cols: list, target_rows: list, target_val: str, target_aggfunc: str = "count", target_filling: int | None = None):
+  def reshape_pivot(self, target_df: pd.DataFrame, target_cols: list, target_rows: list, target_val: str, target_aggfunc: str, target_filling: int | None):
       
     #  validate types
     if not isinstance(target_df, pd.DataFrame):

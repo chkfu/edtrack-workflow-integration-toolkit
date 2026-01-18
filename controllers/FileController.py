@@ -105,8 +105,6 @@ class FileController:
           popup_content=self.app.comp_fact.build_table_view(target_dataframe)
       )
       logger.info(f"Previewed the selected file - {target_key}.")
-      
-      print(target_dataframe)
       return target_dataframe
 
     #  2. failure
