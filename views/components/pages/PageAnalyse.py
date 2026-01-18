@@ -47,7 +47,7 @@ class PageAnalyse(PageTemplate):
     self.graphs_col_dd_01: QComboBox | None = None
     self.graphs_row_dd_01: QComboBox | None = None
     self.graphs_val_dd_01: QComboBox | None = None
-
+    
     #  5. setup tabs
     for title in self.app.analyse_state.TAB_LIST:
       tab = self.build_analyse_tab(target_title=title)
@@ -395,7 +395,7 @@ class PageAnalyse(PageTemplate):
                                              btn_hover_bgcolor=THEME_COLOR["white_hvr"])  
     proceed_btn = self.app.comp_fact.build_btn(btn_text="Proceed",
                                              btn_event=lambda: self.app.analyse_cont.proceed_btn_event_generator(tab_list=self.app.analyse_state.TAB_LIST, 
-                                                                                                       target_tab=self.app.analyse_state.curr_tab),
+                                                                                                                 target_tab=self.app.analyse_state.curr_tab),
                                              btn_bgcolor=THEME_COLOR["primary"],
                                              btn_txtcolor=THEME_COLOR["white"],
                                              btn_hover_bgcolor=THEME_COLOR["primary_hvr"])  
@@ -441,75 +441,3 @@ class PageAnalyse(PageTemplate):
     return frame
   
   
-  
-  #  METHODS -  RESETS
-  
-  def update_pivot_dd(self, target_dd: str, options: list):
-    
-    OPTS_DICT: dict = {
-      "col_dd_01": self.pivots_col_dd_01,
-      "col_dd_02": self.pivots_col_dd_02,
-      "row_dd_01": self.pivots_row_dd_01,
-      "row_dd_02": self.pivots_row_dd_02,
-      "val_dd_01": self.pivots_val_dd_01
-    }
-    
-    #  identify dropdown
-    if target_dd not in OPTS_DICT.keys():
-      logger.error(f"Failed to update pivots dropdown for invalid target - {target_dd}",
-                   exc_info=True)
-      return
-    dropdown = OPTS_DICT[target_dd]
-    
-    #  refresh dropdown
-    dropdown.blockSignals(True)
-    dropdown.clear()
-    dropdown.addItems(options)
-    dropdown.setCurrentIndex(0)
-    dropdown.blockSignals(False)
-    
-    
-  def update_metrics_dd(self, target_dd: str, options: list):
-    
-    OPTS_DICT: dict = {
-      "col_dd_01": self.metrics_col_dd_01,
-      "row_dd_01": self.metrics_row_dd_01,
-      "val_dd_01": self.metrics_val_dd_01
-    }
-    
-    #  identify dropdown
-    if target_dd not in OPTS_DICT.keys():
-      logger.error(f"Failed to update metrics dropdown for invalid target - {target_dd}",
-                   exc_info=True)
-      return
-    dropdown = OPTS_DICT[target_dd]
-    
-    #  refresh dropdown
-    dropdown.blockSignals(True)
-    dropdown.clear()
-    dropdown.addItems(options)
-    dropdown.setCurrentIndex(0)
-    dropdown.blockSignals(False)
-    
-    
-  def update_graphs_dd(self, target_dd: str, options: list):
-  
-    OPTS_DICT: dict = {
-      "col_dd_01": self.graphs_col_dd_01,
-      "row_dd_01": self.graph_row_dd_01,
-      "val_dd_01": self.graphs_val_dd_01
-    }
-    
-    #  identify dropdown
-    if target_dd not in OPTS_DICT.keys():
-      logger.error(f"Failed to update graphs dropdown for invalid target - {target_dd}",
-                  exc_info=True)
-      return
-    dropdown = OPTS_DICT[target_dd]
-    
-    #  refresh dropdown
-    dropdown.blockSignals(True)
-    dropdown.clear()
-    dropdown.addItems(options)
-    dropdown.setCurrentIndex(0)
-    dropdown.blockSignals(False)
