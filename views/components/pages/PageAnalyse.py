@@ -48,6 +48,67 @@ class PageAnalyse(PageTemplate):
     self.graphs_row_dd_01: QComboBox | None = None
     self.graphs_val_dd_01: QComboBox | None = None
     
+    #  5. 
+    self.PIVOTS_OPTS_DICT: dict = {
+      "col_dd_01": {
+        "label": "1a. Select Column (Primary)",
+        "options": ["--- Please Select ---"],
+        "default": 0,
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_col_01",
+                                                                           selected_text=text)
+      },
+      "col_dd_02": {
+        "label": "1b. Select Column (Secondary) - optional",
+        "options": ["--- Please Select ---"],
+        "default": 0,
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_col_02",
+                                                                           selected_text=text)
+      },
+      "row_dd_01": {
+        "label": "2a. Select Row (Primary)",
+        "options": ["--- Please Select ---"],
+        "default": 0,
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_row_01",
+                                                                           selected_text=text)
+      },
+      "row_dd_02": {
+        "label": "2b. Select Row (Secondary) - optional",
+        "options": ["--- Please Select ---"], 
+        "default": 0,
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_row_02",
+                                                                           selected_text=text)
+      },
+      "val_dd_01": {
+        "label": "3. Select Values",
+        "options": ["--- Please Select ---"], 
+        "default": 0,
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_val_01",
+                                                                           selected_text=text)
+      },
+      "agg_func": {
+        "label": "4. Select Aggregation Type",
+        "options": ["--- Please Select ---"], 
+        "default": 0,
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="agg_func",
+                                                                           selected_text=text)
+      },
+      "fill": {
+        "label": "5. Select Blank Filling - optional",
+        "options": ["--- Please Select ---"], 
+        "default": 0,
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="fill",
+                                                                           selected_text=text)
+      }
+    }
+    self.PIVOTS_REFRESH_DICT: dict = {
+      "col_dd_01": self.app.analyse_cont.deliver_col_opts,
+      "col_dd_02": self.app.analyse_cont.deliver_col_opts,
+      "row_dd_01": self.app.analyse_cont.deliver_col_opts,
+      "row_dd_02": self.app.analyse_cont.deliver_col_opts,
+      "val_dd_01": self.app.analyse_cont.deliver_col_opts,
+      "agg_func": self.app.analyse_cont.deliver_agg_func_opts,
+      "fill": self.app.analyse_cont.deliver_fill_opts,
+    }
     #  5. setup tabs
     for title in self.app.analyse_state.TAB_LIST:
       tab = self.build_analyse_tab(target_title=title)
@@ -161,7 +222,8 @@ class PageAnalyse(PageTemplate):
   
     #  build elective options
     if target_title == "Pivots":
-      return self.build_pivots_opts_layout()
+      return self.build_reused_opts_layout(target_opt_dict=self.PIVOTS_OPTS_DICT, 
+                                           target_refresh_dict=self.PIVOTS_REFRESH_DICT)
     # elif target_title == "Metrics": 
     #   return self.build_metrics_opts_layout()
     # elif target_title == "Graphs":
@@ -172,166 +234,36 @@ class PageAnalyse(PageTemplate):
 
   #  METHODS - OPTS LAYOUTS
   
-  def build_pivots_opts_layout(self) -> QHBoxLayout:
+  def build_reused_opts_layout(self, target_opt_dict: dict, target_refresh_dict: dict) -> QWidget:
     
-    OPTS_DICT: dict = {
-      "col_dd_01": {
-        "label": "1a. Select Column (Primary)",
-        "options": ["--- Please Select ---"],
-        "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_col_01",
-                                                                           selected_text=text)
-      },
-      "col_dd_02": {
-        "label": "1b. Select Column (Secondary) - optional",
-        "options": ["--- Please Select ---"],
-        "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_col_02",
-                                                                           selected_text=text)
-      },
-      "row_dd_01": {
-        "label": "2a. Select Row (Primary)",
-        "options": ["--- Please Select ---"],
-        "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_row_01",
-                                                                           selected_text=text)
-      },
-      "row_dd_02": {
-        "label": "2b. Select Row (Secondary) - optional",
-        "options": ["--- Please Select ---"], 
-        "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_row_02",
-                                                                           selected_text=text)
-      },
-      "val_dd_01": {
-        "label": "3. Select Values",
-        "options": ["--- Please Select ---"], 
-        "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_val_01",
-                                                                           selected_text=text)
-      },
-      "agg_func": {
-        "label": "4. Select Aggregation Type",
-        "options": ["--- Please Select ---"], 
-        "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="agg_func",
-                                                                           selected_text=text)
-      },
-      "fill": {
-        "label": "5. Select Blank Filling - optional",
-        "options": ["--- Please Select ---"], 
-        "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="fill",
-                                                                           selected_text=text)
-      }
-    }
-     
     #  setup frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
     
-    #  build compulsory labels
-    col_lb_01 = self.app.comp_fact.build_label(lb_text=OPTS_DICT["col_dd_01"]["label"],
-                                               lb_type="p",
-                                               lb_txtcolor=THEME_COLOR["mid"])
-    col_lb_02 = self.app.comp_fact.build_label(lb_text=OPTS_DICT["col_dd_02"]["label"],
-                                               lb_type="p",
-                                               lb_txtcolor=THEME_COLOR["mid"])
-    row_lb_01 = self.app.comp_fact.build_label(lb_text=OPTS_DICT["row_dd_01"]["label"],
-                                               lb_type="p",
-                                               lb_txtcolor=THEME_COLOR["mid"])
-    row_lb_02 = self.app.comp_fact.build_label(lb_text=OPTS_DICT["row_dd_02"]["label"],
-                                               lb_type="p",
-                                               lb_txtcolor=THEME_COLOR["mid"])
-    val_lb_01 = self.app.comp_fact.build_label(lb_text=OPTS_DICT["val_dd_01"]["label"],
-                                               lb_type="p",
-                                               lb_txtcolor=THEME_COLOR["mid"])
-    agg_func_lb = self.app.comp_fact.build_label(lb_text=OPTS_DICT["agg_func"]["label"],
-                                                 lb_type="p",
-                                                 lb_txtcolor=THEME_COLOR["mid"])
-    fill_lb = self.app.comp_fact.build_label(lb_text=OPTS_DICT["fill"]["label"],
-                                             lb_type="p",
-                                             lb_txtcolor=THEME_COLOR["mid"])
-    
-    #  build compulsory dropdowns
-    col_dd_01 = self.build_table_opt_cell(target_label=OPTS_DICT["col_dd_01"]["label"],
-                                          target_options=OPTS_DICT["col_dd_01"]["options"],
-                                          target_default=OPTS_DICT["col_dd_01"]["default"],
-                                          event=OPTS_DICT["col_dd_01"]["event"])    
-    col_dd_02 = self.build_table_opt_cell(target_label=OPTS_DICT["col_dd_02"]["label"],
-                                          target_options=OPTS_DICT["col_dd_02"]["options"],
-                                          target_default=OPTS_DICT["col_dd_02"]["default"],
-                                          event=OPTS_DICT["col_dd_02"]["event"])
-    row_dd_01 = self.build_table_opt_cell(target_label=OPTS_DICT["row_dd_01"]["label"],
-                                          target_options=OPTS_DICT["row_dd_01"]["options"],
-                                          target_default=OPTS_DICT["row_dd_01"]["default"],
-                                          event=OPTS_DICT["row_dd_01"]["event"])    
-    row_dd_02 = self.build_table_opt_cell(target_label=OPTS_DICT["row_dd_02"]["label"],
-                                          target_options=OPTS_DICT["row_dd_02"]["options"],
-                                          target_default=OPTS_DICT["row_dd_02"]["default"],
-                                          event=OPTS_DICT["row_dd_02"]["event"])    
-    val_dd_01 = self.build_table_opt_cell(target_label=OPTS_DICT["val_dd_01"]["label"],
-                                          target_options=OPTS_DICT["val_dd_01"]["options"],
-                                          target_default=OPTS_DICT["val_dd_01"]["default"],
-                                          event=OPTS_DICT["val_dd_01"]["event"])
-    agg_func_dd = self.build_table_opt_cell(target_label=OPTS_DICT["agg_func"]["label"],
-                                            target_options=OPTS_DICT["agg_func"]["options"],
-                                            target_default=OPTS_DICT["agg_func"]["default"],
-                                            event=OPTS_DICT["agg_func"]["event"]) 
-    fill_dd = self.build_table_opt_cell(target_label=OPTS_DICT["fill"]["label"],
-                                        target_options=OPTS_DICT["fill"]["options"],
-                                        target_default=OPTS_DICT["fill"]["default"],
-                                        event=OPTS_DICT["fill"]["event"])    
-    
-    
-    #  package into widget
-    container_01 = self.package_opt_containers(target_lb=col_lb_01,
-                                               target_dd=col_dd_01["dropdown"])
-    container_02 = self.package_opt_containers(target_lb=col_lb_02,
-                                               target_dd=col_dd_02["dropdown"])
-    container_03 = self.package_opt_containers(target_lb=row_lb_01,   
-                                               target_dd=row_dd_01["dropdown"])
-    container_04 = self.package_opt_containers(target_lb=row_lb_02,
-                                               target_dd=row_dd_02["dropdown"])
-    container_05 = self.package_opt_containers(target_lb=val_lb_01,
-                                               target_dd=val_dd_01["dropdown"])
-    container_06 = self.package_opt_containers(target_lb=agg_func_lb,
-                                               target_dd=agg_func_dd["dropdown"])
-    container_07 = self.package_opt_containers(target_lb=fill_lb,
-                                               target_dd=fill_dd["dropdown"])
-    
-    #  update temp state
-    self.pivots_col_dd_01 = col_dd_01["dropdown"]
-    self.pivots_col_dd_02 = col_dd_02["dropdown"]
-    self.pivots_row_dd_01 = row_dd_01["dropdown"]
-    self.pivots_row_dd_02 = row_dd_02["dropdown"]
-    self.pivots_val_dd_01 = val_dd_01["dropdown"]
-    self.pivots_agg_func = agg_func_dd["dropdown"]
-    self.pivots_fill = fill_dd["dropdown"]
-    
-    #  refresh
-    self.app.comp_fact.refresh_dropdowns(target_dd=col_dd_01["dropdown"],
-                                         target_event=lambda: self.app.analyse_cont.deliver_col_opts())
-    self.app.comp_fact.refresh_dropdowns(target_dd=col_dd_02["dropdown"],
-                                         target_event=lambda: self.app.analyse_cont.deliver_col_opts())
-    self.app.comp_fact.refresh_dropdowns(target_dd=row_dd_01["dropdown"],
-                                         target_event=lambda: self.app.analyse_cont.deliver_col_opts())
-    self.app.comp_fact.refresh_dropdowns(target_dd=row_dd_02["dropdown"],
-                                         target_event=lambda: self.app.analyse_cont.deliver_col_opts())
-    self.app.comp_fact.refresh_dropdowns(target_dd=val_dd_01["dropdown"],
-                                         target_event=lambda: self.app.analyse_cont.deliver_col_opts())
-    self.app.comp_fact.refresh_dropdowns(target_dd=agg_func_dd["dropdown"],
-                                         target_event=lambda: self.app.analyse_cont.deliver_agg_func_opts())
-    self.app.comp_fact.refresh_dropdowns(target_dd=fill_dd["dropdown"],
-                                         target_event=lambda: self.app.analyse_cont.deliver_fill_opts())
-    #  add to layout
-    frame_layout.addWidget(container_01, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(container_02, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(container_03, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(container_04, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(container_05, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(container_06, alignment=Qt.AlignLeft)
-    frame_layout.addWidget(container_07, alignment=Qt.AlignLeft)
+    #  1. setup dropdown widgets and update temp state
+    for key, opt in target_opt_dict.items():
+      #  1a. build compulsory labels
+      opt_lb = self.app.comp_fact.build_label(lb_text=opt["label"],
+                                              lb_type="p",
+                                              lb_txtcolor=THEME_COLOR["mid"])
+      #  1b. build compulsory dropdowns
+      opt_dd = self.build_table_opt_cell(target_label=opt["label"],
+                                         target_options=opt["options"],
+                                         target_default=opt["default"],
+                                         event=opt["event"]) 
+      #  1c. build opt containers to accomodate label and dropdown
+      opt_container = self.package_opt_containers(target_lb=opt_lb,
+                                                  target_dd=opt_dd["dropdown"])
+      #  1d. add container to layout
+      frame_layout.addWidget(opt_container, alignment=Qt.AlignLeft)
+      #  1e. update wdiget into attributes state
+      setattr(self, f"pivots_{key}", opt_dd["dropdown"])
+
+    #  2. setup widget refresh
+    for key, method in target_refresh_dict.items():
+      dropdown = getattr(self, f"pivots_{key}", None)
+      if dropdown:
+        self.app.comp_fact.refresh_dropdowns(target_dd=dropdown,target_event=method)
 
     #  complete frame
     frame_layout.setSpacing(16)
@@ -366,14 +298,19 @@ class PageAnalyse(PageTemplate):
   
   def build_table_opt_cell(self, 
                            target_label=str,
-                           target_options: list = [],
+                           target_options: list=None,
                            target_default: int=0,
                            event: Callable | None=None) -> QWidget:
+    #  error handling
+    if target_options is None:
+      target_options = []
+    #  declaration
     label = self.app.comp_fact.build_label(lb_text=target_label,
-                                          lb_type="p")
+                                           lb_type="p")
     dropdown = self.app.comp_fact.build_dropdown(target_options=target_options,
                                                  target_default=target_default,
                                                  event=event)
+    #  setup component
     cell = QWidget()
     cell_layout = QVBoxLayout()
     cell_layout.setSpacing(4)
@@ -416,7 +353,7 @@ class PageAnalyse(PageTemplate):
     #  error handling
     if target_df is None or target_df.empty:
       logger.warning(f"No data available to display for {target_title} in PageAnalyse.")
-      return
+      return QWidget()
     #  setup frame
     frame = QFrame()
     frame_layout = QHBoxLayout()
