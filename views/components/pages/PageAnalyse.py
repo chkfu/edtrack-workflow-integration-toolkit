@@ -48,7 +48,7 @@ class PageAnalyse(PageTemplate):
     self.graphs_row_dd_01: QComboBox | None = None
     self.graphs_val_dd_01: QComboBox | None = None
     
-    #  5. 
+    #  5. tab content options collection
     self.PIVOTS_OPTS_DICT: dict = {
       "col_dd_01": {
         "label": "1a. Select Column (Primary)",
@@ -100,6 +100,8 @@ class PageAnalyse(PageTemplate):
                                                                            selected_text=text)
       }
     }
+    
+    #  6. dropdown refresh collection
     self.PIVOTS_REFRESH_DICT: dict = {
       "col_dd_01": self.app.analyse_cont.deliver_col_opts,
       "col_dd_02": self.app.analyse_cont.deliver_col_opts,
@@ -109,7 +111,8 @@ class PageAnalyse(PageTemplate):
       "agg_func": self.app.analyse_cont.deliver_agg_func_opts,
       "fill": self.app.analyse_cont.deliver_fill_opts,
     }
-    #  5. setup tabs
+    
+    #  7. setup tabs
     for title in self.app.analyse_state.TAB_LIST:
       tab = self.build_analyse_tab(target_title=title)
       self.tab_group.addTab(tab, title)

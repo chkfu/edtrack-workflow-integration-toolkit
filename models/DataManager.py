@@ -24,16 +24,39 @@ class DataManager:
     
    
     
-  #  METHOD - REUSE
+  #  METHOD - REUSE / SUPPORTING
     
-  def update_valid_lists(self, target_df: pd.DataFrame, target_parameter: list, valid_list: list) -> None: 
+  def update_valid_lists(self, target_df: pd.DataFrame, target_parameter: list, valid_list: list) -> list: 
     for el in target_parameter:
-      testing_el = str(el)
+      testing_el = str(el).strip()
       valid_el = self.valid_cont.validate_col(target_df=target_df, target_col=testing_el)
       if valid_el:
         valid_list.append(valid_el) 
-    
-    
+      else:
+        logger.warning(f"Option {el} is not found, option skipped.")
+     
+        
+  #  Remarks: supporting method to groupby_table
+  def update_groupby_parameters(self, target_df: pd.DataFrame, input_list: list, acted_list: list) -> list:
+    for column in input_list:
+      if column not in target_df.columns:
+        logger.warning(f"Column {column} is not valid, option skipped.")
+      else:
+        acted_list.append(column)
+    return acted_list
+  
+  
+  #  Remarks: supporting method to groupby_table 
+  def get_mode(self, series: pd.Series) -> pd.Series | None:
+    temp_mode = series.mode()
+    length = len(temp_mode)
+    if length < 1:
+      return None
+    #  Leanrt: set boundary for extraction, prevent unnecessary crash
+    if length > 1:
+      logger.warning("More than 1 mode are found.")
+      return None
+    return temp_mode.iloc[0]
     
   #  METHOD - CRUD
   
@@ -176,7 +199,7 @@ class DataManager:
   
   #  DATA MANIPULATION
      
-  def reshape_pivot(self, target_df: pd.DataFrame, target_cols: list, target_rows: list, target_val: str, target_aggfunc: str, target_filling: int | None):
+  def reshape_pivot(self, target_df: pd.DataFrame, target_cols: list, target_rows: list, target_val: str, target_aggfunc: str, target_filling: int | None) -> pd.DataFrame:
       
     #  validate types
     if not isinstance(target_df, pd.DataFrame):
@@ -198,100 +221,65 @@ class DataManager:
     output = pd.pivot_table(data=target_df, columns=valid_col_list, index=valid_row_list, values=valid_val, aggfunc=target_aggfunc, fill_value=target_filling)
     logger.info("A new pivot table has been created.")
     return output
-  
-  
-  def count_user_event_monthly(self, 
-                               target_df: pd.DataFrame,
-                               target_col: str,
-                               target_row: str,
-                               date_col: str) -> pd.DataFrame:
-    
-    output = target_df.copy()
-    
-    month_col: str = "Month"
-    
-    #  validate col name
-    target_col_r = self.valid_cont.validate_col(target_df, target_col)
-    target_row_r = self.valid_cont.validate_col(target_df, target_row)
-    date_col = self.valid_cont.validate_col(target_df, date_col)
-    
-    #  grouping monthly in new column, remove date column
-    date_col_r = self.valid_cont.validate_col(target_df, date_col)
-    output[month_col] = output[date_col_r].dt.month
-    output = self.remove_col(output, date_col_r)
-    
-    #  grouping
-    #  learnt: .size() used for traffic (task frequency), .nunique() used for usage (user engagement)
-    output = output.groupby([month_col, target_row_r])[target_col_r].nunique().reset_index(name=f"{target_col_r}_Count")
-    
-    #  format in multiple index
-    output = output.set_index([month_col, target_row_r]).sort_index(level=month_col)
-    #  learnt: grouping before sort_values, otherwise sorting will not based on month
-    #  learnt: groupkey = False, prevent duplicated column caused by data restructure with grouping
-    #  learnt: no mapping in pd.DataFrame, use apply instead
-    output = output.groupby(month_col, group_keys=False).apply(lambda el: el.sort_values(by=f"{target_col_r}_Count", ascending=False))
-    return output
-      
-      
-  def calculate_statistics(self,
-                           target_df: pd.DataFrame,
-                           target_row: str,
-                           selected_row_list: list,
-                           target_val: str,
-                           date_col: str) -> pd.DataFrame:
-    output = target_df.copy()
-    stat_names: dict = {"month_col": "Month",
-                        "overall_row": "(Overall)",
-                        "mean_col": "Mean",
-                        "median_col": "Median",
-                        "mode_col": "Mode",
-                        "sum_col": "Total"}
 
-    #  validate column names
-    target_row_r: str = self.valid_cont.validate_col(target_df, target_row)
-    target_val_r: str = self.valid_cont.validate_col(target_df, target_val)
-    date_col_r: str = self.valid_cont.validate_col(target_df, date_col)
-    
-    output[stat_names["month_col"]] = output[date_col_r].dt.month
-    output = self.remove_col(output, date_col_r)
-    
-    #  initialise tabular table by months and overall
-    #  learnt: .isin() for list matches
-    output_r = output[output[target_row_r].str.upper().isin([val.upper() for val in selected_row_list])]
-    output_r = pd.pivot_table(data=output_r, 
-                              columns=stat_names["month_col"], 
-                              index=target_row_r, 
-                              values=target_val_r, 
-                              aggfunc="count", 
-                              fill_value=0)
 
-    #  append new row and merge
-    #  reminder: specify axis 1 for matching formats
-    #  learnt: to_frame turns the series in to a row of dataframe, enable to merge vertically
-    #  learnt: the new row is vertically visualised, need to be transpose
-    output_r[stat_names["overall_row"]]= output_r.sum(axis=1, numeric_only=True)
 
-    #  calculate component statistic
-    temp_mean_row = output_r.mean(numeric_only=True)
-    temp_median_row = output_r.median(numeric_only=True)
-    temp_mode_row = output_r.mode(numeric_only=True).iloc[0]
-    temp_sum_row = output_r.sum(numeric_only=True)
-    temp_mean_row.name = stat_names["mean_col"]
-    temp_median_row.name = stat_names["median_col"]
-    temp_mode_row.name = stat_names["mode_col"]
-    temp_sum_row.name = stat_names["sum_col"]
+  def groupby_table(self, target_df: pd.DataFrame, target_groupby_cols: list, target_val_cols: list, target_agg_func: list) -> pd.DataFrame:
     
-    #  merge new statistic rows into dataframe
-    output_r = pd.concat([output_r,
-                          temp_mean_row.to_frame().T,
-                          temp_median_row.to_frame().T,
-                          temp_mode_row.to_frame().T,
-                          temp_sum_row.to_frame().T])
+    #  declaration
+    acted_groupby: list = []
+    acted_vals: list = []
+    acted_aggs: list = []
+    AGG_FUNC_LIST: list = ["count", "sum", "mean", "median", "mode"]
     
-    #  rename columns
-    output_r.columns = [(MONNTH_LIST[str(col)][0:3].title() + "/25")  
-                        if str(col) in MONNTH_LIST
-                        else col 
-                        for col in output_r.columns]
+    #  validate types
     
-    return output_r
+    #  1. valid dataframe
+    if not isinstance(target_df, pd.DataFrame):
+      raise TypeError("Target dataframe must be a pandas DataFrame.")
+    
+    #  2. valid input list
+    acted_groupby: list = self.update_groupby_parameters(target_df=target_df,
+                                                         input_list=target_groupby_cols,
+                                                         acted_list=acted_groupby)
+    acted_vals: list = self.update_groupby_parameters(target_df=target_df,
+                                                      input_list=target_val_cols,
+                                                      acted_list=acted_vals)
+    if not acted_groupby:
+      raise ValueError("No valid groupby columns.")
+    if not acted_vals:
+      raise ValueError("No aggregation option is specified.")
+    
+    for agg in target_agg_func:
+      agg = agg.strip().lower()
+      if agg not in AGG_FUNC_LIST:
+        logger.warning(f"Aggrefate option {agg} is not valid, option skipped.")
+      else:
+        acted_aggs.append(agg)
+     
+    # execution
+    #  1. grouping tables columns
+    #  Learnt: .groupby does not return pd.DataFrame directly, further prcessing with methods
+    grouped_base = target_df.groupby(acted_groupby, dropna=False)
+    grouped_df = grouped_base[acted_vals].count()
+    result_frames: list = []
+    #  2. aggregation
+    #  Learnt: convert methods into dict, enabling customised mode func to be parsed in
+    GROUPBY_AGG_MAP = {
+      "count": lambda: grouped_base[acted_vals].count(),
+      "sum": lambda: grouped_base[acted_vals].sum(),
+      "mean": lambda: grouped_base[acted_vals].mean(),
+      "median": lambda: grouped_base[acted_vals].median(),
+      "mode": lambda: grouped_base[acted_vals].agg(self.get_mode),
+    }
+    for agg in acted_aggs:
+      temp_df = GROUPBY_AGG_MAP[agg]()
+      temp_df.columns = [f"{col}_{agg}" for col in temp_df.columns]
+      result_frames.append(temp_df)
+
+    #  return agg output
+    if not acted_aggs or len(acted_aggs) < 1:
+      return grouped_df
+    else:
+      agg_df = pd.concat(result_frames, axis=1)
+      return grouped_df.join(agg_df)
