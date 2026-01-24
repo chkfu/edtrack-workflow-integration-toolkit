@@ -32,9 +32,10 @@ class AnalyseState:
     self.pivots_fill: str | None = None
 
     #  2. metrics options
-    self.metrics_col_01: str | None = None
-    self.metrics_row_01: str | None = None
-    self.metrics_val_01: str | None = None
+    self.metrics_grouped_01: str | None = None
+    self.metrics_grouped_02: str | None = None
+    self.metrics_val_list: list | None = None
+    self.metrics_agg_list: list | None = None
 
     #  3. graphs options
     self.graphs_col_01: str | None = None
@@ -67,7 +68,7 @@ class AnalyseState:
     self.data_graphs = target_df
 
 
-  #  2. set pivot options
+  #  2. set pivots options
 
   def set_pivots_col_01(self, target_col: str) -> None:
     self.pivots_col_01 = target_col
@@ -114,3 +115,26 @@ class AnalyseState:
       return
     self.pivots_fill = FILL_OPTS[target_fill]
     return
+  
+  
+  #  3. set metrics options
+  
+  def set_metrics_grouped_01(self, target_col: str) -> None:
+    self.metrics_grouped_01 = target_col
+    
+  
+  def set_metrics_grouped_02(self, target_col: str) -> None:
+    self.metrics_grouped_02 = target_col
+    
+    
+  #  remarks: list-based, checkbox return a full list directly
+  def set_metrics_val_list(self, target_list: list) -> None:
+    self.metrics_val_list = target_list
+  
+  
+  #  remarks: list-based, checkbox return a full list directly
+  def set_metrics_agg_func(self, target_list: list) -> None:
+    self.metrics_agg_list = target_list
+    
+    
+  #  4. set graphs options

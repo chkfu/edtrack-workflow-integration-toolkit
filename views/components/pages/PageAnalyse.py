@@ -39,9 +39,10 @@ class PageAnalyse(PageTemplate):
     self.pivots_fill: QComboBox | None = None
     
     #  3. metrics components
-    self.metrics_col_dd_01: QComboBox | None = None
-    self.metrics_row_dd_01: QComboBox | None = None
-    self.metrics_val_dd_01: QComboBox | None = None
+    self.metrics_groupby_dd_01: QComboBox | None = None
+    self.metrics_groupby_dd_02: QComboBox | None = None
+    self.metrics_val_list: QWidget | None = None
+    self.metrics_agg_func_list: QWidget | None = None
     
     #  4. graphs components
     self.graphs_col_dd_01: QComboBox | None = None
@@ -51,6 +52,7 @@ class PageAnalyse(PageTemplate):
     #  5. tab content options collection
     self.PIVOTS_OPTS_DICT: dict = {
       "col_dd_01": {
+        "type": "dropdown",
         "label": "1a. Select Column (Primary)",
         "options": ["--- Please Select ---"],
         "default": 0,
@@ -58,6 +60,7 @@ class PageAnalyse(PageTemplate):
                                                                            selected_text=text)
       },
       "col_dd_02": {
+        "type": "dropdown",
         "label": "1b. Select Column (Secondary) - optional",
         "options": ["--- Please Select ---"],
         "default": 0,
@@ -65,6 +68,7 @@ class PageAnalyse(PageTemplate):
                                                                            selected_text=text)
       },
       "row_dd_01": {
+        "type": "dropdown",
         "label": "2a. Select Row (Primary)",
         "options": ["--- Please Select ---"],
         "default": 0,
@@ -72,6 +76,7 @@ class PageAnalyse(PageTemplate):
                                                                            selected_text=text)
       },
       "row_dd_02": {
+        "type": "dropdown",
         "label": "2b. Select Row (Secondary) - optional",
         "options": ["--- Please Select ---"], 
         "default": 0,
@@ -79,6 +84,7 @@ class PageAnalyse(PageTemplate):
                                                                            selected_text=text)
       },
       "val_dd_01": {
+        "type": "dropdown",
         "label": "3. Select Values",
         "options": ["--- Please Select ---"], 
         "default": 0,
@@ -86,6 +92,7 @@ class PageAnalyse(PageTemplate):
                                                                            selected_text=text)
       },
       "agg_func": {
+        "type": "dropdown",
         "label": "4. Select Aggregation Type",
         "options": ["--- Please Select ---"], 
         "default": 0,
@@ -93,11 +100,41 @@ class PageAnalyse(PageTemplate):
                                                                            selected_text=text)
       },
       "fill": {
+        "type": "dropdown",
         "label": "5. Select Blank Filling - optional",
         "options": ["--- Please Select ---"], 
         "default": 0,
         "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="fill",
                                                                            selected_text=text)
+      }
+    }
+    self.METRICS_OPTS_DICT: dict = {
+      "groupby_dd_01": {
+        "type": "dropdown",
+        "label": "1a. Select Groupby Column (Primary)",
+        "options": ["--- Please Select ---"],
+        "default": 0,
+        "event": lambda text: print(text)
+      },
+      "groupby_dd_02": {
+        "type": "dropdown",
+        "label": "1b. Select Groupby Column (Secondary) - optional",
+        "options": ["--- Please Select ---"],
+        "default": 0,
+        "event": lambda text: print(text)
+      },
+      "value_col_list": {
+        "type": "checkbox",
+        "label": "2. Select Value Column",
+        "options": [],    # Remarks: merge_proc is None when initialised, update later
+        "event": lambda text, checked: print(text, checked)
+      },
+      "agg_func_list": {
+        "type": "checkbox",
+        "label": "3. Select Aggregation Type",
+        "options": ["count", "sum", "mean", "mode", "median"], 
+        "default": 0,
+        "event":  lambda text, checked: print(text, checked)
       }
     }
     
@@ -111,6 +148,11 @@ class PageAnalyse(PageTemplate):
       "agg_func": self.app.analyse_cont.deliver_agg_func_opts,
       "fill": self.app.analyse_cont.deliver_fill_opts,
     }
+    self.METRICS_REFRESH_DICT: dict = {
+      "groupby_dd_01": self.app.analyse_cont.deliver_col_opts,
+      "groupby_dd_02": self.app.analyse_cont.deliver_col_opts,
+      #  Remarks: checkboxes do not require to refresh pop-up list
+    }
     
     #  7. setup tabs
     for title in self.app.analyse_state.TAB_LIST:
@@ -119,7 +161,7 @@ class PageAnalyse(PageTemplate):
       self.tab_group.tabBar().setCursor(Qt.PointingHandCursor)
     self.tab_group.currentChanged.connect(lambda index: self.app.analyse_cont.handle_analyse_tab_switch(target_index=index))
     logger.info("initialised successfully.")
-    
+  
     
   #  METHODS  -  MAIN
   
@@ -153,7 +195,6 @@ class PageAnalyse(PageTemplate):
     #  components
     title_container = self.build_tab_title_container(target_title=target_title)
     opt_container = self.build_tab_opt_container(target_title=target_title)
-
     #  frame
     core_sect = QWidget()
     core_sect_layout = QVBoxLayout()
@@ -202,32 +243,33 @@ class PageAnalyse(PageTemplate):
   
   #  Remarks: building corresponding tab's overall option section
   def build_tab_opt_container(self, target_title: str) -> QWidget:   
-      #  components
-      title_lb = self.app.comp_fact.build_label(lb_text="A. Configure Parameters",
-                                                lb_type="h3")
-      opt_box = self.build_tab_opt_baseline_box(target_title=target_title)
-      opt_control = self.build_tab_opt_controls()
-      #  frame
-      frame = QWidget()
-      frame_layout = QVBoxLayout() 
-      frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft|Qt.AlignTop)
-      # frame_layout.addWidget(basic_opt_box)
-      frame_layout.addWidget(opt_box)
-      frame_layout.addWidget(opt_control, alignment=Qt.AlignLeft)
-      frame_layout.setSpacing(4)
-      frame_layout.setContentsMargins(0, 0, 0, 0) 
-      frame.setLayout(frame_layout)
-      frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-      return frame
+    #  components
+    title_lb = self.app.comp_fact.build_label(lb_text="A. Configure Parameters",
+                                              lb_type="h3")
+    opt_box = self.build_tab_opt_baseline_box(target_title=target_title)
+    opt_control = self.build_tab_opt_controls()
+    #  frame
+    frame = QWidget()
+    frame_layout = QVBoxLayout() 
+    frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft|Qt.AlignTop)
+    frame_layout.addWidget(opt_box)
+    frame_layout.addWidget(opt_control, alignment=Qt.AlignLeft)
+    frame_layout.setSpacing(4)
+    frame_layout.setContentsMargins(0, 0, 0, 0) 
+    frame.setLayout(frame_layout)
+    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    return frame
   
   
   #  Remarks: re-directing corresponding tab content layout
   def build_tab_opt_baseline_box(self, target_title: str) -> QWidget:
     if target_title == "Pivots":
-      return self.build_reused_opts_layout(target_opt_dict=self.PIVOTS_OPTS_DICT, 
+      return self.build_reused_opts_layout(target_tab="pivots",
+                                           target_opt_dict=self.PIVOTS_OPTS_DICT, 
                                            target_refresh_dict=self.PIVOTS_REFRESH_DICT)
     elif target_title == "Metrics": 
-      return self.build_reused_opts_layout(target_opt_dict=self.METRICS_OPTS_DICT, 
+      return self.build_reused_opts_layout(target_tab="metrics",
+                                           target_opt_dict=self.METRICS_OPTS_DICT, 
                                            target_refresh_dict=self.METRICS_REFRESH_DICT)
     # elif target_title == "Graphs":
     #   return self.build_graphs_opts_layout()
@@ -236,36 +278,70 @@ class PageAnalyse(PageTemplate):
     
   
   #  Remarks: the reusable generator for building layout of tab content
-  def build_reused_opts_layout(self, target_opt_dict: dict, target_refresh_dict: dict) -> QWidget:
+  #  TODO: Metrics Q2 checkboxes need to be fixed, and the styling issue with padding
+  def build_reused_opts_layout(self, target_tab: str, target_opt_dict: dict, target_refresh_dict: dict) -> QWidget:
+    
+    #  declaration
+    target_tab = target_tab.strip().lower()
+    
     #  setup frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
+    
     #  1. setup dropdown widgets and update temp state
     for key, opt in target_opt_dict.items():
-      #  1a. build compulsory labels
-      opt_lb = self.app.comp_fact.build_label(lb_text=opt["label"],
-                                              lb_type="p",
-                                              lb_txtcolor=THEME_COLOR["mid"])
-      #  1b. build compulsory dropdowns
-      opt_dd = self.build_table_opt_box(target_label=opt["label"],
-                                         target_options=opt["options"],
-                                         target_default=opt["default"],
-                                         event=opt["event"]) 
-      #  1c. build opt containers to accomodate label and dropdown
-      opt_container = self.package_opt_box(target_lb=opt_lb,
-                                                  target_dd=opt_dd["dropdown"])
-      #  1d. add container to layout
-      frame_layout.addWidget(opt_container, alignment=Qt.AlignLeft)
-      #  1e. update wdiget into attributes state
-      setattr(self, f"pivots_{key}", opt_dd["dropdown"])
-    #  2. setup widget refresh
+      opt_type = opt["type"]
+      
+      if opt_type == "dropdown":
+        #  1a. build dropdown objects
+        opt_hybrid = self.build_table_opt_box(target_label=opt["label"],
+                                              target_options=opt["options"],
+                                              target_default=opt["default"],
+                                              event=opt.get("event"))
+        opt_cell = opt_hybrid["cell"]
+        opt_combo = opt_hybrid["dropdown"]
+        #  1b. update temp state (replace value)
+        setattr(self, f"{target_tab}_{key}", opt_combo)
+        
+      elif opt_type == "checkbox":
+        
+        #  2a. build frame cell with label
+        opt_cell = QWidget()
+        opt_cell_layout = QVBoxLayout()
+        opt_lb = self.app.comp_fact.build_label(lb_text=opt["label"],
+                                                lb_type="p",
+                                                lb_align=Qt.AlignLeft)
+        opt_cell_layout.addWidget(opt_lb)
+        #  2b. setup empty list reminder at UI
+        if len(opt["options"]) < 1:
+          err_lb = self.app.comp_fact.build_label(lb_text="(No option can be found.)",
+                                                  lb_align=Qt.AlignCenter)
+          opt_cell_layout.addWidget(err_lb) 
+          opt_cell.setLayout(opt_cell_layout)
+        #  2c. build checkbox group object
+        else:  
+          for col in opt.get("options", []):
+            cb = self.app.comp_fact.build_checkbox(target_name=col, target_event=None)  # event method to be appended
+            opt_cell_layout.addWidget(cb)
+            opt_cell_layout.setSpacing(8)
+            opt_cell_layout.setContentsMargins(0, 8, 0, 0)
+            opt_cell.setLayout(opt_cell_layout)
+            #  2d. update temporary state list with individual checkbox
+            temp_cb_list = getattr(self, f"{target_tab}_{key}")
+            temp_cb_list = temp_cb_list.append(cb) if temp_cb_list is not None else [cb]
+            setattr(self, f"{target_tab}_{key}", temp_cb_list)
+          opt_cell.setLayout(opt_cell_layout)
+       
+    #  3. setup widget refresh
     for key, method in target_refresh_dict.items():
-      dropdown = getattr(self, f"pivots_{key}", None)
+      dropdown = getattr(self, f"{target_tab}_{key}", None)
       if dropdown:
         self.app.comp_fact.refresh_dropdowns(target_dd=dropdown,target_event=method)
-    #  complete frame
+      
+    #  4. complete frame
     frame_layout.setSpacing(16)
-    frame_layout.setContentsMargins(0, 0, 0, 0)
+    frame_layout.setContentsMargins(0, 8, 0, 0)
+    frame_layout.addWidget(opt_cell, alignment=Qt.AlignLeft)
     frame.setLayout(frame_layout)
     return frame
   
@@ -273,7 +349,7 @@ class PageAnalyse(PageTemplate):
   #  METHODS - BOXES
 
   #  Remarks: primary option containers
-  def package_opt_box(self, target_lb: QLabel, target_dd: QComboBox) -> QWidget:
+  def package_opt_box(self, target_lb: QLabel, target_dd: QWidget) -> QWidget:
     container = QWidget()
     container_layout = QVBoxLayout()
     container_layout.addWidget(target_lb, alignment=Qt.AlignLeft)
@@ -286,16 +362,17 @@ class PageAnalyse(PageTemplate):
   
   #  Remarks: sub-container to pack a label and a dropdown
   def build_table_opt_box(self, 
-                           target_label=str,
-                           target_options: list=None,
-                           target_default: int=0,
-                           event: Callable | None=None) -> QWidget:
+                          target_label=str,
+                          target_options: list=None,
+                          target_default: int=0,
+                          event: Callable | None=None) -> QWidget:
     #  error handling
     if target_options is None:
       target_options = []
     #  declaration
     label = self.app.comp_fact.build_label(lb_text=target_label,
-                                           lb_type="p")
+                                           lb_type="p",
+                                           lb_align=Qt.AlignLeft)
     dropdown = self.app.comp_fact.build_dropdown(target_options=target_options,
                                                  target_default=target_default,
                                                  event=event)
@@ -307,9 +384,9 @@ class PageAnalyse(PageTemplate):
     cell_layout.addWidget(label, alignment=Qt.AlignLeft)
     cell_layout.addWidget(dropdown, alignment=Qt.AlignLeft)
     cell.setLayout(cell_layout)
-    cell.setFixedWidth(200)
+    cell.setFixedWidth(280)
     cell.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    return {"box": cell, "dropdown": dropdown}
+    return {"cell": cell, "dropdown": dropdown}
     
     
   #  Remarks: control panel for trigger analysing option events 
@@ -332,7 +409,7 @@ class PageAnalyse(PageTemplate):
     frame_layout.addWidget(reset_btn, alignment=Qt.AlignLeft)
     frame_layout.addWidget(proceed_btn, alignment=Qt.AlignLeft)
     frame_layout.setSpacing(12)
-    frame_layout.setContentsMargins(0, 8, 0, 0)
+    frame_layout.setContentsMargins(0, 16, 0, 0)
     frame.setLayout(frame_layout)
     return frame
   
