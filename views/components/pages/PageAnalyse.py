@@ -56,7 +56,7 @@ class PageAnalyse(PageTemplate):
         "label": "1a. Select Column (Primary)",
         "options": ["--- Please Select ---"],
         "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_col_01",
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivots_event(target_col="pivots_col_01",
                                                                            selected_text=text)
       },
       "col_dd_02": {
@@ -64,7 +64,7 @@ class PageAnalyse(PageTemplate):
         "label": "1b. Select Column (Secondary) - optional",
         "options": ["--- Please Select ---"],
         "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_col_02",
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivots_event(target_col="pivots_col_02",
                                                                            selected_text=text)
       },
       "row_dd_01": {
@@ -72,7 +72,7 @@ class PageAnalyse(PageTemplate):
         "label": "2a. Select Row (Primary)",
         "options": ["--- Please Select ---"],
         "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_row_01",
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivots_event(target_col="pivots_row_01",
                                                                            selected_text=text)
       },
       "row_dd_02": {
@@ -80,7 +80,7 @@ class PageAnalyse(PageTemplate):
         "label": "2b. Select Row (Secondary) - optional",
         "options": ["--- Please Select ---"], 
         "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_row_02",
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivots_event(target_col="pivots_row_02",
                                                                            selected_text=text)
       },
       "val_dd_01": {
@@ -88,7 +88,7 @@ class PageAnalyse(PageTemplate):
         "label": "3. Select Values",
         "options": ["--- Please Select ---"], 
         "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="pivots_val_01",
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivots_event(target_col="pivots_val_01",
                                                                            selected_text=text)
       },
       "agg_func": {
@@ -96,7 +96,7 @@ class PageAnalyse(PageTemplate):
         "label": "4. Select Aggregation Type",
         "options": ["--- Please Select ---"], 
         "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="agg_func",
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivots_event(target_col="agg_func",
                                                                            selected_text=text)
       },
       "fill": {
@@ -104,7 +104,7 @@ class PageAnalyse(PageTemplate):
         "label": "5. Select Blank Filling - optional",
         "options": ["--- Please Select ---"], 
         "default": 0,
-        "event": lambda text: self.app.analyse_cont.analyse_dd_pivot_event(target_col="fill",
+        "event": lambda text: self.app.analyse_cont.analyse_dd_pivots_event(target_col="fill",
                                                                            selected_text=text)
       }
     }
@@ -140,18 +140,17 @@ class PageAnalyse(PageTemplate):
     
     #  6. dropdown refresh collection
     self.PIVOTS_REFRESH_DICT: dict = {
-      "col_dd_01": self.app.analyse_cont.deliver_col_opts,
-      "col_dd_02": self.app.analyse_cont.deliver_col_opts,
-      "row_dd_01": self.app.analyse_cont.deliver_col_opts,
-      "row_dd_02": self.app.analyse_cont.deliver_col_opts,
-      "val_dd_01": self.app.analyse_cont.deliver_col_opts,
-      "agg_func": self.app.analyse_cont.deliver_agg_func_opts,
-      "fill": self.app.analyse_cont.deliver_fill_opts,
+      "col_dd_01": self.app.analyse_cont.deliver_pivots_col_opts,
+      "col_dd_02": self.app.analyse_cont.deliver_pivots_col_opts,
+      "row_dd_01": self.app.analyse_cont.deliver_pivots_col_opts,
+      "row_dd_02": self.app.analyse_cont.deliver_pivots_col_opts,
+      "val_dd_01": self.app.analyse_cont.deliver_pivots_col_opts,
+      "agg_func": self.app.analyse_cont.deliver_pivots_agg_func_opts,
+      "fill": self.app.analyse_cont.deliver_pivots_fill_opts,
     }
     self.METRICS_REFRESH_DICT: dict = {
-      "groupby_dd_01": self.app.analyse_cont.deliver_col_opts,
-      "groupby_dd_02": self.app.analyse_cont.deliver_col_opts,
-      #  Remarks: checkboxes do not require to refresh pop-up list
+      "groupby_dd_01": self.app.analyse_cont.deliver_pivots_col_opts,
+      "groupby_dd_02": self.app.analyse_cont.deliver_pivots_col_opts,
     }
     
     #  7. setup tabs
@@ -283,54 +282,33 @@ class PageAnalyse(PageTemplate):
     
     #  declaration
     target_tab = target_tab.strip().lower()
+    if not isinstance(target_opt_dict, dict) or not isinstance(target_refresh_dict, dict):
+      err_msg: str = "Failed to build optioms layout. Required information is not found."
+      logger.warning(err_msg + "(target_opt_dict or target_refresh_dict)")
+      err_lb = self.app.comp_fact.build_label(lb_text=err_msg,
+                                              lb_align=Qt.AlignLeft)
+      return err_lb
     
     #  setup frame
     frame = QWidget()
     frame_layout = QVBoxLayout()
+    frame_layout.setSpacing(16)
+    frame_layout.setContentsMargins(0, 0, 0, 0)
     
     #  1. setup dropdown widgets and update temp state
     for key, opt in target_opt_dict.items():
       opt_type = opt["type"]
-      
+      opt_cell = None
       if opt_type == "dropdown":
-        #  1a. build dropdown objects
-        opt_hybrid = self.build_table_opt_box(target_label=opt["label"],
-                                              target_options=opt["options"],
-                                              target_default=opt["default"],
-                                              event=opt.get("event"))
-        opt_cell = opt_hybrid["cell"]
-        opt_combo = opt_hybrid["dropdown"]
-        #  1b. update temp state (replace value)
-        setattr(self, f"{target_tab}_{key}", opt_combo)
-        
+        opt_cell = self.build_dropdown_cell(target_tab=target_tab, 
+                                            target_state_name=key, 
+                                            target_opt_dict=opt)["cell"]
       elif opt_type == "checkbox":
-        
-        #  2a. build frame cell with label
-        opt_cell = QWidget()
-        opt_cell_layout = QVBoxLayout()
-        opt_lb = self.app.comp_fact.build_label(lb_text=opt["label"],
-                                                lb_type="p",
-                                                lb_align=Qt.AlignLeft)
-        opt_cell_layout.addWidget(opt_lb)
-        #  2b. setup empty list reminder at UI
-        if len(opt["options"]) < 1:
-          err_lb = self.app.comp_fact.build_label(lb_text="(No option can be found.)",
-                                                  lb_align=Qt.AlignCenter)
-          opt_cell_layout.addWidget(err_lb) 
-          opt_cell.setLayout(opt_cell_layout)
-        #  2c. build checkbox group object
-        else:  
-          for col in opt.get("options", []):
-            cb = self.app.comp_fact.build_checkbox(target_name=col, target_event=None)  # event method to be appended
-            opt_cell_layout.addWidget(cb)
-            opt_cell_layout.setSpacing(8)
-            opt_cell_layout.setContentsMargins(0, 8, 0, 0)
-            opt_cell.setLayout(opt_cell_layout)
-            #  2d. update temporary state list with individual checkbox
-            temp_cb_list = getattr(self, f"{target_tab}_{key}")
-            temp_cb_list = temp_cb_list.append(cb) if temp_cb_list is not None else [cb]
-            setattr(self, f"{target_tab}_{key}", temp_cb_list)
-          opt_cell.setLayout(opt_cell_layout)
+        opt_cell = self.build_checkbox_cell(target_tab=target_tab, 
+                                            target_state_name=key, 
+                                            target_opt_dict=opt)
+      if opt_cell:
+        frame_layout.addWidget(opt_cell, alignment=Qt.AlignLeft)
        
     #  3. setup widget refresh
     for key, method in target_refresh_dict.items():
@@ -339,11 +317,58 @@ class PageAnalyse(PageTemplate):
         self.app.comp_fact.refresh_dropdowns(target_dd=dropdown,target_event=method)
       
     #  4. complete frame
-    frame_layout.setSpacing(16)
-    frame_layout.setContentsMargins(0, 8, 0, 0)
-    frame_layout.addWidget(opt_cell, alignment=Qt.AlignLeft)
     frame.setLayout(frame_layout)
     return frame
+  
+  
+  #  Remarks: cerate the dropdown cells, supporting to build_reused_opts_layout
+  def build_dropdown_cell(self, target_tab: str, target_state_name, target_opt_dict: Callable) -> QWidget:
+    opt_hybrid = self.build_table_opt_box(target_label=target_opt_dict["label"],
+                                              target_options=target_opt_dict["options"],
+                                              target_default=target_opt_dict["default"],
+                                              event=target_opt_dict["event"])
+    opt_combo = opt_hybrid["dropdown"]
+    #  1b. update temp state (replace value)
+    setattr(self, f"{target_tab}_{target_state_name}", opt_combo)
+    return opt_hybrid
+  
+  
+  #  Remarks: create the checkbox cells, supporting to build_reused_opts_layout
+  def build_checkbox_cell(self, target_tab: str, target_state_name, target_opt_dict: Callable) -> QWidget:
+        #  2a. build frame cell
+        cb_cell = QWidget()
+        cb_cell_layout = QVBoxLayout()
+        
+        #  2b. build label
+        cb_cell_lb = self.app.comp_fact.build_label(lb_text=target_opt_dict["label"],
+                                                    lb_type="p",
+                                                    lb_align=Qt.AlignLeft)
+        cb_cell_layout.addWidget(cb_cell_lb)
+        
+        #  2c. false case
+        if len(target_opt_dict["options"]) < 1:
+          err_lb = self.app.comp_fact.build_label(lb_text="(No option can be found.)",
+                                                  lb_align=Qt.AlignCenter)
+          cb_cell_layout.addWidget(err_lb)
+          
+        #  2d. suceed case: build checkbox group object
+        else:
+          temp_cb_list = getattr(self, f"{target_tab}_{target_state_name}", None)
+          if not isinstance(temp_cb_list, list):
+            temp_cb_list = []
+          for column in target_opt_dict["options"]:
+            cb = self.app.comp_fact.build_checkbox(target_name=column, 
+                                                   target_event=None)  # event method to be appended
+            cb_cell_layout.addWidget(cb)
+            #  Remarks: setup temporary state
+            temp_cb_list.append(cb)
+          setattr(self, f"{target_tab}_{target_state_name}", temp_cb_list)
+        cb_cell_layout.setSpacing(8)
+        cb_cell_layout.setContentsMargins(0, 8, 0, 0)
+        setattr(self, f"{target_tab}_{target_state_name}_layout", cb_cell_layout)
+        cb_cell.setLayout(cb_cell_layout)
+        #  Remarks: setup temporary state
+        return cb_cell
   
   
   #  METHODS - BOXES

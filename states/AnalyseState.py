@@ -1,4 +1,5 @@
 import pandas as pd
+from PyQt5.QtCore import Qt
 import logging
 
 
@@ -35,7 +36,7 @@ class AnalyseState:
     self.metrics_grouped_01: str | None = None
     self.metrics_grouped_02: str | None = None
     self.metrics_val_list: list | None = None
-    self.metrics_agg_list: list | None = None
+    self.metrics_agg_func_list: list | None = None
 
     #  3. graphs options
     self.graphs_col_01: str | None = None
@@ -128,13 +129,27 @@ class AnalyseState:
     
     
   #  remarks: list-based, checkbox return a full list directly
-  def set_metrics_val_list(self, target_list: list) -> None:
-    self.metrics_val_list = target_list
+  def set_metrics_val_list(self, target_state: Qt.Checked, target_col: str) -> None:
+    if target_state == Qt.Checked:
+      self.metrics_val_list.append(target_col)
+    elif target_state == Qt.UnChecked:
+      self.metrics_val_list.remove(target_col)
+    else:
+      return
+    return
   
   
   #  remarks: list-based, checkbox return a full list directly
-  def set_metrics_agg_func(self, target_list: list) -> None:
-    self.metrics_agg_list = target_list
+  def set_metrics_agg_func_list(self, target_state: Qt.Checked, target_col: str) -> None:
+    if target_col not in ["count", "sum", "mean", "mode", "median"]:
+      pass
+    if target_state == Qt.Checked:
+      self.metrics_agg_func_list.append(target_col)
+    elif target_state == Qt.UnChecked:
+      self.metrics_agg_func_list.remove(target_col)
+    else:
+      return
+    return
     
     
   #  4. set graphs options

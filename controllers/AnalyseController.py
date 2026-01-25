@@ -1,5 +1,5 @@
 import logging
-import pandas as pd
+from PyQt5.QtCore import Qt
 from controllers.ValidController import ValidController
 from models.DataManager import DataManager
 from views.components.config.views_config import MERGE_METHOD_OPT
@@ -37,13 +37,23 @@ class AnalyseController:
     
     
   #  Remarks: generate list for dropdown options
-  def deliver_col_opts(self) -> list:
+  def deliver_pivots_col_opts(self) -> list:
+    if self.app.merge_state.merge_proc is None:
+      return ["--- Please Select ---"]
     include_list: list = [col for col in self.app.merge_state.merge_proc.columns]
     return ["--- Please Select ---", *include_list]
   
   
+  #  Remarks: generate list of metrics value column options 
+  def deliver_metrics_val_col_opts(self) -> list:
+    if self.app.merge_state.merge_proc is None:
+      return []
+    include_list: list = [col for col in self.app.merge_state.merge_proc.columns]
+    return include_list
+  
+  
   #  Remarks: generate list of aggregation options
-  def deliver_agg_func_opts(self) -> list:
+  def deliver_pivots_agg_func_opts(self) -> list:
     include_list: list = ["Number of Entries (Exclude Blanks)",
                           "Number of Entries (Include Blanks)",
                           "Number of Different Items",
@@ -55,15 +65,16 @@ class AnalyseController:
   
   
   #  Remarks: generate list of fill options
-  def deliver_fill_opts(self) -> list:
+  def deliver_pivots_fill_opts(self) -> list:
     include_list: list = ["Remain Blank",
                           "Fill Zero"]
     return ["--- Please Select ---", *include_list]
 
+
   #  METHODS - TABS SPEC
 
   #  Remarks: for updating analyse options into analyse state
-  def analyse_dd_pivot_event(self, target_col: str, selected_text: str) -> None:
+  def analyse_dd_pivots_event(self, target_col: str, selected_text: str) -> None:
     if selected_text == "--- Please Select ---":
       return
     if target_col == "pivots_col_01":
@@ -83,10 +94,28 @@ class AnalyseController:
     else:
       return
     
+      
+  #  Remarks: for updating analyse options into analyse state
+  def analyse_dd_metrics_event(self, target_col: str, selected_text: str, selected_state: Qt.CheckState) -> None:
+    if selected_text == "--- Please Select ---":
+      return
+    if target_col == "metrics_groupby_01":
+      self.app.analyse_cont.set_metrics_grouped_01(target_col=selected_text)
+    elif target_col == "metrics_groupby_02":
+      self.app.analyse_cont.set_metrics_grouped_02(target_col=selected_text)
+    elif target_col == "metrics_val_list":
+      self.app.analyse_cont.analyse_dd_pivots_event(target_col=target_col,
+                                                    selected_text=selected_text,
+                                                    selected_state=selected_state)
+    elif target_col == "metrics_agg_func_list":
+      self.app.analyse_cont.analyse_dd_pivots_event(target_col=target_col,
+                                                    selected_text=selected_text,
+                                                    selected_state=selected_state)
+    else:
+      return
+      
+  
     
-  
-  
-  
   
   #  METHODS - BTN EVENTS
   
@@ -108,12 +137,10 @@ class AnalyseController:
       self.execute_pivots_btn_event()
         
     elif target_tab == "metrics":
-      print("metrics............................")
-      pass
+      self.execute_metrics_btn_event()
     
     elif target_tab == "graphs":
-      print("graphs............................")
-      pass
+      self.execute_graphs_btn_event()
     
     else:
       err_msg = f"Failed to proceed the analysis. Invalid tab name."
@@ -137,12 +164,12 @@ class AnalyseController:
                                                   target_val=self.app.analyse_state.pivots_val_01, 
                                                   target_aggfunc=self.app.analyse_state.pivots_agg_func,
                                                   target_filling=self.app.analyse_state.pivots_fill)
-      self.app.comp_fact.build_popup_wd(wd_title="Preview Pivot Table",
+      self.app.comp_fact.build_popup_wd(wd_title="Preview Pivots Table",
                                         target_df=target_tb,
-                                        popup_title=f"Preview Pivot Table",
+                                        popup_title=f"Preview Pivots Table",
                                         popup_content=self.app.comp_fact.build_table_view(target_df=target_tb))
     except Exception as ex:
-      err_msg: str = f"Failed to prepare pivot table"
+      err_msg: str = f"Failed to prepare pivots table"
       self.app.comp_fact.build_reminder_box(title="Error",
                                             txt_msg=err_msg)
       logger.error(err_msg + f"- {ex}", exc_info=True)
@@ -151,7 +178,52 @@ class AnalyseController:
   #  Remarks: instructed by event generator and behaviors specifically (Metrics)
   def execute_metrics_btn_event(self):
     try:
-      pass
+      #  1. decalrarion
+      input_groupby: list = [self.app.analyse_state.metrics_grouped_01,
+                             self.app.analyse_state.metrics_grouped_02]
+      input_val: list = self.app.analyse_state.metrics_val_list
+      input_agg_func: list = self.app.analyse_state.metrics_agg_func_list
+      
+      #  2. validate inputs 
+         
+      #  2a. invalid list parameters
+      if not input_groupby or input_groupby.empty:
+        err_msg: str = f"Failed to transform metrics table. Invalid parameters: groupby column list"
+        logger.warning(err_msg)
+        raise ValueError(err_msg)
+      if not input_val or input_val.empty:
+        err_msg: str = f"Failed to transform metrics table. Invalid parameters: value column list"
+        logger.warning(err_msg)
+        raise ValueError(err_msg)
+      #  trade-offs: pure groupby methods for empty, or statistical analysis with opts
+      if not input_agg_func or input_agg_func.empty:
+        input_agg_func = []
+        
+      #  2b. invalid value to be processed
+      for column in input_groupby:
+        self.app.valid_cont.validate_col(target_df=self.app.merge_state.merge_proc,
+                                         target_col=column)
+      for column in input_val:
+        self.app.valid_cont.validate_col(target_df=self.app.merge_state.merge_proc,
+                                         target_col=column)
+        
+      #  2c. remove invalid items, in case mistakenly input as final check
+      #      trade-offs: pure groupby methods for empty, or statistical analysis with opts
+      for column in input_agg_func:
+        if column.strip().lower() not in ["count", "sum", "mean", "mode", "median"]:
+          input_agg_func.remove(column)
+      
+      #  3. data transformation 
+      target_tb = self.app.data_manager.groupby_table(target_df=self.app.merge_state.merge_proc, 
+                                                      target_groupby_cols=input_groupby, 
+                                                      target_val_cols=input_val, 
+                                                      target_agg_func=input_agg_func)
+      #  4. build pop-up window
+      self.app.comp_fact.build_popup_wd(wd_title="Preview Metrics Table",
+                                        target_df=target_tb,
+                                        popup_title=f"Preview Metrics Table",
+                                        popup_content=self.app.comp_fact.build_table_view(target_df=target_tb))
+    
     except Exception as ex:
       err_msg: str = f"Failed to prepare metrics table"
       self.app.comp_fact.build_reminder_box(title="Error",
@@ -168,7 +240,34 @@ class AnalyseController:
       self.app.comp_fact.build_reminder_box(title="Error",
                                             txt_msg=err_msg)
       logger.error(err_msg + f"- {ex}", exc_info=True)
+      
+      
+  #  METHODS - REFRESH
+  
+  def refresh_checkbox_cell(self, target_tab: str, target_state_name: str, new_opt_list: list): 
+    #  1. get layout from temp state
+    cb_layout = getattr(self, f"{target_tab}_{target_state_name}_layout", None)
+    if not cb_layout: 
+      return
     
-
-
-
+    #  2. remove original child items
+    #  Learnt: use countdown to make sure the continuity of child removal
+    while cb_layout.count() > 0:
+      child = cb_layout.takeAt(0)
+      if child.widget():
+        child.widget().deleteLater()
+        
+    #  3. build new children
+    temp_list: list = []
+    if not new_opt_list or len(new_opt_list) < 1:
+      err_lb = self.app.comp_fact.build_label(lb_text="(No option found)", lb_align=Qt.AlignLeft)
+      cb_layout.addWidget(err_lb)
+    else:
+      for column in new_opt_list:
+        cb = self.app.comp_fact.build_checkbox(target_name=column, target_event=None)
+        cb_layout.addWidget(cb)
+        temp_list.append(cb)
+      setattr(self, f"{target_tab}_{target_state_name}", temp_list)
+      
+    
+    
