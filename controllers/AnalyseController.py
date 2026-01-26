@@ -115,6 +115,42 @@ class AnalyseController:
   
   #  METHODS - BTN EVENTS
   
+  #  Remarks: rebuild value options with up-to-date columns data with 'Next' btn
+  def rebuild_metrics_val_cell(self) -> None:
+    #  update temp state (initialise merge_proc is None)
+    update_options: list = self.app.merge_state.merge_proc.columns
+    if update_options is None or update_options.empty:
+      return
+    temp_dict = self.app.pages_fact.page_analyse.METRICS_OPTS_DICT["value_col_cell"]
+    temp_dict["options"] = update_options.tolist()
+    
+    #  declaration
+    curr_widget = self.app.pages_fact.page_analyse.metrics_val_cell
+    replace_widget = self.app.pages_fact.page_analyse.build_checkbox_cell(target_tab="Metrics", 
+                                                                            target_state_name="value_col_cell", 
+                                                                            target_opt_dict=temp_dict)
+    #  get master level
+    print("=======================================")
+    print(curr_widget)
+    print("=======================================")
+    print(curr_widget.parentWidget())
+    print("=======================================")
+    master_widget = curr_widget.parentWidget()
+    if not master_widget:
+      return
+    master_widget_layout = master_widget.layout()
+    if not master_widget_layout:
+      return
+    #  swapping items
+    #  Learnt: get the index -> search item -> insert new -> remove old
+    curr_widget_index = master_widget_layout.indexOf(curr_widget)
+    master_widget_layout.takeAt(curr_widget_index)
+    master_widget_layout.insertWidget(curr_widget_index, replace_widget)
+    curr_widget.deleteLater()
+    self.app.pages_fact.page_analyse.metrics_val_cell = replace_widget
+    return
+  
+  
   #  Remarks: identify tab and forwarding corr actions
   def proceed_btn_event_generator(self, tab_list: list, target_tab: str) -> None:
     
@@ -147,7 +183,6 @@ class AnalyseController:
   
   
   #  Remarks: instructed by event generator and behaviors specifically (Pivots)
-  #  TODO: error reminder should clarify if any requriement is missing
   def execute_pivots_btn_event(self):
     try:
       target_tb = self.data_manager.reshape_pivot(target_df=self.app.merge_state.merge_proc, 
@@ -239,33 +274,7 @@ class AnalyseController:
       
       
   #  METHODS - REFRESH
-  
-  # def refresh_checkbox_cell(self, target_tab: str, target_state_name: str, new_opt_list: list): 
-  #   #  1. get layout from temp state
-  #   cb_layout = getattr(self, f"{target_tab}_{target_state_name}_layout", None)
-  #   if not cb_layout: 
-  #     return
-    
-  #   #  2. remove original child items
-  #   #  Learnt: use countdown to make sure the continuity of child removal
-  #   while cb_layout.count() > 0:
-  #     child = cb_layout.takeAt(0)
-  #     if child.widget():
-  #       child.widget().deleteLater()
-        
-  #   #  3. build new children
-  #   temp_list: list = []
-  #   if not new_opt_list or len(new_opt_list) < 1:
-  #     err_lb = self.app.comp_fact.build_label(lb_text="(No option found)", lb_align=Qt.AlignLeft)
-  #     cb_layout.addWidget(err_lb)
-  #   else:
-  #     for column in new_opt_list:
-  #       cb = self.app.comp_fact.build_checkbox(target_name=column, target_event=None)
-  #       cb_layout.addWidget(cb)
-  #       temp_list.append(cb)
-  #     setattr(self, f"{target_tab}_{target_state_name}", temp_list)
       
-  
   def reset_analyse_option_generator(self, target_tab):
     #  error handling
     target_tab_r = target_tab.strip().lower()
@@ -312,5 +321,7 @@ class AnalyseController:
     #  Remarks: reset general setting in analyse state
     self.TAB_LIST: list = ["Pivots", "Metrics", "Graphs"]
     self.curr_tab: str = "Pivots"
+    #  Remarks: reset updated temp state
+    self.app.pages_fact.page_analyse.METRICS_OPTS_DICT["value_col_cell"]["options"] = None
     logger.info("All options has been reset at PageAnalyse.")
     return

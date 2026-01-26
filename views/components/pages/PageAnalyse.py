@@ -130,7 +130,7 @@ class PageAnalyse(PageTemplate):
       "value_col_cell": {
         "type": "checkbox",
         "label": "2. Select Value Column",
-        "options": [],    # Remarks: merge_proc is None when initialised, update later
+        "options": None,    # Remarks: merge_proc is None when initialised, update later
         "event": lambda target_state, target_name: self.app.analyse_cont.analyse_dd_metrics_event(target_col="metrics_val_cell",
                                                                                     selected_text=target_name,   
                                                                                     selected_state=target_state)
@@ -315,6 +315,8 @@ class PageAnalyse(PageTemplate):
         opt_cell = self.build_checkbox_cell(target_tab=target_tab, 
                                             target_state_name=key, 
                                             target_opt_dict=opt)
+        if key == "value_col_cell":
+          self.metrics_val_cell = opt_cell
       if opt_cell:
         frame_layout.addWidget(opt_cell, alignment=Qt.AlignLeft)
        
@@ -330,7 +332,7 @@ class PageAnalyse(PageTemplate):
   
   
   #  Remarks: cerate the dropdown cells, supporting to build_reused_opts_layout
-  def build_dropdown_cell(self, target_tab: str, target_state_name, target_opt_dict: Callable) -> QWidget:
+  def build_dropdown_cell(self, target_tab: str, target_state_name, target_opt_dict: dict) -> QWidget:
     opt_hybrid = self.build_table_opt_box(target_label=target_opt_dict["label"],
                                           target_options=target_opt_dict["options"],
                                           target_default=target_opt_dict["default"],
@@ -342,7 +344,7 @@ class PageAnalyse(PageTemplate):
   
   
   #  Remarks: create the checkbox cells, supporting to build_reused_opts_layout
-  def build_checkbox_cell(self, target_tab: str, target_state_name, target_opt_dict: Callable) -> QWidget:
+  def build_checkbox_cell(self, target_tab: str, target_state_name, target_opt_dict: dict) -> QWidget:
        
         #  2a. build frame cell
         sect_frame = QWidget()
@@ -359,7 +361,8 @@ class PageAnalyse(PageTemplate):
         sect_frame_layout.addWidget(sect_frame_lb)
         
         #  2c. false case
-        if len(target_opt_dict["options"]) < 1:
+        options = target_opt_dict["options"]
+        if not options or len(options) < 1:
           err_lb = self.app.comp_fact.build_label(lb_text="(No option can be found.)",
                                                   lb_align=Qt.AlignCenter)
           sect_frame_layout.addWidget(err_lb)
@@ -367,7 +370,7 @@ class PageAnalyse(PageTemplate):
         #  2d. suceed case: build checkbox group object
         else:
           #  start building and update checkbox items
-          for column in target_opt_dict["options"]:
+          for column in options:
             cb = self.app.comp_fact.build_checkbox(target_name=column, 
                                                    target_event=lambda target_state, 
                                                    target_name, 

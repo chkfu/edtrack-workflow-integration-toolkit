@@ -56,6 +56,8 @@ class NavController:
     #  execution
     if curr_page < total_pages - 1:
       self.app.page_stack.setCurrentIndex(curr_page+1)
+      if curr_page == 3:    #  Remarks: PageFE's button
+        self.app.analyse_cont.rebuild_metrics_val_cell()
     else:
       self.app.comp_fact.build_reminder_box(title="Error",
                                           txt_msg="Application failed to switch next steps and pages.")
