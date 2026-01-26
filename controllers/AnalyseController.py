@@ -96,26 +96,22 @@ class AnalyseController:
     
       
   #  Remarks: for updating analyse options into analyse state
-  def analyse_dd_metrics_event(self, target_col: str, selected_text: str, selected_state: Qt.CheckState) -> None:
+  def analyse_dd_metrics_event(self, target_col: str, selected_text: str, selected_state: Qt.CheckState | None) -> None:
     if selected_text == "--- Please Select ---":
       return
     if target_col == "metrics_groupby_01":
-      self.app.analyse_cont.set_metrics_grouped_01(target_col=selected_text)
+      self.app.analyse_state.set_metrics_grouped_01(target_col=selected_text)
     elif target_col == "metrics_groupby_02":
-      self.app.analyse_cont.set_metrics_grouped_02(target_col=selected_text)
-    elif target_col == "metrics_val_list":
-      self.app.analyse_cont.analyse_dd_pivots_event(target_col=target_col,
-                                                    selected_text=selected_text,
-                                                    selected_state=selected_state)
-    elif target_col == "metrics_agg_func_list":
-      self.app.analyse_cont.analyse_dd_pivots_event(target_col=target_col,
-                                                    selected_text=selected_text,
-                                                    selected_state=selected_state)
-    else:
+      self.app.analyse_state.set_metrics_grouped_02(target_col=selected_text)
+    elif target_col == "metrics_val_cell":
+      self.app.analyse_state.set_metrics_val_list(target_col=selected_text,
+                                                  target_state=selected_state)
+    elif target_col == "metrics_agg_func_cell":
+      self.app.analyse_state.set_metrics_agg_func_list(target_col=selected_text,
+                                                       target_state=selected_state)
       return
       
   
-    
   
   #  METHODS - BTN EVENTS
   
@@ -244,30 +240,77 @@ class AnalyseController:
       
   #  METHODS - REFRESH
   
-  def refresh_checkbox_cell(self, target_tab: str, target_state_name: str, new_opt_list: list): 
-    #  1. get layout from temp state
-    cb_layout = getattr(self, f"{target_tab}_{target_state_name}_layout", None)
-    if not cb_layout: 
-      return
+  # def refresh_checkbox_cell(self, target_tab: str, target_state_name: str, new_opt_list: list): 
+  #   #  1. get layout from temp state
+  #   cb_layout = getattr(self, f"{target_tab}_{target_state_name}_layout", None)
+  #   if not cb_layout: 
+  #     return
     
-    #  2. remove original child items
-    #  Learnt: use countdown to make sure the continuity of child removal
-    while cb_layout.count() > 0:
-      child = cb_layout.takeAt(0)
-      if child.widget():
-        child.widget().deleteLater()
+  #   #  2. remove original child items
+  #   #  Learnt: use countdown to make sure the continuity of child removal
+  #   while cb_layout.count() > 0:
+  #     child = cb_layout.takeAt(0)
+  #     if child.widget():
+  #       child.widget().deleteLater()
         
-    #  3. build new children
-    temp_list: list = []
-    if not new_opt_list or len(new_opt_list) < 1:
-      err_lb = self.app.comp_fact.build_label(lb_text="(No option found)", lb_align=Qt.AlignLeft)
-      cb_layout.addWidget(err_lb)
-    else:
-      for column in new_opt_list:
-        cb = self.app.comp_fact.build_checkbox(target_name=column, target_event=None)
-        cb_layout.addWidget(cb)
-        temp_list.append(cb)
-      setattr(self, f"{target_tab}_{target_state_name}", temp_list)
+  #   #  3. build new children
+  #   temp_list: list = []
+  #   if not new_opt_list or len(new_opt_list) < 1:
+  #     err_lb = self.app.comp_fact.build_label(lb_text="(No option found)", lb_align=Qt.AlignLeft)
+  #     cb_layout.addWidget(err_lb)
+  #   else:
+  #     for column in new_opt_list:
+  #       cb = self.app.comp_fact.build_checkbox(target_name=column, target_event=None)
+  #       cb_layout.addWidget(cb)
+  #       temp_list.append(cb)
+  #     setattr(self, f"{target_tab}_{target_state_name}", temp_list)
       
+  
+  def reset_analyse_option_generator(self, target_tab):
+    #  error handling
+    target_tab_r = target_tab.strip().lower()
+    if target_tab_r not in ["pivots", "metrics", "graphs", "all"]:
+      err_msg: str = f"Failed to reset the options due to invalid tab of targets - {target_tab}"
+      self.app.comp_fact.build_reminder_box(err_msg)
+      logger.warning(err_msg)
+      return
+    #  Remarks: operate reset
+    RESET_DECISIONS: dict = {
+      "pivots": self.reset_pivots_options,
+      "metrics": self.reset_metrics_options,
+      "graphs": self.reset_graphs_options,
+      "all": self.reset_all_options
+    }
+    return RESET_DECISIONS[target_tab]()
+
+  
+  def reset_pivots_options(self) -> None:
+    self.app.pages_fact.page_analyse.reset_widget_display(self, target_tab="pivots")
+    self.app.analyse_state.reset_state_generator(target_tab="pivots")
+    logger.info("Pivots options has been reset at PageAnalyse.")
+    return
+  
     
-    
+  def reset_metrics_options(self) -> None:
+    self.app.pages_fact.page_analyse.reset_widget_display(self, target_tab="metrics")
+    self.app.analyse_state.reset_state_generator(target_tab="metircs")
+    logger.info("Metrics options has been reset at PageAnalyse.")
+    return
+  
+  
+  def reset_graphs_options(self) -> None:
+    self.app.pages_fact.page_analyse.reset_widget_display(self, target_tab="graphs")
+    self.app.analyse_state.reset_state_generator(target_tab="graphs")
+    logger.info("Graphs options has been reset at PageAnalyse.")
+    return
+  
+  
+  def reset_all_options(self) -> None:
+    self.reset_pivots_options()
+    self.reset_metrics_options()
+    self.reset_graphs_options()
+    #  Remarks: reset general setting in analyse state
+    self.TAB_LIST: list = ["Pivots", "Metrics", "Graphs"]
+    self.curr_tab: str = "Pivots"
+    logger.info("All options has been reset at PageAnalyse.")
+    return

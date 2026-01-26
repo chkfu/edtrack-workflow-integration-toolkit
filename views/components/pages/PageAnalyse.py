@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import ( 
   QWidget, QGridLayout, QHBoxLayout, QVBoxLayout, QScrollArea, QTabWidget,
-  QSizePolicy, QFrame, QComboBox, QLabel
+  QSizePolicy, QFrame, QComboBox, QLabel, QCheckBox
 )
 from PyQt5.QtCore import Qt
 from views.components.pages.PageTemplate import PageTemplate
@@ -41,8 +41,8 @@ class PageAnalyse(PageTemplate):
     #  3. metrics components
     self.metrics_groupby_dd_01: QComboBox | None = None
     self.metrics_groupby_dd_02: QComboBox | None = None
-    self.metrics_val_list: QWidget | None = None
-    self.metrics_agg_func_list: QWidget | None = None
+    self.metrics_val_cell: QWidget | None = None
+    self.metrics_agg_func_cell: QWidget | None = None
     
     #  4. graphs components
     self.graphs_col_dd_01: QComboBox | None = None
@@ -114,27 +114,35 @@ class PageAnalyse(PageTemplate):
         "label": "1a. Select Groupby Column (Primary)",
         "options": ["--- Please Select ---"],
         "default": 0,
-        "event": lambda text: print(text)
+        "event": lambda text: self.app.analyse_cont.analyse_dd_metrics_event(target_col="metrics_groupby_01",
+                                                                             selected_text=text,
+                                                                             selected_state=None)
       },
       "groupby_dd_02": {
         "type": "dropdown",
         "label": "1b. Select Groupby Column (Secondary) - optional",
         "options": ["--- Please Select ---"],
         "default": 0,
-        "event": lambda text: print(text)
+        "event": lambda text: self.app.analyse_cont.analyse_dd_metrics_event(target_col="metrics_groupby_02",
+                                                                             selected_text=text,
+                                                                             selected_state=None)
       },
-      "value_col_list": {
+      "value_col_cell": {
         "type": "checkbox",
         "label": "2. Select Value Column",
         "options": [],    # Remarks: merge_proc is None when initialised, update later
-        "event": lambda text, checked: print(text, checked)
+        "event": lambda target_state, target_name: self.app.analyse_cont.analyse_dd_metrics_event(target_col="metrics_val_cell",
+                                                                                    selected_text=target_name,   
+                                                                                    selected_state=target_state)
       },
-      "agg_func_list": {
+      "agg_func_cell": {
         "type": "checkbox",
         "label": "3. Select Aggregation Type",
         "options": ["count", "sum", "mean", "mode", "median"], 
         "default": 0,
-        "event":  lambda text, checked: print(text, checked)
+        "event": lambda target_state, target_name: self.app.analyse_cont.analyse_dd_metrics_event(target_col="metrics_agg_func_cell",
+                                                                                    selected_text=target_name,   
+                                                                                    selected_state=target_state)
       }
     }
     
@@ -324,51 +332,59 @@ class PageAnalyse(PageTemplate):
   #  Remarks: cerate the dropdown cells, supporting to build_reused_opts_layout
   def build_dropdown_cell(self, target_tab: str, target_state_name, target_opt_dict: Callable) -> QWidget:
     opt_hybrid = self.build_table_opt_box(target_label=target_opt_dict["label"],
-                                              target_options=target_opt_dict["options"],
-                                              target_default=target_opt_dict["default"],
-                                              event=target_opt_dict["event"])
+                                          target_options=target_opt_dict["options"],
+                                          target_default=target_opt_dict["default"],
+                                          event=target_opt_dict["event"])
     opt_combo = opt_hybrid["dropdown"]
-    #  1b. update temp state (replace value)
+    # Remarks: update temp state
     setattr(self, f"{target_tab}_{target_state_name}", opt_combo)
     return opt_hybrid
   
   
   #  Remarks: create the checkbox cells, supporting to build_reused_opts_layout
   def build_checkbox_cell(self, target_tab: str, target_state_name, target_opt_dict: Callable) -> QWidget:
+       
         #  2a. build frame cell
+        sect_frame = QWidget()
+        sect_frame_layout = QVBoxLayout()
+        #  Remarks: this list container for temp widget reference
+        #  building inner cb_cell (for reset/refresh reference)
         cb_cell = QWidget()
         cb_cell_layout = QVBoxLayout()
         
         #  2b. build label
-        cb_cell_lb = self.app.comp_fact.build_label(lb_text=target_opt_dict["label"],
+        sect_frame_lb = self.app.comp_fact.build_label(lb_text=target_opt_dict["label"],
                                                     lb_type="p",
                                                     lb_align=Qt.AlignLeft)
-        cb_cell_layout.addWidget(cb_cell_lb)
+        sect_frame_layout.addWidget(sect_frame_lb)
         
         #  2c. false case
         if len(target_opt_dict["options"]) < 1:
           err_lb = self.app.comp_fact.build_label(lb_text="(No option can be found.)",
                                                   lb_align=Qt.AlignCenter)
-          cb_cell_layout.addWidget(err_lb)
+          sect_frame_layout.addWidget(err_lb)
           
         #  2d. suceed case: build checkbox group object
         else:
-          temp_cb_list = getattr(self, f"{target_tab}_{target_state_name}", None)
-          if not isinstance(temp_cb_list, list):
-            temp_cb_list = []
+          #  start building and update checkbox items
           for column in target_opt_dict["options"]:
             cb = self.app.comp_fact.build_checkbox(target_name=column, 
-                                                   target_event=None)  # event method to be appended
-            cb_cell_layout.addWidget(cb)
-            #  Remarks: setup temporary state
-            temp_cb_list.append(cb)
-          setattr(self, f"{target_tab}_{target_state_name}", temp_cb_list)
-        cb_cell_layout.setSpacing(8)
-        cb_cell_layout.setContentsMargins(0, 8, 0, 0)
-        setattr(self, f"{target_tab}_{target_state_name}_layout", cb_cell_layout)
-        cb_cell.setLayout(cb_cell_layout)
-        #  Remarks: setup temporary state
-        return cb_cell
+                                                   target_event=lambda target_state, 
+                                                   target_name, 
+                                                   column_val=column: target_opt_dict["event"](target_state=target_state, 
+                                                                                               target_name=column_val))
+            cb_cell_layout.addWidget(cb) 
+          cb_cell_layout.setSpacing(8)
+          cb_cell_layout.setContentsMargins(0, 0, 0, 0)
+          cb_cell.setLayout(cb_cell_layout)
+          # Remarks: update temp state
+          setattr(self, f"{target_tab}_{target_state_name}", cb_cell)
+        
+        sect_frame_layout.addWidget(cb_cell)
+        sect_frame_layout.setSpacing(8)
+        sect_frame_layout.setContentsMargins(0, 8, 0, 0)
+        sect_frame.setLayout(sect_frame_layout)
+        return sect_frame
   
   
   #  METHODS - BOXES
@@ -418,7 +434,7 @@ class PageAnalyse(PageTemplate):
   def build_tab_opt_controls(self) -> QWidget:
     #  components
     reset_btn = self.app.comp_fact.build_btn(btn_text="Reset",
-                                             btn_event=lambda: print("Reset button clicked"),
+                                             btn_event=lambda: self.reset_widget_display(target_tab=self.app.analyse_state.curr_tab),
                                              btn_bgcolor=THEME_COLOR["white"],
                                              btn_txtcolor=THEME_COLOR["primary"],
                                              btn_hover_bgcolor=THEME_COLOR["white_hvr"])  
@@ -470,3 +486,42 @@ class PageAnalyse(PageTemplate):
     return frame
   
   
+  #  RESET
+  
+  def reset_widget_display(self, target_tab: str) -> None:
+    target_tab = target_tab.strip().lower()
+    TAG_WIDGET_DICT: dict = {
+      "pivots": {
+        "dropdown": [self.pivots_col_dd_01,
+                     self.pivots_col_dd_02,
+                     self.pivots_row_dd_01,
+                     self.pivots_row_dd_02,
+                     self.pivots_val_dd_01,
+                     self.pivots_agg_func,
+                     self.pivots_fill],
+        "checkbox": []  
+      },
+      "metrics": {
+        "dropdown": [self.metrics_groupby_dd_01,
+                     self.metrics_groupby_dd_02],
+        "checkbox": [self.metrics_val_cell, 
+                     self.metrics_agg_func_cell]
+      }
+    }
+    
+    target_dd_list = TAG_WIDGET_DICT[target_tab]["dropdown"]
+    target_cb_list = TAG_WIDGET_DICT[target_tab]["checkbox"]
+    
+    if target_dd_list and len(target_dd_list) > 0:
+      for dropdown in target_dd_list:
+        dropdown.blockSignals(True)
+        dropdown.setCurrentIndex(0)
+        dropdown.blockSignals(False)
+    if target_cb_list and len(target_cb_list) > 0:
+      for cell in target_cb_list:
+        if cell is not None and cell.layout() is not None:
+          for item in cell.findChildren(QCheckBox):
+            item.blockSignals(True)
+            item.setChecked(False)
+            item.blockSignals(False)
+    return

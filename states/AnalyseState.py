@@ -14,14 +14,11 @@ class AnalyseState:
   
   def __init__(self):
     
-    #  Tab States
+    #  A. Tab States
     self.TAB_LIST: list = ["Pivots", "Metrics", "Graphs"]
     self.curr_tab: str = "Pivots"
     
-    #  DataFrame Management
-    self.data_pivots: pd.DataFrame = None
-    self.data_metrics: pd.DataFrame = None
-    self.data_graphs: pd.DataFrame = None
+    #  B. Option Management
 
     #  1. pivots options
     self.pivots_col_01: str | None = None
@@ -35,8 +32,8 @@ class AnalyseState:
     #  2. metrics options
     self.metrics_grouped_01: str | None = None
     self.metrics_grouped_02: str | None = None
-    self.metrics_val_list: list | None = None
-    self.metrics_agg_func_list: list | None = None
+    self.metrics_val_list: list = []
+    self.metrics_agg_func_list: list = []
 
     #  3. graphs options
     self.graphs_col_01: str | None = None
@@ -130,12 +127,14 @@ class AnalyseState:
     
   #  remarks: list-based, checkbox return a full list directly
   def set_metrics_val_list(self, target_state: Qt.Checked, target_col: str) -> None:
+    if self.metrics_val_list is None: 
+      self.metrics_val_list = []
     if target_state == Qt.Checked:
-      self.metrics_val_list.append(target_col)
-    elif target_state == Qt.UnChecked:
-      self.metrics_val_list.remove(target_col)
+      if target_col not in self.metrics_val_list:
+        self.metrics_val_list.append(target_col)
     else:
-      return
+      if target_col in self.metrics_val_list:
+        self.metrics_val_list.remove(target_col)
     return
   
   
@@ -145,11 +144,48 @@ class AnalyseState:
       pass
     if target_state == Qt.Checked:
       self.metrics_agg_func_list.append(target_col)
-    elif target_state == Qt.UnChecked:
-      self.metrics_agg_func_list.remove(target_col)
     else:
-      return
+      self.metrics_agg_func_list.remove(target_col)
     return
     
     
   #  4. set graphs options
+  
+  
+  
+  
+  
+  
+  #  5. reset
+  
+  
+  def reset_state_generator(self, target_tab) -> None:
+    METHOD_OPTS_DICT: dict = {
+      "pivots": self.reset_pivots_state,
+      "metrics": self.reset_metrics_state,
+      "graphs": self.reset_graphs_state
+      }   
+    return METHOD_OPTS_DICT[target_tab]()
+  
+  
+  def reset_pivots_state(self) -> None:
+    self.pivots_col_01: str | None = None
+    self.pivots_col_02: str | None = None
+    self.pivots_row_01: str | None = None
+    self.pivots_row_02: str | None = None
+    self.pivots_val_01: str | None = None
+    self.pivots_agg_func: str | None = None
+    self.pivots_fill: str | None = None
+    return
+
+
+  def reset_metrics_state(self) -> None:
+    self.metrics_grouped_01: str | None = None
+    self.metrics_grouped_02: str | None = None
+    self.metrics_val_list: list = []
+    self.metrics_agg_func_list: list = []
+    return
+    
+    
+  def reset_graphs_state(self) -> None:
+    return
