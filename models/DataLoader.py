@@ -68,7 +68,8 @@ class DataLoader:
         #  learnt: orient="records" for dict type (json-like)
         dataframe.to_json(destination, orient="records", indent=4) 
       elif type_r == ".png":
-        dfi.export(dataframe, destination)
+        #  Learnt: max_col as -1 for breaking limit
+        dfi.export(dataframe, destination, max_cols=-1)
       else:
         raise ValueError("Data path format is not .csv, .xml, or .json.")
       

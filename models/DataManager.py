@@ -1,7 +1,5 @@
 import pandas as pd
 import logging
-from models.config.monthList import MONNTH_LIST
-
 
 
 #  LOGGING
@@ -138,19 +136,13 @@ class DataManager:
     if formatted_col_left == "index":
       valid_col_left = "index"
     else:
-      valid_col_left = self.valid_cont.validate_col(
-        target_df=target_df_left,
-        target_col=target_col_left
-      )
-
+      valid_col_left = self.valid_cont.validate_col(target_df=target_df_left,
+                                                    target_col=target_col_left)
     if formatted_col_right == "index":
       valid_col_right = "index"
     else:
-      valid_col_right = self.valid_cont.validate_col(
-        target_df=target_df_right,
-        target_col=target_col_right
-      )
-
+      valid_col_right = self.valid_cont.validate_col(target_df=target_df_right,
+                                                     target_col=target_col_right)
     if valid_col_left is None or valid_col_right is None:
       raise ValueError("[DataManager] invalid merge column after validation.")
 
@@ -227,10 +219,11 @@ class DataManager:
   def groupby_table(self, target_df: pd.DataFrame, target_groupby_cols: list, target_val_cols: list, target_agg_func: list) -> pd.DataFrame:
     
     #  declaration
+    result_df = None
     acted_groupby: list = []
     acted_vals: list = []
     acted_aggs: list = []
-    AGG_FUNC_LIST: list = ["count", "sum", "mean", "median", "mode"]
+    AGG_FUNC_LIST: list = ["sum", "mean", "median", "mode"]
     
     #  validate types
     
@@ -250,6 +243,8 @@ class DataManager:
     if not acted_vals:
       raise ValueError("No aggregation option is specified.")
     
+    #  3. update agg functions list (temp)
+    
     for agg in target_agg_func:
       agg = agg.strip().lower()
       if agg not in AGG_FUNC_LIST:
@@ -257,29 +252,26 @@ class DataManager:
       else:
         acted_aggs.append(agg)
      
-    # execution
-    #  1. grouping tables columns
-    #  Learnt: .groupby does not return pd.DataFrame directly, further prcessing with methods
-    grouped_base = target_df.groupby(acted_groupby, dropna=False)
-    grouped_df = grouped_base[acted_vals].count()
-    result_frames: list = []
-    #  2. aggregation
-    #  Learnt: convert methods into dict, enabling customised mode func to be parsed in
-    GROUPBY_AGG_MAP = {
-      "count": lambda: grouped_base[acted_vals].count(),
-      "sum": lambda: grouped_base[acted_vals].sum(),
-      "mean": lambda: grouped_base[acted_vals].mean(),
-      "median": lambda: grouped_base[acted_vals].median(),
-      "mode": lambda: grouped_base[acted_vals].agg(self.get_mode),
-    }
+    #  exercise groupby dataframe
+    result_df = target_df.groupby(acted_groupby, dropna=False)[acted_vals].agg('count')
+    result_df.columns = [col for col in result_df.columns]
+    
+    #  exercise aggregations
     for agg in acted_aggs:
-      temp_df = GROUPBY_AGG_MAP[agg]()
-      temp_df.columns = [f"{col}_{agg}" for col in temp_df.columns]
-      result_frames.append(temp_df)
-
-    #  return agg output
-    if not acted_aggs or len(acted_aggs) < 1:
-      return grouped_df
+      for col in result_df.columns:
+        col_name = f"{col} ({agg})"
+        if agg == "sum":
+          result_df[col_name] = result_df[col].sum()
+        elif agg == "mean":
+          result_df[col_name] = result_df[col].mean()
+        elif agg == "median":
+          result_df[col_name] = result_df[col].median()
+        elif agg == "mode":
+          mode_val = result_df[col].mode()
+          result_df[col_name] = mode_val.iloc[0] if not mode_val.empty else None
+    
+    #  return dataframe, prevent crash with empty dataframe
+    if result_df is not None:
+      return result_df
     else:
-      agg_df = pd.concat(result_frames, axis=1)
-      return grouped_df.join(agg_df)
+      return pd.DataFrame(columns=acted_groupby)

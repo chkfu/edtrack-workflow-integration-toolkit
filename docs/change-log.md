@@ -28,10 +28,12 @@ This file records the major version changes of the projects.
 ### Edited
 
 - Restructured analysing logic at PageAnalyse
+- Update page-specific criteria of back button triggering at NavController
 
 ### Fixed
 
 - Fixed parameter input missing in AnalyseState
+- Fixed missing value checkboxes in metric tabs, PageAnalyse
 
 <br/>
 

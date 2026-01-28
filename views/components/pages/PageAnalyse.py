@@ -138,7 +138,7 @@ class PageAnalyse(PageTemplate):
       "agg_func_cell": {
         "type": "checkbox",
         "label": "3. Select Aggregation Type",
-        "options": ["count", "sum", "mean", "mode", "median"], 
+        "options": ["sum", "mean", "mode", "median"], 
         "default": 0,
         "event": lambda target_state, target_name: self.app.analyse_cont.analyse_dd_metrics_event(target_col="metrics_agg_func_cell",
                                                                                     selected_text=target_name,   

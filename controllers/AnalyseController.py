@@ -130,11 +130,6 @@ class AnalyseController:
                                                                             target_state_name="value_col_cell", 
                                                                             target_opt_dict=temp_dict)
     #  get master level
-    print("=======================================")
-    print(curr_widget)
-    print("=======================================")
-    print(curr_widget.parentWidget())
-    print("=======================================")
     master_widget = curr_widget.parentWidget()
     if not master_widget:
       return
@@ -218,34 +213,34 @@ class AnalyseController:
       #  2. validate inputs 
          
       #  2a. invalid list parameters
-      if not input_groupby or input_groupby.empty:
+      if not input_groupby:
         err_msg: str = f"Failed to transform metrics table. Invalid parameters: groupby column list"
         logger.warning(err_msg)
         raise ValueError(err_msg)
-      if not input_val or input_val.empty:
+      if not input_val:
         err_msg: str = f"Failed to transform metrics table. Invalid parameters: value column list"
         logger.warning(err_msg)
         raise ValueError(err_msg)
       #  trade-offs: pure groupby methods for empty, or statistical analysis with opts
-      if not input_agg_func or input_agg_func.empty:
+      if not input_agg_func:
         input_agg_func = []
         
       #  2b. invalid value to be processed
-      for column in input_groupby:
+      for column in self.app.merge_state.merge_proc.columns:
         self.app.valid_cont.validate_col(target_df=self.app.merge_state.merge_proc,
                                          target_col=column)
-      for column in input_val:
+      for column in self.app.merge_state.merge_proc.columns:
         self.app.valid_cont.validate_col(target_df=self.app.merge_state.merge_proc,
                                          target_col=column)
         
       #  2c. remove invalid items, in case mistakenly input as final check
       #      trade-offs: pure groupby methods for empty, or statistical analysis with opts
       for column in input_agg_func:
-        if column.strip().lower() not in ["count", "sum", "mean", "mode", "median"]:
+        if column.strip().lower() not in ["sum", "mean", "mode", "median"]:
           input_agg_func.remove(column)
       
       #  3. data transformation 
-      target_tb = self.app.data_manager.groupby_table(target_df=self.app.merge_state.merge_proc, 
+      target_tb = self.data_manager.groupby_table(target_df=self.app.merge_state.merge_proc, 
                                                       target_groupby_cols=input_groupby, 
                                                       target_val_cols=input_val, 
                                                       target_agg_func=input_agg_func)
