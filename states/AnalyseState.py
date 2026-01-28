@@ -69,23 +69,38 @@ class AnalyseState:
   #  2. set pivots options
 
   def set_pivots_col_01(self, target_col: str) -> None:
-    self.pivots_col_01 = target_col
+    if target_col == "--- Please Select ---":
+      self.pivots_col_01 = None
+    else:
+      self.pivots_col_01 = target_col
 
 
   def set_pivots_col_02(self, target_col: str) -> None:
-    self.pivots_col_02 = target_col
+    if target_col == "--- Please Select ---":
+      self.pivots_col_02 = None
+    else:
+      self.pivots_col_02 = target_col
 
 
   def set_pivots_row_01(self, target_row: str) -> None:
-    self.pivots_row_01 = target_row
+    if target_row == "--- Please Select ---":
+      self.pivots_row_01 = None
+    else:
+      self.pivots_row_01 = target_row
 
 
   def set_pivots_row_02(self, target_row: str) -> None:
-    self.pivots_row_02 = target_row
+    if target_row == "--- Please Select ---":
+      self.pivots_row_02 = None
+    else:
+      self.pivots_row_02 = target_row
 
 
   def set_pivots_val_01(self, target_val: str) -> None:
-    self.pivots_val_01 = target_val
+    if target_val == "--- Please Select ---":
+      self.pivots_val_01 = None
+    else:
+      self.pivots_val_01 = target_val
     
     
   def set_pivots_agg_func(self, target_fn: str) -> None:
@@ -98,8 +113,8 @@ class AnalyseState:
                           "Maximum Value": "max"}  
     if target_fn not in AGGFUNC_OPTS:
       self.pivots_agg_func = None
-      return
-    self.pivots_agg_func = AGGFUNC_OPTS[target_fn]
+    else:
+      self.pivots_agg_func = AGGFUNC_OPTS[target_fn]
     return
     
     
@@ -110,19 +125,25 @@ class AnalyseState:
     }
     if target_fill not in FILL_OPTS:
       self.pivots_fill = None
-      return
-    self.pivots_fill = FILL_OPTS[target_fill]
+    else:
+      self.pivots_fill = FILL_OPTS[target_fill]
     return
   
   
   #  3. set metrics options
   
   def set_metrics_grouped_01(self, target_col: str) -> None:
-    self.metrics_grouped_01 = target_col
+    if target_col == "--- Please Select ---":
+      self.metrics_grouped_01 = None
+    else:
+      self.metrics_grouped_01 = target_col
     
   
   def set_metrics_grouped_02(self, target_col: str) -> None:
-    self.metrics_grouped_02 = target_col
+    if target_col == "--- Please Select ---":
+      self.metrics_grouped_02 = None
+    else:
+     self.metrics_grouped_02 = target_col
     
     
   #  remarks: list-based, checkbox return a full list directly

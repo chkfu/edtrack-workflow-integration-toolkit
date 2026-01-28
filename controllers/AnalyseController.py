@@ -75,8 +75,6 @@ class AnalyseController:
 
   #  Remarks: for updating analyse options into analyse state
   def analyse_dd_pivots_event(self, target_col: str, selected_text: str) -> None:
-    if selected_text == "--- Please Select ---":
-      return
     if target_col == "pivots_col_01":
       self.app.analyse_state.set_pivots_col_01(selected_text)
     elif target_col == "pivots_col_02":
@@ -97,8 +95,6 @@ class AnalyseController:
       
   #  Remarks: for updating analyse options into analyse state
   def analyse_dd_metrics_event(self, target_col: str, selected_text: str, selected_state: Qt.CheckState | None) -> None:
-    if selected_text == "--- Please Select ---":
-      return
     if target_col == "metrics_groupby_01":
       self.app.analyse_state.set_metrics_grouped_01(target_col=selected_text)
     elif target_col == "metrics_groupby_02":
@@ -205,8 +201,9 @@ class AnalyseController:
   def execute_metrics_btn_event(self):
     try:
       #  1. decalrarion
-      input_groupby: list = [self.app.analyse_state.metrics_grouped_01,
+      raw_groupby: list = [self.app.analyse_state.metrics_grouped_01,
                              self.app.analyse_state.metrics_grouped_02]
+      input_groupby = [el for el in raw_groupby if el is not None and el != "--- Please Select ---"]
       input_val: list = self.app.analyse_state.metrics_val_list
       input_agg_func: list = self.app.analyse_state.metrics_agg_func_list
       
@@ -297,7 +294,7 @@ class AnalyseController:
     
   def reset_metrics_options(self) -> None:
     self.app.pages_fact.page_analyse.reset_widget_display(self, target_tab="metrics")
-    self.app.analyse_state.reset_state_generator(target_tab="metircs")
+    self.app.analyse_state.reset_state_generator(target_tab="metrics")
     logger.info("Metrics options has been reset at PageAnalyse.")
     return
   

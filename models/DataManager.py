@@ -215,7 +215,6 @@ class DataManager:
     return output
 
 
-
   def groupby_table(self, target_df: pd.DataFrame, target_groupby_cols: list, target_val_cols: list, target_agg_func: list) -> pd.DataFrame:
     
     #  declaration
@@ -244,7 +243,6 @@ class DataManager:
       raise ValueError("No aggregation option is specified.")
     
     #  3. update agg functions list (temp)
-    
     for agg in target_agg_func:
       agg = agg.strip().lower()
       if agg not in AGG_FUNC_LIST:
@@ -254,11 +252,12 @@ class DataManager:
      
     #  exercise groupby dataframe
     result_df = target_df.groupby(acted_groupby, dropna=False)[acted_vals].agg('count')
-    result_df.columns = [col for col in result_df.columns]
+    count_cols = list(result_df.columns)
     
     #  exercise aggregations
     for agg in acted_aggs:
-      for col in result_df.columns:
+      #  Learnt: refer to independent count_cols, as result_df columns keeps updating
+      for col in count_cols:
         col_name = f"{col} ({agg})"
         if agg == "sum":
           result_df[col_name] = result_df[col].sum()
