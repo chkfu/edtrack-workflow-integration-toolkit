@@ -151,7 +151,57 @@ The Content is the work panel for the application, enabling users to adjust the 
 
 <br/>
 
-## VIII. Dependencies
+
+
+## VIII. Technical Consideration and Limitations
+
+###  A. Known Issues
+
+#### (1) State Refresh Bugs
+
+- Issue: 
+Old states still retain in backend after clicking "--- Please Select ---" at dropdowns and unchecked the selected checkboxes, rather than reset to None or default value.  The reset functions in the sub-pages has been impacted and thereby unable to clear earlier options.
+
+- Action:
+Based on MVC architecture, we have tested the inputs between methods in models, views, controller and state management to ensure proper parameters have been provided and processed. A "if-else" conditional criteria has also been adopted, clarifying special cases handling with corresponding behaviors within our expectation.
+
+- Technical Debt:
+Despite the adoption of central state managemet and event-driven designs, the application still failed to handling sync updates with designated events. The failure is seemingly caused by the unpredicted gap between global state transition and Qt widgets lifecycle.
+
+
+###  B. Design Trade-off
+
+#### (1) Centralisation vs. Maintenance
+
+- Solution:
+This project attempts to adopt dictionary mapping and reusable methods for replicated widget constructions (especially options containers and tab content). The modularisation reduces potential "spagehtti codes" for better visual consistency.
+
+- Trade-off:
+As the programming logics are highly centralised, the core methods grow substantially with higher complication. Considering the challenges on future troubleshooring and maintenacne, this project prevents to divided the functionalities into the overwhelming and fragmented pieces, enabling developers to following the logical flow in sequence.
+
+
+#### (2) Linear Workflow vs. Tab Branches
+
+- Solution:
+The analyse stage is seperated into three independent tabs - pivot tables, calculate metrics and graph visualisation. The design provided higher degree of autonomy over specific tasking, even though the data analytical workflow can be processed in a single-paged sequencem directly.
+
+- Trade-off:
+This decision sacrisficed code simplicity with duplicated widget components (dropbox, checkboxes and tabs), but it simplified user operation with dedicated and straight-foward services, instead of being forced to run thorugh compulsory steps throughout the sequential analytical procedures.
+
+
+#### (3) Timing of Component Refresh
+
+- Solution:
+Parameter selections in our project are based on the informations from the table transformed in previous stages. As expected options will not be display with PyQt5 initial building, this project inserts mouse events for triggering corresponding component updates and ensuring the up-to-date information to be visualised.
+
+- Trade-off:
+Triggering for current table data is crucial for providing up-to-date options. With the stored interim tables in state, however, most of the option selection widget are better to refresh massively by next button (in page level), considering component-specific re-rendering could overload the program by frequent requests. Only few specific selection in feature engineering required immediate re-rendering for searching live information.
+
+
+<br/>
+
+
+## IX. Dependencies
 
 | Category | Package    | Version |
 |----------|------------|---------|
@@ -167,4 +217,4 @@ See `requirements.txt` for the full package list.
 
 <i> Author: kchan </i>
 </br>
-<i> Last Updated: Dec 9, 2025 </i>
+<i> Last Updated: Jan 29, 2026 </i>
