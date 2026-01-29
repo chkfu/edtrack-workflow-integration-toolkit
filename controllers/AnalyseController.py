@@ -113,6 +113,11 @@ class AnalyseController:
   
   #  Remarks: rebuild value options with up-to-date columns data with 'Next' btn
   def rebuild_metrics_val_cell(self) -> None:
+    
+    #  clear prev setting
+    self.app.analyse_state.metrics_val_list.clear() 
+    self.app.analyse_state.metrics_agg_func_list.clear()
+    
     #  update temp state (initialise merge_proc is None)
     update_options: list = self.app.merge_state.merge_proc.columns
     if update_options is None or update_options.empty:
@@ -286,21 +291,21 @@ class AnalyseController:
 
   
   def reset_pivots_options(self) -> None:
-    self.app.pages_fact.page_analyse.reset_widget_display(self, target_tab="pivots")
+    self.app.pages_fact.page_analyse.reset_widget_display(target_tab="pivots")
     self.app.analyse_state.reset_state_generator(target_tab="pivots")
     logger.info("Pivots options has been reset at PageAnalyse.")
     return
   
     
   def reset_metrics_options(self) -> None:
-    self.app.pages_fact.page_analyse.reset_widget_display(self, target_tab="metrics")
-    self.app.analyse_state.reset_state_generator(target_tab="metrics")
+    self.app.pages_fact.page_analyse.reset_widget_display(target_tab="pivots")
+    self.app.analyse_state.reset_state_generator(target_tab="pivots")
     logger.info("Metrics options has been reset at PageAnalyse.")
     return
   
   
   def reset_graphs_options(self) -> None:
-    self.app.pages_fact.page_analyse.reset_widget_display(self, target_tab="graphs")
+    self.app.pages_fact.page_analyse.reset_widget_display(target_tab="graphs")
     self.app.analyse_state.reset_state_generator(target_tab="graphs")
     logger.info("Graphs options has been reset at PageAnalyse.")
     return
@@ -311,8 +316,7 @@ class AnalyseController:
     self.reset_metrics_options()
     self.reset_graphs_options()
     #  Remarks: reset general setting in analyse state
-    self.TAB_LIST: list = ["Pivots", "Metrics", "Graphs"]
-    self.curr_tab: str = "Pivots"
+    self.app.analyse_state.curr_tab = "Pivots" 
     #  Remarks: reset updated temp state
     self.app.pages_fact.page_analyse.METRICS_OPTS_DICT["value_col_cell"]["options"] = None
     logger.info("All options has been reset at PageAnalyse.")

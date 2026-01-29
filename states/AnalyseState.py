@@ -32,8 +32,8 @@ class AnalyseState:
     #  2. metrics options
     self.metrics_grouped_01: str | None = None
     self.metrics_grouped_02: str | None = None
-    self.metrics_val_list: list = []
-    self.metrics_agg_func_list: list = []
+    self.metrics_val_list: set = set()
+    self.metrics_agg_func_list: set = set()
 
     #  3. graphs options
     self.graphs_col_01: str | None = None
@@ -148,26 +148,21 @@ class AnalyseState:
     
   #  remarks: list-based, checkbox return a full list directly
   def set_metrics_val_list(self, target_state: Qt.Checked, target_col: str) -> None:
-    if self.metrics_val_list is None: 
-      self.metrics_val_list = []
     if target_state == Qt.Checked:
-      if target_col not in self.metrics_val_list:
-        self.metrics_val_list.append(target_col)
+      self.metrics_val_list.add(target_col)
     else:
-      if target_col in self.metrics_val_list:
-        self.metrics_val_list.remove(target_col)
-    return
+      self.metrics_val_list.discard(target_col)       #  Remarks: use discard to avoid crash by empty item
   
   
   #  remarks: list-based, checkbox return a full list directly
-  def set_metrics_agg_func_list(self, target_state: Qt.Checked, target_col: str) -> None:
-    if target_col not in ["count", "sum", "mean", "mode", "median"]:
-      pass
-    if target_state == Qt.Checked:
-      self.metrics_agg_func_list.append(target_col)
-    else:
-      self.metrics_agg_func_list.remove(target_col)
-    return
+  def set_metrics_agg_func_list(self, target_state: int, target_agg: str):
+    valid_funcs = {"sum", "mean", "mode", "median"}
+    if target_agg in valid_funcs:
+      if target_state == Qt.Checked:
+        self.metrics_agg_func_list.add(target_agg)
+      else:
+        self.metrics_agg_func_list.discard(target_agg)
+
     
     
   #  4. set graphs options
@@ -180,7 +175,7 @@ class AnalyseState:
   #  5. reset
   
   
-  def reset_state_generator(self, target_tab) -> None:
+  def reset_state_generator(self, target_tab: str) -> None:
     METHOD_OPTS_DICT: dict = {
       "pivots": self.reset_pivots_state,
       "metrics": self.reset_metrics_state,
@@ -203,8 +198,8 @@ class AnalyseState:
   def reset_metrics_state(self) -> None:
     self.metrics_grouped_01: str | None = None
     self.metrics_grouped_02: str | None = None
-    self.metrics_val_list: list = []
-    self.metrics_agg_func_list: list = []
+    self.metrics_val_list: set = set()
+    self.metrics_agg_func_list: set = set()
     return
     
     

@@ -492,7 +492,13 @@ class PageAnalyse(PageTemplate):
   #  RESET
   
   def reset_widget_display(self, target_tab: str) -> None:
+    
+    #  prevent tab input mistakenly processed
     target_tab = target_tab.strip().lower()
+    if target_tab not in ["pivots", "metrics", "graphs"]:
+        return
+      
+    #  declaration
     TAG_WIDGET_DICT: dict = {
       "pivots": {
         "dropdown": [self.pivots_col_dd_01,
@@ -511,10 +517,10 @@ class PageAnalyse(PageTemplate):
                      self.metrics_agg_func_cell]
       }
     }
-    
     target_dd_list = TAG_WIDGET_DICT[target_tab]["dropdown"]
     target_cb_list = TAG_WIDGET_DICT[target_tab]["checkbox"]
     
+    #  execution
     if target_dd_list and len(target_dd_list) > 0:
       for dropdown in target_dd_list:
         dropdown.blockSignals(True)
