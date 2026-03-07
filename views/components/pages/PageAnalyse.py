@@ -44,10 +44,10 @@ class PageAnalyse(PageTemplate):
     self.metrics_val_cell: QWidget | None = None
     self.metrics_agg_func_cell: QWidget | None = None
     
-    #  4. graphs components
-    self.graphs_col_dd_01: QComboBox | None = None
-    self.graphs_row_dd_01: QComboBox | None = None
-    self.graphs_val_dd_01: QComboBox | None = None
+    # #  4. graphs components
+    # self.graphs_col_dd_01: QComboBox | None = None
+    # self.graphs_row_dd_01: QComboBox | None = None
+    # self.graphs_val_dd_01: QComboBox | None = None
     
     #  5. tab content options collection
     self.PIVOTS_OPTS_DICT: dict = {
@@ -230,9 +230,9 @@ class PageAnalyse(PageTemplate):
     elif target_title == "Metrics":
       title_lb = self.app.comp_fact.build_label(lb_text="II. Create Statistic Tables",
                                                 lb_type="h3")
-    elif target_title == "Graphs":
-      title_lb = self.app.comp_fact.build_label(lb_text="IV. Visualise Trends and Patterns",
-                                                lb_type="h3")
+    # elif target_title == "Graphs":
+    #   title_lb = self.app.comp_fact.build_label(lb_text="IV. Visualise Trends and Patterns",
+    #                                             lb_type="h3")
     else:
       title_lb = self.app.comp_fact.build_label(lb_text="Unknown Section",
                                                 lb_type="h3")
@@ -476,12 +476,12 @@ class PageAnalyse(PageTemplate):
       if target_df is not None or not target_df.empty:
         table_board = self.app.comp_fact.build_table_widget(target_df=target_df)
         frame_layout.addWidget(table_board)
-    elif target_title == "Graphs":
-      title_lb = self.app.comp_fact.build_label(lb_text="B. Graph Display",
-                                                lb_type="h3")
-      frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft | Qt.AlignTop)
-      if target_df is not None or not target_df.empty:
-        graph_board = None
+    # elif target_title == "Graphs":
+    #   title_lb = self.app.comp_fact.build_label(lb_text="B. Graph Display",
+    #                                             lb_type="h3")
+    #   frame_layout.addWidget(title_lb, alignment=Qt.AlignLeft | Qt.AlignTop)
+    #   if target_df is not None or not target_df.empty:
+    #     graph_board = None
     #  frame
     frame_layout.setSpacing(12)
     frame_layout.setContentsMargins(0, 8, 0, 0)
@@ -495,7 +495,7 @@ class PageAnalyse(PageTemplate):
     
     #  prevent tab input mistakenly processed
     target_tab = target_tab.strip().lower()
-    if target_tab not in ["pivots", "metrics", "graphs"]:
+    if target_tab not in ["pivots", "metrics"]:
         return
       
     #  declaration

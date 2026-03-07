@@ -15,7 +15,7 @@ class AnalyseState:
   def __init__(self):
     
     #  A. Tab States
-    self.TAB_LIST: list = ["Pivots", "Metrics", "Graphs"]
+    self.TAB_LIST: list = ["Pivots", "Metrics"]
     self.curr_tab: str = "Pivots"
     
     #  B. Option Management
