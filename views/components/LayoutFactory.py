@@ -241,7 +241,11 @@ class LayoutFactory:
   #  METHODS -  REUSABLE
   
   def reuse_list_items(self) -> None:
-    for data in DATASET_LIST:
+    for index, data in enumerate(DATASET_LIST):
+      #  skip item
+      if index == 0:
+        continue
+      #  update item
       txt = f"🟢 {data['data']}" if data["status"] else f" 🔴{data['data']}"
       list_item = QListWidgetItem()
       new_lb_widget = self.comp_fact.build_sidebar_listItem(is_listTop=False, lb_text=txt)
