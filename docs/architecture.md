@@ -98,13 +98,13 @@ Controllers bridge between the views and the models, handling user instruction a
 ###  B. Models - Data Pipeline Modules
 
 ```
-| Module       | Responsibility                                                                             |
-|----------------|---------------------------------------------------------------------------------------------|
-| Loader | Imports raw datasets, validates structure and converts into pandas DataFrames. |
-| Cleaner | Handles missing values, duplicates and inconsistent / unmatched formats. |
-| Manager | Manages DataFrame structures, merging, and interim dataset organisation. |
-| Preprocessor | Establishes feature engineering and prepares data for later analysis. |
-| Visualiser | Produces preview diagrams for visual display. |
+| Module       | Responsibility                                                                                  |
+|--------------|------------------------------------------------------------------------------------------------|
+| Loader       | Imports raw datasets, validates structure, and converts into pandas DataFrames.               |
+| Cleaner      | Handles missing values, duplicates, and inconsistent or unmatched formats.                    |
+| Manager      | Manages DataFrame structures, merging, and interim dataset organisation.                       |
+| Preprocessor | Establishes feature engineering and prepares data for later analysis.                          |
+| Visualiser   | Produces preview diagrams for visual display.                                                  |
 ```
 
 ###  C. Models - Data Pipelines
@@ -119,11 +119,11 @@ The Data Pipelines processes data with staged modules which enables data handlin
 ###  D.  Views - UI Composition
 
 ```
-| Module         | Responsibility                                                                             |
-|----------------|---------------------------------------------------------------------------------------------|
-| UIApplication |  Manages the overall interface and workflow, including the main window and the application's lifecycle.  |
-| LayoutFactory | Constructs standardised layout sections to organise the structure of each page consistently. |
-| PagesFactory | Generates page layouts for each workflow step, handling the arrangement and presentation of content. |
+| Module           | Responsibility                                                                                  |
+|-----------------|------------------------------------------------------------------------------------------------|
+| UIApplication    | Manages the overall interface and workflow, including the main window and the application's lifecycle. |
+| LayoutFactory    | Constructs standardized layout sections to organize the structure of each page consistently.  |
+| PagesFactory     | Generates page layouts for each workflow step, handling the arrangement and presentation of content. |
 | ComponentFactory | Creates reusable UI components and grouped toolkits to maintain visual and behavioural consistency. |
 ```
 

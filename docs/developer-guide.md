@@ -18,14 +18,12 @@ specific structure.
 
 - [I. Overview](#i-overview)
 - [II. Environment Setup](#ii-environment-setup)
-- [III. Architecture Rationale](#iii-architecture-rationale)
-- [IV. Project Structure](#iv-project-structure)
-- [V. Workflow Logic](#v-workflow-logic)
-- [VI. User Interface Guide](#vi-user-interface-guide)
-- [VII. Error Handling](#vii-error-handling)
-- [VIII. Trouble-shooting](#viii-trouble-shooting)
-- [IX. Limitation and Future Improvements](#ix-limitation-and-future-improvements)
-
+- [III. Project Structure](#iii-project-structure)
+- [IV. Workflow Logic](#iv-workflow-logic)
+- [V. User Interface Guide](#v-user-interface-guide)
+- [VI. Error Handling](#vi-error-handling)
+- [VII. Trouble-shooting](#vii-trouble-shooting)
+- [VIII. Limitation and Future Improvements](#viii-limitation-and-future-improvements)
 
 <br/>
 

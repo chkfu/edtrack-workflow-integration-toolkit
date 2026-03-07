@@ -3,16 +3,15 @@
 <br/>
 
 ## Contents
-- [Overview](#i-overview)
-- [Features](#ii-features)
-- [Architecture](#iii-architecture)
-- [Project Structure](#iv-project-structure)
-- [Workflow](#v-workflow)
-- [Installation](#vi-installation--initialisation)
-- [Usage Guide](#vii-usage-guide)
-- [Technical Considerations](#viii-technical-consideration-and-limitations)
-- [Roadmap](#ix-roadmap)
-- [Dependencies](#x-dependencies)
+- [I. Overview](#i-overview)
+- [II. Features](#ii-features)
+- [III. Architecture](#iii-architecture)
+- [IX. Project Structure](#iv-project-structure)
+- [V. Workflow](#v-workflow)
+- [VI. Installation](#vi-installation--initialisation)
+- [VII. Usage Guide](#vii-usage-guide)
+- [VIII. Technical Considerations](#viii-technical-consideration-and-limitations)
+- [IX. Dependencies](#ix-dependencies)
 
 <br/>
 
@@ -247,7 +246,7 @@ The UI components for SQL were hidden to keep the interface focused. The underly
 <br/>
 
 
-## X. Dependencies
+## IX. Dependencies
 
 | Category | Package    | Version |
 |----------|------------|---------|
