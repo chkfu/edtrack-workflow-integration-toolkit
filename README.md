@@ -182,7 +182,7 @@ The Content is the work panel for the application, enabling users to adjust the 
 
 ###  A. Known Issues
 
-#### (1) State Refresh Bugs
+#### (1) Incomplete State Reset on Widget Deselection
 
 - Issue: 
 Old states still retain in backend after clicking "--- Please Select ---" at dropdowns and unchecked the selected checkboxes, rather than reset to None or default value.  The reset functions in the sub-pages has been impacted and thereby unable to clear earlier options.
@@ -194,16 +194,7 @@ Based on MVC architecture, we have tested the inputs between methods in models, 
 Despite the adoption of central state managemet and event-driven designs, the application still failed to handling sync updates with designated events. The failure is seemingly caused by the unpredicted gap between global state transition and Qt widgets lifecycle.
 
 
-#### (2) SQL Connections
-
--  Issue: 
-Functionally, SQL connection has been built in early stage, but a permanant data storgae is not necessary in this use case. It is supposed to regulate and guide user's behavior on processing data through the designated pipeline.
-
--  Action:
-Related code of user interface has been hidden, while the basic connection has been kept in FileController as legacy code.
-
-
-####  (3) Graph Visualisation
+#### (2) Graph Visualisation Deferred
 
 - Issue:
 The original design intended to include interactive graph visualisations alongside pivot tables and heatmaps throughout the analysis.
@@ -215,31 +206,42 @@ Removed graph visualisation in the current version due to scope constraints. Pla
 
 ###  B. Design Trade-off
 
-#### (1) Centralisation vs. Maintenance
+#### (1) Centralisation vs. Maintainability
 
 - Solution:
-This project attempts to adopt dictionary mapping and reusable methods for replicated widget constructions (especially options containers and tab content). The modularisation reduces potential "spagehtti codes" for better visual consistency.
+Dictionary mapping and reusable methods are adopted for repeated widget constructions, such as option containers and tab content, to reduce duplicated code and maintain visual consistency.
 
 - Trade-off:
-As the programming logics are highly centralised, the core methods grow substantially with higher complication. Considering the challenges on future troubleshooting and maintenacne, this project prevents to divided the functionalities into the overwhelming and fragmented pieces, enabling developers to following the logical flow in sequence.
+Centralised logic causes core methods to grow in complexity over time. To avoid overwhelming fragmentation, related functionalities are grouped together, allowing developers to follow the logical flow sequentially rather than jumping across many small pieces.
 
 
 #### (2) Linear Workflow vs. Tab Branches
 
 - Solution:
-The analyse stage is seperated into three independent tabs - pivot tables, calculate metrics and graph visualisation. The design provided higher degree of autonomy over specific tasking, even though the data analytical workflow can be processed in a single-paged sequencem directly.
+The Analyse stage is split into three independent tabs — pivot tables, metric calculation, and graph visualisation — giving users focused control over each task without enforcing a fixed sequence.
 
 - Trade-off:
-This decision sacrisficed code simplicity with duplicated widget components (dropbox, checkboxes and tabs), but it simplified user operation with dedicated and straight-foward services, instead of being forced to run thorugh compulsory steps throughout the sequential analytical procedures.
+This introduced duplicated widget components (dropdowns, checkboxes, tabs) across tabs, increasing code complexity. However, it simplifies the user experience by providing dedicated, straightforward interfaces for each analytical task.
 
 
 #### (3) Timing of Component Refresh
 
 - Solution:
-Parameter selections in our project are based on the informations from the table transformed in previous stages. As expected options will not be display with PyQt5 initial building, this project inserts mouse events for triggering corresponding component updates and ensuring the up-to-date information to be visualised.
+Parameter selections depend on data from previous pipeline stages, which are unavailable at PyQt5's initial build time. Mouse events are used to trigger component updates and display up-to-date options when needed.
 
 - Trade-off:
-Triggering for current table data is crucial for providing up-to-date options. With the stored interim tables in state, however, most of the option selection widget are better to refresh massively by next button (in page level), considering component-specific re-rendering could overload the program by frequent requests. Only few specific selection in feature engineering required immediate re-rendering for searching live information.
+Most option widgets refresh at the page level (via the Next button) to avoid overloading the app with frequent re-render requests. Only a few selections in the feature engineering stage require immediate re-rendering to reflect live data changes.
+
+
+#### (4) SQL Connection Excluded from UI
+
+- Solution:
+SQL connectivity was implemented early in development, but persistent storage is not essential for the core use case of guiding users through a structured data processing pipeline.
+
+- Trade-off:
+The UI components for SQL were hidden to keep the interface focused. The underlying connection logic remains in `FileController` as legacy code for potential future use.
+
+
 
 
 <br/>
