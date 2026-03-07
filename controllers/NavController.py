@@ -47,7 +47,7 @@ class NavController:
     
   def next_btn(self) -> None:
     """ USE: navigate to go to next workflow step"""
-    
+
     #  false cases
     self.validate_qstacks()
     #  get variables
@@ -55,17 +55,73 @@ class NavController:
     curr_page = self.app.page_stack.currentIndex()
     #  execution
     if curr_page < total_pages - 1:
+      #  step-specific validation before proceeding
+      if not self._validate_step_before_next(curr_page):
+        return
       self.app.page_stack.setCurrentIndex(curr_page+1)
-      if curr_page == 3:    #  Remarks: PageFE's button
+      if curr_page == 3:    #  Remarks: PageFE's button trigger PageAnalyse rendering
         self.app.analyse_cont.rebuild_metrics_val_cell()
     else:
       self.app.comp_fact.build_reminder_box(title="Error",
                                           txt_msg="Application failed to switch next steps and pages.")
     #  update tasks list
-    self.update_workflow(target_action="next", 
+    self.update_workflow(target_action="next",
                          curr_page=curr_page)
     #  refresh sidebar list status
     self.app.layout_fact.refresh_db_sect()
+
+
+  def _validate_step_before_next(self, curr_page: int) -> bool:
+    """ USE: validate step-specific conditions before allowing navigation to next page.
+        Returns True if navigation should proceed, False to block. """
+
+    #  Step 1 (page 0): at least one dataset must be loaded
+    if curr_page == 0:
+      validity = self.app.clean_state.get_clean_ds_validity()
+      if not any(validity.values()):
+        self.app.comp_fact.build_reminder_box(
+          title="Warning",
+          txt_msg="Please select at least one dataset before proceeding.")
+        return False
+
+    #  Step 2 (page 1): confirm if no dataset has been cleaned
+    elif curr_page == 1:
+      any_cleaned = any(
+        ds.data_clean is not None
+        for ds in self.app.clean_state.dataset_states.values()
+      )
+      if not any_cleaned:
+        confirmed = self.app.comp_fact.build_msg_box(
+          title="Confirmation",
+          question="Are you sure to proceed further without cleaning any dataset?")
+        if not confirmed:
+          return False
+
+    #  Step 3 (page 2): merge must be completed
+    elif curr_page == 2:
+      if self.app.merge_state.merge_raw is None:
+        self.app.comp_fact.build_reminder_box(
+          title="Warning",
+          txt_msg="Please complete the dataset merge before proceeding.")
+        return False
+
+    #  Step 4 (page 3): confirm if no feature engineering was applied
+    elif curr_page == 3:
+      merge_raw = self.app.merge_state.merge_raw
+      merge_proc = self.app.merge_state.merge_proc
+      fe_applied = (
+        merge_proc is not None and merge_raw is not None and
+        (list(merge_proc.columns) != list(merge_raw.columns) or
+         merge_proc.shape != merge_raw.shape)
+      )
+      if not fe_applied:
+        confirmed = self.app.comp_fact.build_msg_box(
+          title="Confirmation",
+          question="Are you sure to proceed further without applying any feature engineering?")
+        if not confirmed:
+          return False
+
+    return True
       
       
   def validate_qstacks(self) -> None:

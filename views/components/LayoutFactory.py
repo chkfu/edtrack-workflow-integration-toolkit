@@ -236,6 +236,8 @@ class LayoutFactory:
     for item in DATASET_LIST:
       if item["data"] in unmerged_datasets.keys():
         item["status"] = unmerged_datasets[item["data"]]
+      elif item["data"] == "Dataset - Merged":
+        item["status"] = self.app.merge_state.merge_raw is not None
   
       
   #  METHODS -  REUSABLE
