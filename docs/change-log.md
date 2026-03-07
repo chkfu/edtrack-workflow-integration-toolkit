@@ -19,7 +19,14 @@ This file records the major version changes of the projects.
 <br/>
 
 
-## [0.1.7] - 
+## [1.0.8] - Mar 07, 2026
+
+-  First minimum viable product released.
+
+<br/>
+
+
+## [0.1.7] - Mar 07, 2026
 
 ### Added 
 
@@ -34,6 +41,11 @@ This file records the major version changes of the projects.
 
 - Fixed parameter input missing in AnalyseState
 - Fixed missing value checkboxes in metric tabs, PageAnalyse
+- Update page-specific criteria of back button triggering at NavController
+
+### Delete
+
+- Removed graph visualization for the current version.
 
 <br/>
 

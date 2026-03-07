@@ -6,7 +6,7 @@ import models.SQLConnector
 
 #  LOGGING
 
-logger = DebugLogger().setup_app_logger(file_name="debug.log")
+logger = DebugLogger().setup_app_logger()
 
 
 #  MAIN

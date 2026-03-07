@@ -2,6 +2,20 @@
 
 <br/>
 
+## Contents
+- [Overview](#i-overview)
+- [Features](#ii-features)
+- [Architecture](#iii-architecture)
+- [Project Structure](#iv-project-structure)
+- [Workflow](#v-workflow)
+- [Installation](#vi-installation--initialisation)
+- [Usage Guide](#vii-usage-guide)
+- [Technical Considerations](#viii-technical-consideration-and-limitations)
+- [Roadmap](#ix-roadmap)
+- [Dependencies](#x-dependencies)
+
+<br/>
+
 
 ## I. Overview
 
@@ -10,6 +24,7 @@ A refactored version of my earlier coursework rebuilt into a modularised Python 
 It is designed to tailor-made a standard workflow for analysing student engagement and supports exporting processed datasets into designated format and storing persistent data in a SQL database.
 
 <br/>
+
 
 ## II. Features
 
@@ -22,6 +37,7 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 </p>
 
 <br/>
+
 
 ## III. Architecture
 
@@ -89,9 +105,9 @@ views/         # UI layer: all UI components and structure workflow
 
 <br/>
 
-## VI. Installation
+## VI. Installation / Initialisation
 
- <i> Clone the Project </i>
+### A. Clone the Project
 
 ```
 $ git clone https://github.com/chkfu/Practice_student-activities.git
@@ -116,6 +132,15 @@ $ pip install -r requirements.txt
 ```
 $ python3 app.py
 ```
+
+###  B. Open the Pre-built app (macOS version)
+
+<i> No Python installation required. </i>
+
+**[Download latest release](https://github.com/chkfu/Practice_student-activities/releases/latest)**
+
+<br>
+
 
 <br/>
 
@@ -169,6 +194,25 @@ Based on MVC architecture, we have tested the inputs between methods in models, 
 Despite the adoption of central state managemet and event-driven designs, the application still failed to handling sync updates with designated events. The failure is seemingly caused by the unpredicted gap between global state transition and Qt widgets lifecycle.
 
 
+#### (2) SQL Connections
+
+-  Issue: 
+Functionally, SQL connection has been built in early stage, but a permanant data storgae is not necessary in this use case. It is supposed to regulate and guide user's behavior on processing data through the designated pipeline.
+
+-  Action:
+Related code of user interface has been hidden, while the basic connection has been kept in FileController as legacy code.
+
+
+####  (3) Graph Visualisation
+
+- Issue:
+The original design intended to include interactive graph visualisations alongside pivot tables and heatmaps throughout the analysis.
+
+- Action:
+Removed graph visualisation in the current version due to scope constraints. Planned for future expansion.
+
+
+
 ###  B. Design Trade-off
 
 #### (1) Centralisation vs. Maintenance
@@ -177,7 +221,7 @@ Despite the adoption of central state managemet and event-driven designs, the ap
 This project attempts to adopt dictionary mapping and reusable methods for replicated widget constructions (especially options containers and tab content). The modularisation reduces potential "spagehtti codes" for better visual consistency.
 
 - Trade-off:
-As the programming logics are highly centralised, the core methods grow substantially with higher complication. Considering the challenges on future troubleshooring and maintenacne, this project prevents to divided the functionalities into the overwhelming and fragmented pieces, enabling developers to following the logical flow in sequence.
+As the programming logics are highly centralised, the core methods grow substantially with higher complication. Considering the challenges on future troubleshooting and maintenacne, this project prevents to divided the functionalities into the overwhelming and fragmented pieces, enabling developers to following the logical flow in sequence.
 
 
 #### (2) Linear Workflow vs. Tab Branches
@@ -201,7 +245,7 @@ Triggering for current table data is crucial for providing up-to-date options. W
 <br/>
 
 
-## IX. Dependencies
+## X. Dependencies
 
 | Category | Package    | Version |
 |----------|------------|---------|
@@ -215,6 +259,7 @@ See `requirements.txt` for the full package list.
 
 <br/>
 
+
 <i> Author: kchan </i>
 </br>
-<i> Last Updated: Jan 29, 2026 </i>
+<i> Last Updated: Mar 07, 2026 </i>

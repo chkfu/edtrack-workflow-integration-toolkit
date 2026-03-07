@@ -74,7 +74,6 @@ class NavController:
   def _validate_step_before_next(self, curr_page: int) -> bool:
     """ USE: validate step-specific conditions before allowing navigation to next page.
         Returns True if navigation should proceed, False to block. """
-
     #  Step 1 (page 0): at least one dataset must be loaded
     if curr_page == 0:
       validity = self.app.clean_state.get_clean_ds_validity()
@@ -83,7 +82,6 @@ class NavController:
           title="Warning",
           txt_msg="Please select at least one dataset before proceeding.")
         return False
-
     #  Step 2 (page 1): confirm if no dataset has been cleaned
     elif curr_page == 1:
       any_cleaned = any(
@@ -96,7 +94,6 @@ class NavController:
           question="Are you sure to proceed further without cleaning any dataset?")
         if not confirmed:
           return False
-
     #  Step 3 (page 2): merge must be completed
     elif curr_page == 2:
       if self.app.merge_state.merge_raw is None:
@@ -104,7 +101,6 @@ class NavController:
           title="Warning",
           txt_msg="Please complete the dataset merge before proceeding.")
         return False
-
     #  Step 4 (page 3): confirm if no feature engineering was applied
     elif curr_page == 3:
       merge_raw = self.app.merge_state.merge_raw
