@@ -58,12 +58,12 @@ class TestDataCleanerBasic:
   """ ==== handle na ==== """
     
   #  Remarks: for NA, for no na
-  def handle_na_original(self):
+  def test_handle_na_original(self):
     test_df: pd.DataFrame = pd.DataFrame({
       "col_a": ["item-1", "item-2", "item-3"], 
       "col_b": ["item-1", "item-2", "item-3"]
     })
-    result = self.cleaner.handle_na(test_df, drop_missing=True)
+    result = self.cleaner.handle_na(test_df, drop_missing=True, na_subset_col=None)
     assert len(result) == 3
     assert result["col_a"].tolist() == ["item-1", "item-2", "item-3"]
     assert result["col_b"].tolist() == ["item-1", "item-2", "item-3"]
@@ -74,7 +74,7 @@ class TestDataCleanerBasic:
       "col_a": ["item-1", "item-2", "item-3"], 
       "col_b": ["item-1", "item-2", None]
       })
-    result = self.cleaner.handle_na(test_df, drop_missing=True)
+    result = self.cleaner.handle_na(test_df, drop_missing=True, na_subset_col=None)
     assert len(result) == 2
     assert result["col_a"].tolist() == ["item-1", "item-2"]
     assert result["col_b"].tolist() == ["item-1", "item-2"]
@@ -85,7 +85,7 @@ class TestDataCleanerBasic:
       "col_a": [None, "item-2", "item-3"], 
       "col_b": ["item-1", "item-2", None]
       })
-    result = self.cleaner.handle_na(test_df, drop_missing=True)
+    result = self.cleaner.handle_na(test_df, drop_missing=True, na_subset_col=None)
     assert len(result) == 1
     assert result["col_a"].tolist() == ["item-2"]
     assert result["col_b"].tolist() == ["item-2"]
@@ -96,15 +96,16 @@ class TestDataCleanerBasic:
       "col_a": [None, "item-2", "item-3"], 
       "col_b": ["item-1", "item-2", None]
       })
-    result = self.cleaner.handle_na(test_df, drop_missing=True)
-    assert result["col_a"].isna().all()
-    assert result["col_b"].isna().all()
+    result = self.cleaner.handle_na(test_df, drop_missing=True, na_subset_col=None)
+    assert len(result) == 1
+    assert result["col_a"].tolist() == ["item-2"]
+    assert result["col_b"].tolist() == ["item-2"]
     
   #  Remarks: for NA, for empty dataframe
     #  Remarks: for NA, for na in 1 row
   def test_handle_na_empty(self):
     test_df = pd.DataFrame(columns=["col_a", "col_b"])
-    result = self.cleaner.handle_na(test_df, drop_missing=True)
+    result = self.cleaner.handle_na(test_df, drop_missing=True, na_subset_col=None)
     assert result.empty
     
     
@@ -116,7 +117,7 @@ class TestDataCleanerBasic:
       "col_a": ["item-2", "item-1", "item-3"], 
       "col_b": ["item-2", "item-1", "item-3"]
     })
-    result = self.cleaner.handle_sort(test_df, sort_item="col_a", sort_ascending=True)
+    result = self.cleaner.handle_sort(test_df, target_col="col_a", is_ascending=True)
     assert len(result) == 3
     assert result["col_a"].tolist() == ["item-1", "item-2", "item-3"]
     assert result["col_b"].tolist() == ["item-1", "item-2", "item-3"]
@@ -127,7 +128,7 @@ class TestDataCleanerBasic:
       "col_a": ["item-2", "item-1", "item-3"], 
       "col_b": ["item-2", "item-1", "item-3"]
     })
-    result = self.cleaner.handle_sort(test_df, sort_item="col_a", sort_ascending=False)
+    result = self.cleaner.handle_sort(test_df, target_col="col_a", is_ascending=False)
     assert len(result) == 3
     assert result["col_a"].tolist() == ["item-3", "item-2", "item-1"]
     assert result["col_b"].tolist() == ["item-3", "item-2", "item-1"]
@@ -138,7 +139,7 @@ class TestDataCleanerBasic:
       "col_a": [None, "item-2", "item-3"], 
       "col_b": ["item-2", "item-1", "item-3"]
     })
-    result = self.cleaner.handle_sort(test_df, sort_item="col_a", sort_ascending=True)
+    result = self.cleaner.handle_sort(test_df, target_col="col_a", is_ascending=True)
     assert len(result) == 3
     assert result["col_a"].tolist()[:2] == ["item-2", "item-3"]
     assert pd.isna(result["col_a"].iloc[2])
@@ -149,14 +150,15 @@ class TestDataCleanerBasic:
       "col_a": [None, "item-2", "item-3"], 
       "col_b": ["item-2", "item-1", "item-3"]
     })
-    result = self.cleaner.handle_sort(test_df, sort_item="col_a", sort_ascending=False)
+    result = self.cleaner.handle_sort(test_df, target_col="col_a", is_ascending=False)
     assert len(result) == 3
     assert result["col_a"].tolist()[:2] == ["item-3", "item-2"]
     assert pd.isna(result["col_a"].iloc[2])
   
   #  Remarks: for sorting, for empty in ascending
-  def test_handle_sort_original_asc(self):
+  def test_handle_sort_empty(self):
     test_df = pd.DataFrame()
-    result = self.cleaner.handle_sort(test_df, sort_item="col_a", sort_ascending=True)
-    assert result["col_a"].tolist() == pd.DataFrame().empty()
+    #  Remarks: no col name for empty dataframe
+    result = self.cleaner.handle_sort(test_df, target_col="index", is_ascending=True)
+    assert result.empty
     

@@ -85,7 +85,7 @@ class DataCleaner:
   def manage_string_case(self, 
                          input: str, 
                          case: str="title") -> str:
-    if pd.isna(input):                    # ← 加這兩行
+    if pd.isna(input):
       return "Not Specified"
     case = case.lower()
     if case not in ["upper", "lower", "capitalize", "capitalise", "title"]:
