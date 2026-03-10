@@ -85,6 +85,8 @@ class DataCleaner:
   def manage_string_case(self, 
                          input: str, 
                          case: str="title") -> str:
+    if pd.isna(input):                    # ← 加這兩行
+      return "Not Specified"
     case = case.lower()
     if case not in ["upper", "lower", "capitalize", "capitalise", "title"]:
       logger.warning("the selected option is not valid text case.")
@@ -99,21 +101,29 @@ class DataCleaner:
       output = input.title()
     return output.strip()
   
+  
   def handle_num_na(self, 
                     series: pd.Series, 
-                    filling: str="median") -> pd.Series:   
-    if filling.lower() not in ["mean", "median", "mode"]:
+                    filling: str="median") -> pd.Series:  
+    filling = filling.lower().strip() 
+    if series.empty:
+      return series
+    if filling not in ["mean", "median", "mode"]:
       logger.warning("the designated filling unit is not a valid option.")
       return series
     if filling == "mean":
       temp_val = series.mean()
-    elif filling == "mode":
-      temp_val = statistics.mode(series)
-    else:
+    elif filling == "median":
       temp_val = series.median()
-    if series.isna().any():
-      series = series.fillna(temp_val)
-    return series
+    elif filling == "mode":
+      temp_val = series.mode().iloc[0]
+    else:
+      #  remarks: invalid mode case
+      modes = series.mode(dropna=True)
+      if modes.empty:
+        return series
+      temp_val = modes.iloc[0]
+    return series.fillna(temp_val)
   
   
   def spec_cleaning_str(self, 
@@ -122,22 +132,25 @@ class DataCleaner:
     output = target_df.copy()
     output[target_col] = output[target_col].astype("string").fillna("Not Specified")
     for index, value in output[target_col].items():
+      if value == "Not Specified":
+        continue
       temp_val = self.trim_string(input=value, isAlpha=False)
       temp_val = self.manage_string_case(input=temp_val, case="upper")
       output.loc[index, target_col] = temp_val
     return output
   
-  
+    
   def spec_cleaning_int(self, 
                         target_df: pd.DataFrame, 
                         target_col: str) -> pd.DataFrame:
     output = target_df.copy()
-    
-    
+    #  Remarks: in case bool will be ignored
+    output[target_col] = output[target_col].map(
+      lambda item: 1 if item is True else (0 if item is False else item))
     output[target_col] = output[target_col].astype(str).str.strip().map(lambda el: re.sub(r'[^0-9\.,]', "", el))
     output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
     if output[target_col].notna().sum() == 0:
-      raise ValueError(f"Failed to convert to integer type.")
+        raise ValueError(f"Failed to convert to integer type.")
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
     output[target_col] = output[target_col].round().astype("Int64")
     return output
@@ -147,6 +160,9 @@ class DataCleaner:
                           target_df: pd.DataFrame, 
                           target_col: str) -> pd.DataFrame:
     output = target_df.copy()
+    #  Remarks: in case bool will be ignored
+    output[target_col] = output[target_col].map(
+      lambda item: 1 if item is True else (0 if item is False else item))
     output[target_col] = output[target_col].astype(str).str.strip().map(lambda el: re.sub(r'[^0-9\.,]', "", el))
     output[target_col] = pd.to_numeric(output[target_col], errors="coerce")
     output[target_col] = self.handle_num_na(output[target_col], filling="median")
