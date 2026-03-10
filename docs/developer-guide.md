@@ -440,21 +440,13 @@ All testing files are located at `tests/` folders.
 With the example of `TestDataCleanerBasic.py"` file, run the unit test specifically with the code:
 
 ```
-#  1. run the test at specific files:
 $ pytest tests/test_data_cleaner_basic.py -v
-
-#  2. recevie the result:
-$ tests/test_data_cleaner_basic.py | grep -n "def 
 ```
 
 Additionally, the shortcut to run all tests under `tests/` folder, consider the code in below:
 
 ```
-#  1. run the test at specific files:
 pytest tests/ -v
-
-#  2. recevie the result:
-$ tests/ | grep -n "def 
 ```
 
 As the result, you will get an report to know whether the test methods has been passed or failed:
