@@ -9,9 +9,10 @@
 - [IX. Project Structure](#iv-project-structure)
 - [V. Workflow](#v-workflow)
 - [VI. Installation](#vi-installation--initialisation)
-- [VII. Usage Guide](#vii-usage-guide)
-- [VIII. Technical Considerations](#viii-technical-consideration-and-limitations)
-- [IX. Dependencies](#ix-dependencies)
+- [VII. Testing](#vii-testing)
+- [VIII. Usage Guide](#vii-usage-guide)
+- [IX. Technical Considerations](#viii-technical-consideration-and-limitations)
+- [X. Dependencies](#ix-dependencies)
 
 <br/>
 
@@ -141,9 +142,33 @@ $ python3 app.py
 <br>
 
 
+## VII. Testing
+
+All testing files are located at `tests/` folders.  
+
+With the example of `TestDataCleanerBasic.py"` file, run the unit test specifically with the code:
+
+```
+#  1. run the test at specific files:
+$ pytest tests/test_data_cleaner_basic.py -v
+
+#  2. recevie the result:
+$ tests/test_data_cleaner_basic.py | grep -n "def 
+```
+
+Additionally, the shortcut to run all tests under `tests/` folder, consider the code in below:
+
+```
+#  1. run the test at specific files:
+pytest tests/ -v
+
+#  2. recevie the result:
+$ tests/ | grep -n "def 
+```
+
 <br/>
 
-## VII. Usage Guide
+## VIII. Usage Guide
 
 ### A. Initialise the Program
 
@@ -177,33 +202,9 @@ The Content is the work panel for the application, enabling users to adjust the 
 
 
 
-## VIII. Technical Consideration and Limitations
+## IX. Technical Consideration and Limitations
 
-###  A. Known Issues
-
-#### (1) Incomplete State Reset on Widget Deselection
-
-- Issue: 
-Old states still retain in backend after clicking "--- Please Select ---" at dropdowns and unchecked the selected checkboxes, rather than reset to None or default value.  The reset functions in the sub-pages has been impacted and thereby unable to clear earlier options.
-
-- Action:
-Based on MVC architecture, we have tested the inputs between methods in models, views, controller and state management to ensure proper parameters have been provided and processed. A "if-else" conditional criteria has also been adopted, clarifying special cases handling with corresponding behaviors within our expectation.
-
-- Technical Debt:
-Despite the adoption of central state managemet and event-driven designs, the application still failed to handling sync updates with designated events. The failure is seemingly caused by the unpredicted gap between global state transition and Qt widgets lifecycle.
-
-
-#### (2) Graph Visualisation Deferred
-
-- Issue:
-The original design intended to include interactive graph visualisations alongside pivot tables and heatmaps throughout the analysis.
-
-- Action:
-Removed graph visualisation in the current version due to scope constraints. Planned for future expansion.
-
-
-
-###  B. Design Trade-off
+###  A. Design Trade-off
 
 #### (1) Centralisation vs. Maintainability
 
@@ -241,12 +242,23 @@ SQL connectivity was implemented early in development, but persistent storage is
 The UI components for SQL were hidden to keep the interface focused. The underlying connection logic remains in `FileController` as legacy code for potential future use.
 
 
+### (B) Limitations
+
+#### (1) Graph Visualisation Deferred
+
+- Removed graph visualisation in the current version due to scope constraints. 
+- Planning to implement matplotlib diagrams in the future version.
+
+#### (2) Subsequent test modules
+
+- The project prioritised unit tests for data -cleaning due to frequent reuse and the foundation to support the data analytical pipeline. 
+- Planning to implement all unit tests for data transformation and preprocessing methods, as well as integration tests in the future version.
 
 
 <br/>
 
 
-## IX. Dependencies
+## X. Dependencies
 
 | Category | Package    | Version |
 |----------|------------|---------|
@@ -254,7 +266,7 @@ The UI components for SQL were hidden to keep the interface focused. The underly
 | Library  | pandas     | 2.3.3   |
 | Library  | numpy      | 2.3.4   |
 | UI       | PyQt5      | 5.15.11 |
-| Plotting | matplotlib | 3.10.7  |
+| Testing  | pytest     | 8.4.2   |
 
 See `requirements.txt` for the full package list.
 

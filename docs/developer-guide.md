@@ -23,7 +23,7 @@ specific structure.
 - [V. User Interface Guide](#v-user-interface-guide)
 - [VI. Error Handling](#vi-error-handling)
 - [VII. Trouble-shooting](#vii-trouble-shooting)
-- [VIII. Limitation and Future Improvements](#viii-limitation-and-future-improvements)
+- [VIII. Testing](#viii-testing)
 
 <br/>
 
@@ -70,13 +70,14 @@ The application adopts MVC pattern.
 
 ```
 controllers/   # logic layer: bridge views and models, manage user
-data/          # Raw input or interim processed data
+data/          # raw input or interim processed data
 docs/          # internal documentation and architectural diagrams
-infra/         # Infrastructure: logging
-models/        # Data layer: database management, data transformation
-output/        # File generation: exported files and reports
-state/         # State management: handle state for cross-modules
-views/         # UI layer: all UI components and structure workflow
+infra/         # infrastructure: logging
+models/        # data layer: database management, data transformation
+output/        # file generation: exported files and reports
+state/         # state management: handle state for cross-modules
+tests/         # unit testing
+views/         # ui layer: all ui components and structure workflow
 ```
 
 Each module groups logically and specialises their own duties, separating a clear layer structure with the principle of high cohesion and low coupling.  This arrangement helps to prevent cross-dependent logic with complex relations, improving future maintenance and testing with module reusability and system consistency.
@@ -395,6 +396,7 @@ If the warning still exists, select the correct interpreter.
 
 Import warnings should disappear if the correct version has been selected.
 
+
 ### B. Missing Module
 
 After renaming, the ModuleNotFoundError may exist if the files still refer to the old path name.
@@ -430,13 +432,44 @@ $ python3 app.py
 <br/>
 
 
-## VII. Limitation and Future Improvements
+## VIII. Testing
 
 
+All testing files are located at `tests/` folders.  
+
+With the example of `TestDataCleanerBasic.py"` file, run the unit test specifically with the code:
+
+```
+#  1. run the test at specific files:
+$ pytest tests/test_data_cleaner_basic.py -v
+
+#  2. recevie the result:
+$ tests/test_data_cleaner_basic.py | grep -n "def 
+```
+
+Additionally, the shortcut to run all tests under `tests/` folder, consider the code in below:
+
+```
+#  1. run the test at specific files:
+pytest tests/ -v
+
+#  2. recevie the result:
+$ tests/ | grep -n "def 
+```
+
+As the result, you will get an report to know whether the test methods has been passed or failed:
+
+```
+========================== short test summary info ==========================
+FAILED tests/test_data_cleaner_basic.py::TestDataCleanerBasic::test_handle_na_single_none - TypeError: DataCleaner.handle_na() missing 1 required positional argumen...
+FAILED tests/test_data_cleaner_basic.py::TestDataCleanerBasic::test_handle_na_plural_none - TypeError: DataCleaner.handle_na() missing 1 required positional argumen...
+================= 2 failed, 64 passed, 11 warnings in 4.02s ================
+
+```
 
 <br/>
 
 
 <i> Author: kchan </i>
 </br>
-<i> Last Updated: Dec 18, 2025 </i>
+<i> Last Updated: Mar 10, 2025 </i>

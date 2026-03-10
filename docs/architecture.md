@@ -58,8 +58,10 @@ Class abstraction and inheritance also enable modules to replace or extend or ov
  |      |----  diagrams/
  |      |----   tables/
  |----  state/                            #  Global state management
+ |----  tests/                            #  Testing files
  |----  views/                            #  User Interface
- |----  config.env                        #  Environment config
+ |----  config.env.example                #  Environment config (example)
+ |----  EdTrack.spec                      #  Built config from PyInstaller
  |----  requirements.txt                  #  List of dependencies
  |----  README.md
  |----  app.py                            #  Entry Point

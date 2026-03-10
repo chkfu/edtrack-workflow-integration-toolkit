@@ -12,9 +12,27 @@ summaries for further maintenance.
 
 -->
 
-# CHAGELOG
+# CHANGELOG
 
 This file records the major version changes of the projects.
+
+<br/>
+
+
+## [1.0.1] - Mar 10, 2026
+
+### Added 
+
+-  Added `test/` folder for unit testing
+-  Added new unit tests for data cleaning methods
+                     
+### Edited
+-  Refined `readme.md` and `developer-guide.md` documents
+-  Updated `requirements.txt` with new implemented libraries
+
+### Fixed
+-  Refined data cleaning methods based on the failed tests at edge cases
+
 
 <br/>
 
