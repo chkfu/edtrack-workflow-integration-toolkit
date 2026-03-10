@@ -110,7 +110,7 @@ views/         # UI layer: all UI components and structure workflow
 ### A. Clone the Project
 
 ```
-$ git clone https://github.com/chkfu/Practice_student-activities.git
+$ git clone https://github.com/chkfu/edtrack-workflow-integration-toolkit.git
 $ cd Practice_student-activities
 ```
 

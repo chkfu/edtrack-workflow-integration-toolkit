@@ -29,6 +29,7 @@ This file records the major version changes of the projects.
 ### Edited
 -  Refined `readme.md` and `developer-guide.md` documents
 -  Updated `requirements.txt` with new implemented libraries
+-  Updated git URL for clone reference
 
 ### Fixed
 -  Refined data cleaning methods based on the failed tests at edge cases
