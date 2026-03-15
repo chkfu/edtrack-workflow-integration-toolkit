@@ -21,16 +21,17 @@
 
 A refactored version of my earlier coursework rebuilt into a modularised Python application. Redesigned the client-side workflow with a new PyQt5 interface, together with the server-side data-processing pipelines with modules of import/export, cleaning, transforming and visualising student activities logs.
 
-It is designed to tailor-made a standard workflow for analysing student engagement and supports exporting processed datasets into designated format and storing persistent data in a SQL database.
+It is designed to tailor-made a standard workflow for analysing student engagement and supports exporting processed datasets into designated formats.
 
 <br/>
 
 
 ## II. Features
 
-- Import/export datasets and connect to a SQL database
-- Form modular data-processing pipeline (Loader, Cleaner, Transformer, Visualiser, etc.)
-- Basic data visualisation with Matplotlib heatmaps and pivot tables
+- PyQt5 interface for managing the data-processing workflow
+- Modularised data-processing for importing, cleaning, transforming, and analysing student activities
+- Pivot-table-based data exploration and analysis of student engagement
+- Engineering-oriented project structure with OOP design, logging, testing, and centralised state management
 
 <p>
   <img src="docs/demo/demo_import-export_01.gif" width="65%">
@@ -66,13 +67,14 @@ The system applies OOP to break data handling and workflow logic into small, ind
 <i>* Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
 ```
-controllers/   # logic layer: bridge views and models, manage user
+controllers/   # Logic layer: bridge views and models, manage user
 data/          # Raw input or interim processed data
-docs/          # internal documentation and architectural diagrams
+docs/          # Internal documentation and architectural diagrams
 infra/         # Infrastructure: logging
 models/        # Data layer: database management, data transformation
 output/        # File generation: exported files and reports
 state/         # State management: handle state for cross-modules
+tests/         # Testing: unit tests
 views/         # UI layer: all UI components and structure workflow
 ```
 
@@ -107,6 +109,10 @@ views/         # UI layer: all UI components and structure workflow
 
 ## VI. Installation / Initialisation
 
+### A. Download the App
+
+**[Download latest release](https://github.com/chkfu/Practice_student-activities/releases/latest)**
+
 ### A. Clone the Project
 
 ```
@@ -132,12 +138,6 @@ $ pip install -r requirements.txt
 ```
 $ python3 app.py
 ```
-
-###  B. Open the Pre-built app (macOS version)
-
-<i> No Python installation required. </i>
-
-**[Download latest release](https://github.com/chkfu/Practice_student-activities/releases/latest)**
 
 <br>
 
@@ -267,4 +267,4 @@ See `requirements.txt` for the full package list.
 
 <i> Author: kchan </i>
 </br>
-<i> Last Updated: Mar 07, 2026 </i>
+<i> Last Updated: Mar 15, 2026 </i>

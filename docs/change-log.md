@@ -19,7 +19,7 @@ This file records the major version changes of the projects.
 <br/>
 
 
-## [1.0.1] - Mar 10, 2026
+## [1.0.1] - Mar 15, 2026
 
 ### Added 
 
