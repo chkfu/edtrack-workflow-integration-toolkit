@@ -3,21 +3,21 @@
 <br/>
 
 ## Contents
-- [I. Overview](#i-overview)
-- [II. Features](#ii-features)
-- [III. Architecture](#iii-architecture)
-- [IX. Project Structure](#iv-project-structure)
-- [V. Workflow](#v-workflow)
-- [VI. Installation](#vi-installation--initialisation)
-- [VII. Testing](#vii-testing)
-- [VIII. Usage Guide](#vii-usage-guide)
-- [IX. Technical Considerations](#viii-technical-consideration-and-limitations)
-- [X. Dependencies](#ix-dependencies)
+- [Overview](#i-overview)
+- [Features](#ii-features)
+- [Architecture](#iii-architecture)
+- [Project Structure](#iv-project-structure)
+- [Workflow](#v-workflow)
+- [Installation and Initialisation](#vi-installation-and-initialisation)
+- [Testing](#vii-testing)
+- [Usage Guide](#viii-usage-guide)
+- [Technical Considerations and Limitations](#ix-technical-considerations-and-limitations)
+- [Dependencies](#x-dependencies)
 
 <br/>
 
 
-## I. Overview
+## Overview
 
 A refactored version of my earlier coursework rebuilt into a modularised Python application. Redesigned the client-side workflow with a new PyQt5 interface, together with the server-side data-processing pipelines with modules of import/export, cleaning, transforming and visualising student activities logs.
 
@@ -26,7 +26,7 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 <br/>
 
 
-## II. Features
+## Features
 
 - PyQt5 interface for managing the data-processing workflow
 - Modularised data-processing for importing, cleaning, transforming, and analysing student activities
@@ -40,7 +40,7 @@ It is designed to tailor-made a standard workflow for analysing student engageme
 <br/>
 
 
-## III. Architecture
+## Architecture
 
 <i>* Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
@@ -62,7 +62,7 @@ The system applies OOP to break data handling and workflow logic into small, ind
 
 <br/>
 
-## IV. Project Structure
+## Project Structure
 
 <i>* Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
@@ -80,7 +80,7 @@ views/         # UI layer: all UI components and structure workflow
 
 <br/>
 
-## V. Workflow
+## Workflow
 
 <i>* Read `architecture.md` for further information of design and module reponsibilities.  </i>
 
@@ -107,17 +107,17 @@ views/         # UI layer: all UI components and structure workflow
 
 <br/>
 
-## VI. Installation / Initialisation
+## Installation / Initialisation
 
 ### A. Download the App
 
-**[Download latest release](https://github.com/chkfu/Practice_student-activities/releases/latest)**
+**[Download latest release](https://github.com/chkfu/edtrack-workflow-integration-toolkit/releases/tag/v1.0.0)**
 
 ### A. Clone the Project
 
 ```
 $ git clone https://github.com/chkfu/edtrack-workflow-integration-toolkit.git
-$ cd Practice_student-activities
+$ cd edtrack-workflow-integration-toolkit
 ```
 
  <i> Build Virtual Environment </i>
@@ -142,7 +142,7 @@ $ python3 app.py
 <br>
 
 
-## VII. Testing
+## Testing
 
 All testing files are located at `tests/` folders.  
 
@@ -160,7 +160,7 @@ pytest tests/ -v
 
 <br/>
 
-## VIII. Usage Guide
+## Usage Guide
 
 ### A. Initialise the Program
 
@@ -194,7 +194,7 @@ The Content is the work panel for the application, enabling users to adjust the 
 
 
 
-## IX. Technical Consideration and Limitations
+## Technical Consideration and Limitations
 
 ###  A. Design Trade-off
 
@@ -250,7 +250,7 @@ The UI components for SQL were hidden to keep the interface focused. The underly
 <br/>
 
 
-## X. Dependencies
+##  Dependencies
 
 | Category | Package    | Version |
 |----------|------------|---------|

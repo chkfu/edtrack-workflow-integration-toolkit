@@ -1,11 +1,6 @@
 import logging
 import pandas as pd
-from PyQt5.QtWidgets import (
-  QFrame, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea,
-  QDialog, QMessageBox
-)
 from states.CleanDataState import CleanDataState
-from controllers.ValidController import ValidController
 from models.DataCleaner import DataCleaner
 from models.DataManager import DataManager
 from models.DataPreprocessor import DataPreprocessor

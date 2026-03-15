@@ -31,8 +31,11 @@ This file records the major version changes of the projects.
 -  Updated `requirements.txt` with new implemented libraries
 -  Updated git URL for clone reference
 
-### Fixed
+###  Fixed
 -  Refined data cleaning methods based on the failed tests at edge cases
+
+###  Removed
+-  Deleted legacy dependencies in all files
 
 
 <br/>
@@ -62,7 +65,7 @@ This file records the major version changes of the projects.
 - Fixed missing value checkboxes in metric tabs, PageAnalyse
 - Update page-specific criteria of back button triggering at NavController
 
-### Delete
+### Removed
 
 - Removed graph visualization for the current version.
 

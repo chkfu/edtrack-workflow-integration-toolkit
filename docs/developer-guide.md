@@ -37,7 +37,7 @@ It is a desktop application to be utilised for cleaning and transforming student
 
 ## II. Environment Setup
 
-Run the project with Python 3.13+ version.
+**Run the project with Python 3.13+ version.**
 
 ### A. Create the virtual environment:
 ```
@@ -276,9 +276,9 @@ STEP_NAME_LIST: list = [
 ]
 ```
 
-#### (3) Reset Components
+#### (4) Reset Components
 
-#### (3a) QButtonGroup
+#### (4a) QButtonGroup
 
 `QButtonGroup` manages the behavioral logic of the entire button group, while each radio button widget represents only the visual element. For a full reset, the group must be temporarily unlocked to allow individual buttons to change state, then locked again to re-establish the group’s behavior.
 
@@ -289,7 +289,7 @@ for btn in self.radio_btn_list:
 self.merge_method_group.setExclusive(True)    # after change, locked it back
 ```
 
-#### (3a) QRadioButton
+#### (4a) QRadioButton
 
 For single `QRadioButton`, the container (a list of buttons) is recalled and iterated to update each button’s state. Each button temporarily blocks signals to prevent triggering additional events, then unblocks signals after the state change is applied.
 
@@ -300,7 +300,7 @@ for btn in self.radio_btn_list:
     btn.blockSignals(False)    # after change, locked it back
 ```
 
-#### (3c) `QComboBox`
+#### (4c) `QComboBox`
 
 `QComboBox` (drop-down list) also need to be locked and unlocked using blockSignals.
 However, the default option is reset by setting the index of the selected item, rather than modifying a checked state.
@@ -364,6 +364,30 @@ Among various modules, the criteria:
 The logger is packaged into a reusable module in the infra folder.  It prevents duplicated codes across the system, as well as considering future maintenance and expansion of the system structure.
 
 The log sheet will be stored in the same folder for logical file management.
+
+
+#### (5) Update Requirement.txt
+
+Once the existing libraries or extensions changed, please make sure to save the updates by running the code below:
+
+```
+pip freeze > requirements.txt
+```
+The latest updates of dependencies and their version will be stored in `requirement.txt`, enabling to recreate the project environment.
+
+#### (6) Publish Latest Package
+
+If PyInstaller is not installed, install it first in your Python environment:
+```
+pip install pyinstaller
+```
+
+Then, at the project root, run PyInstaller from the terminal:
+```
+pyinstaller --onefile --windowed --name edtrack_package_v1.0.0 --add-data "views/:views/" app.py
+```
+
+PyInstaller will create the new `build/` and `dist/` folders for the location of those temporary files used and the standalone app, respectively. In `dist/`, you will find the final package directly - `./dist/edtrack_package_v1.0.0`.
 
 <br/>
 

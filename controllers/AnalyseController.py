@@ -1,8 +1,6 @@
 import logging
 from PyQt5.QtCore import Qt
-from controllers.ValidController import ValidController
 from models.DataManager import DataManager
-from views.components.config.views_config import MERGE_METHOD_OPT
 
 
 #  LOGGING
