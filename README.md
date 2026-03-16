@@ -19,7 +19,9 @@
 
 ## Overview
 
-A refactored version of my earlier coursework rebuilt into a modularised Python application. Redesigned the client-side workflow with a new PyQt5 interface, together with the server-side data-processing pipelines with modules of import/export, cleaning, transforming and visualising student activities logs.
+In education, administrators often process and analyse data manually, which is slow and unreliable. As datasets grow, maintaining a consistent workflow becomes difficult without a standard process for cleaning and transforming data.
+
+As a modularised application, EdTrack streamlines the processing and analysis of student engagement data. It integrates PyQt5 interface and server-side data-processing pipelines for import/export, cleaning, transforming and visualising activity-log records.
 
 It is designed to tailor-made a standard workflow for analysing student engagement and supports exporting processed datasets into designated formats.
 
